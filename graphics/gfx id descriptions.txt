@@ -1,0 +1,159 @@
+00	grass and forest
+01	forest with car, scrolling right
+02	forest with car, stationary
+03	mansion (orange)
+04	mansion (blue)
+05	mansion (red)
+06	armor
+07	long empty hallway
+08	forest with shed & visible tree trunks
+09	inside of greenhouse
+0A	kitchen and fridge
+0B	dining table
+0C	desk with dictionaries
+0D	dictionary spines
+0E	staircase
+0F	box and lantern
+10	wooden crates with spiderweb
+11	boiler room
+12	test tubes, beaker, flask
+13	window with curtain
+14	window with curtain
+15	window with curtain
+16	lamp with drawers
+17	dimly lit room with lamp
+18	woman's bedroom
+19	dresser with potted plant
+1A	diary (red)
+1B	diary (blue)
+1C	car
+1D	doorknob
+1E	doorknob but darker
+1F	door with silver doorknob
+20	double door
+21	front door
+22	bottom of open door
+23	sliding door
+24	field of otogirisou (yellow flowers)
+25	field of lilacs (purple flowers)
+26	field of wildflowers (white)
+27	field of otogirisou
+28	single otogirisou
+29	single otogirisou
+2A	candle
+2B	three candles
+2C	hawk
+2D	two girls' dolls
+2E	phone
+2F	S pipe under sink
+30	medicine tube
+31	wheelchair
+32	photo of two girls
+33	newspaper clipping
+34	straw figure
+35	two straw figures
+36	vampire bat with red eyes
+37	sink
+38	showerhead (orange and blue)
+39	showerhead (gray)
+3A	broken down terrace
+3B	piano room
+3C	water tank (dirty water)
+3D	water tank (clear blue water)
+3E	empty water tank
+3F	bed on left of screen
+40	bed
+41	lab of preserved specimens
+42	foyer
+43	fireplace with couch
+44	gates with mansion gone
+45	hallway with doors
+46	painting
+47	painting - could be unused
+48	mostly white painting
+49	two maternity health books
+4A	one maternity health book
+4B	monstrous fish
+4C	looking up at chandelier
+4D	sword
+4E	knife
+4F	mummy
+50	cat's eyes (static)
+51	woman's eyes (uses $00E012)
+52	knife - animated
+53	sword - animated
+54	cat's eyes open (automatic meow sfx)
+55	cat's eyes open (no auto sfx) (educated guess)
+56	woman's eyes (uses $07C686)
+57	mummy slides in
+58	mummy
+59	forest
+5A	title screen
+5B	file select screen (see $02B861)
+5C	name entry screen  (see $02B03E)
+5D	credits 5D
+5E	credits 5E
+5F	credits 5F
+60	credits 60
+61	credits 61
+62	credits 62
+63	credits 63
+64	credits 64
+65	credits 65
+66	credit tilemap planner
+67	credit tilemap writer
+68	credit tilemap art director
+69	credit tilemap graphics
+6A	credit tilemap composer
+6B	credit tilemap programming director
+6C	credit tilemap programmer
+6D	credit tilemap sound programmer
+6E	credit tilemap original sfx
+6F	credit tilemap support pg 1
+70	credit tilemap support pg 2
+71	credit tilemap producer director
+72	credit tilemap (c) chunsoft co ltd
+73	tilemap 終
+74	tilemap 完
+75	unknown
+76	rain
+77	rain - not sure
+78	rain
+79	rain
+7A	axe flies into wall
+7B	Nami graphic - auto creak sfx
+7C	Nami graphic - no auto sfx
+7D	car approaches
+7E	car approaches
+7F	car approaches - no auto sfx
+80	flying bat animation (see $01F213)
+81	tree lightning strike - set trans. color in CGRAM
+82	tree lightning strike
+83	fade to white
+84	make image much darker
+85	flash of light
+86	wipe image to black from right to left
+87	screen shakes
+88	screen shakes
+89	more intense shaking
+8A	stop screen shaking
+8B	speed up car's screen scroll
+8C	car slows down
+8D	car very quickly slows to a stop
+8E	screen shakes when crashing car
+8F	car slowly moves
+90	car stops
+91	small flames
+92	large flames
+93	medium flames
+94	unknown
+95	cut out flames
+96	small flames on bottom of screen; for ending 1, top of mansion
+97	mansion crumbles out of sight
+98	pan screen up to starry sky
+99	ball of fire flies on screen
+9A	three balls of fire fly on screen
+9B	glowing ball flies on screen
+9C	three glowing balls fly on screen
+9D	cut out ball of fire
+9E	fade out glowing ball

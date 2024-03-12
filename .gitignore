@@ -1,0 +1,38 @@
+# Vim swap files
+*.swp
+
+# SNES ROM extensions
+**/*.sfc
+**/*.smc
+
+# Do not upload data for dumped graphics
+gfx dump*/**
+
+# Do not upload ROMs, original or otherwise
+# rom/**
+
+# Do not upload generated patches
+# patches/**
+**/*.bps
+**/*.ips
+
+# Do not upload compiled Java bytecode
+# src/*.class
+# gfx modifications/*.class
+# gfx modifications/*/*.class
+**/*.class
+
+# Do not upload anything in the OLD folder
+OLD/**
+OLD/
+
+# Do not upload any script dumps or data
+script/DUMP*.txt
+script/analysis/**
+script/*.bin
+
+# Do not upload any log files
+logs/**
+
+# Do not upload generated binary files related to the font
+font/*.bin

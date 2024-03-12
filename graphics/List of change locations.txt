@@ -1,0 +1,348 @@
+Title logo:
+- Graphics are 1999 (0x7CF) bytes at $07CC6B (0x3CC6B).
+- Tilemap is 153 (0x99) bytes at $07D4B5 (0x3D4B5).
+
+File select prompts:
+- Graphics are 532 (0x214) bytes at $07E637 (0x3E637).
+- Tilemap is 369 (0x171) bytes at $07E855 (0x3E855).
+
+Name entry buttons (technically whole screen's graphics, but beside the point):
+- Graphics are 1337 (0x539) bytes at $07DD87 (0x3DD87).
+- Tilemap UNCHANGED.
+
+Nami graphic:
+- Graphics are 1095 (0x447) bytes at $07A4EA (0x3A4EA).
+- Tilemap is 148 (0x94) bytes at $07AA34 (0x3AA34).
+- Also need to change # of tiles at 0x3A4E6, from 0x55 to 0x42.
+
+--------------------------------------------------------------------------------
+
+Credits graphics is by far the most complicated change here.
+First, make sure that stuff will fit within original bounds.
+
+Compile information from graphics structure list log files.
+Here is everything sorted by location in the ROM:
+
+Main credits graphics:
+Pointer:    c162
+Metadata: 08AA0A - 08AA0D
+Data:     08AA0E - 08C281 (0x1874 = 6260)
+Translation: 5220
+
+Credit 01 tilemap: NO ******
+Pointer:    c192
+Metadata: 08C282 - 08C287
+Data:     08C288 - 08C306 (0x7F = 127)
+Translation: 135
+
+Credit 02 tilemap:
+Pointer:    c1a4
+Metadata: 08C307 - 08C30C
+Data:     08C30D - 08C369 (0x5D = 93)
+Translation: 89
+
+Credit 03 tilemap: NO ******
+Pointer:    c1af
+Metadata: 08C36A - 08C36F
+Data:     08C370 - 08C490 (0x121 = 289)
+Translation: 299
+
+Credit 04 tilemap: NO ******
+Pointer:    c1ba
+Metadata: 08C491 - 08C496
+Data:     08C497 - 08C509 (0x73 = 115)
+Translation: 178
+
+Credit 05 tilemap: NO ******
+Pointer:    c1c5
+Metadata: 08C50A - 08C50F
+Data:     08C510 - 08C5CB (0xBC = 188)
+Translation: 253
+
+Credit 06 tilemap: NO ******
+Pointer:    c1d0
+Metadata: 08C5CC - 08C5D1
+Data:     08C5D2 - 08C674 (0xA3 = 163)
+Translation: 188
+
+Credit 07 tilemap: NO ******
+Pointer:    c1db
+Metadata: 08C675 - 08C67A
+Data:     08C67B - 08C6FD (0x83 = 131)
+Translation: 222
+
+Credit 08 tilemap: NO ******
+Pointer:    c1e6
+Metadata: 08C6FE - 08C703
+Data:     08C704 - 08C7E2 (0xDF = 223)
+Translation: 291
+
+Credit 09 tilemap: NO ******
+Pointer:    c1f1
+Metadata: 08C7E3 - 08C7E8
+Data:     08C7E9 - 08C87F (0x97 = 151)
+Translation: 215
+
+Credit 10 tilemap: NO ******
+Pointer:    c1fc
+Metadata: 08C880 - 08C885
+Data:     08C886 - 08C93E (0xB9 = 185)
+Translation: 281
+
+Credit 11 tilemap: NO ******
+Pointer:    c207
+Metadata: 08C93F - 08C944
+Data:     08C945 - 08CA2D (0xE9 = 233)
+Translation: 319
+
+Credit 12 tilemap: NO ******
+Pointer:    c212
+Metadata: 08CA2E - 08CA33
+Data:     08CA34 - 08CB93 (0x160 = 352)
+Translation: 516
+
+Credit 13 tilemap: NO ******
+Pointer:    c21d
+Metadata: 08CB94 - 08CB99
+Data:     08CB9A - 08CC3E (0xA5 = 165)
+Translation: 230
+
+Credit 14 tilemap:
+Pointer:    c228
+Metadata: 08CC3F - 08CC44
+Data:     08CC45 - 08CD47 (0x103 = 259)
+Translation: 186
+
+Palette for credits: (not changing, but may need to repoint)
+Pointer:    c19c
+Metadata: 08CD48 - 08CD4B
+Data:     08CD4C - 08CD4F (0x4)
+
+終 graphics:
+Pointer:    c168
+Metadata: 08CD50 - 08CD53
+Data:     08CD54 - 08CFD9 (0x286 = 646)
+Translation: 333
+
+終 tilemap:
+Pointer:    c233
+Metadata: 08CFDA - 08CFDF
+Data:     08CFE0 - 08D081 (0xA2 = 162)
+Translation: 62
+
+完 graphics:
+Pointer:    c16e
+Metadata: 08D082 - 08D085
+Data:     08D086 - 08D2F7 (0x272 = 626)
+Translation: 276
+
+完 tilemap:
+Pointer:    c23e
+Metadata: 08D2F8 - 08D2FD
+Data:     08D2FE - 08D39A (0x9D = 157)
+Translation: 57
+
+----------------------------------------
+
+Total size:
+EN:  9354
+JP: 10594
+
+Conclusion:
+While several individual tilemaps won't fit into their spots, there is plenty of
+spare space freed up from using smaller tilesets that everything can fit with
+some repointing.
+
+--------------------------------------------------------------------------------
+
+When looking through the list logs I had generated from this, I discovered how
+to shift the tilemaps horizontally on screen. You can do it at a granularity of
+one tile either horizontally or vertically, based on the last two bytes of
+metadata in the 10 byte tilemap structure.
+
+How to go about inserting and repointing stuff:
+
+Go to the pointer at the graphics structure list for the main credits graphics.
+It is 08AA0A. Advance 4 bytes to account for TILE metadata (08AA0E).
+Insert the contents of the file with the new English credits graphics here.
+
+Take note of our current file position, after 0x80 RLE terminator. (0x43E72)
+Write 24-bit CPU address to pointer in TILEMAP structure for credit 01. (08BE72)
+  $C192 <- 72, $C193 <- BE, $C194 <- 08
+Copy the 6 bytes of metadata from the original pointer in JP ROM.
+Update the tilemap dimensions appropriately.
+
+Main credits graphics:
+Pointer:    c162
+Metadata: 08AA0A - 08AA0D
+- Change first two bytes [31 03] to [0D 03] for # tiles
+Old data: 08AA0E - 08C281 (0x1874 = 6260)
+New data: 08AA0E - 08BE71 (0x1464 = 5220)
+
+Credit 01 tilemap:
+Pointer:    c192
+Old meta: 08C282 - 08C287
+Old data: 08C288 - 08C306 (0x7F = 127)
+New meta: 08BE72 - 08BE77
+- Change map WxH:  08BE76: [16 07]
+New data: 08BE78 - 08BEFE (0x87 = 135)
+
+Credit 02 tilemap:
+Pointer:    c1a4
+Old meta: 08C307 - 08C30C
+Old data: 08C30D - 08C369 (0x5D = 93)
+New meta: 08BEFF - 08BF04
+Map WxH:  08BF03: [14 07]
+New data: 08BF05 - 08BF5D (0x59 = 89)
+
+Credit 03 tilemap: NO ******
+Pointer:    c1af
+Old meta: 08C36A - 08C36F
+Old data: 08C370 - 08C490 (0x121 = 289)
+New meta: 
+Map WxH:  
+New data: 08BF64 - 08C08E
+Translation: 299
+
+Credit 04 tilemap: NO ******
+Pointer:    c1ba
+Old meta: 08C491 - 08C496
+Old data: 08C497 - 08C509 (0x73 = 115)
+New meta: 
+Map WxH:  
+New data: 08C095 - 08C146
+Translation: 178
+
+Credit 05 tilemap: NO ******
+Pointer:    c1c5
+Old meta: 08C50A - 08C50F
+Old data: 08C510 - 08C5CB (0xBC = 188)
+New meta: 
+Map WxH:  
+New data: 08C14D - 08C249
+Translation: 253
+
+Credit 06 tilemap: NO ******
+Pointer:    c1d0
+Old meta: 08C5CC - 08C5D1
+Old data: 08C5D2 - 08C674 (0xA3 = 163)
+New meta: 
+Map WxH:  
+New data: 08C250 - 08C30B
+Translation: 188
+
+Credit 07 tilemap: NO ******
+Pointer:    c1db
+Old meta: 08C675 - 08C67A
+Old data: 08C67B - 08C6FD (0x83 = 131)
+New meta: 
+Map WxH:  
+New data: 08C312 - 08C3EF
+Translation: 222
+
+Credit 08 tilemap: NO ******
+Pointer:    c1e6
+Old meta: 08C6FE - 08C703
+Old data: 08C704 - 08C7E2 (0xDF = 223)
+New meta: 
+Map WxH:  
+New data: 08C3F6 - 08C518
+Translation: 291
+
+Credit 09 tilemap: NO ******
+Pointer:    c1f1
+Old meta: 08C7E3 - 08C7E8
+Old data: 08C7E9 - 08C87F (0x97 = 151)
+New meta: 
+Map WxH:  
+New data: 08C51F - 08C5F5
+Translation: 215
+
+Credit 10 tilemap: NO ******
+Pointer:    c1fc
+Old meta: 08C880 - 08C885
+Old data: 08C886 - 08C93E (0xB9 = 185)
+New meta: 
+Map WxH:  
+New data: 08C5FC - 08C714
+Translation: 281
+
+Credit 11 tilemap: NO ******
+Pointer:    c207
+Old meta: 08C93F - 08C944
+Old data: 08C945 - 08CA2D (0xE9 = 233)
+New meta: 
+Map WxH:  
+New data: 08C71B - 08C859
+Translation: 319
+
+Credit 12 tilemap: NO ******
+Pointer:    c212
+Old meta: 08CA2E - 08CA33
+Old data: 08CA34 - 08CB93 (0x160 = 352)
+New meta: 
+Map WxH:  
+New data: 08C860 - 08CA63
+Translation: 516
+
+Credit 13 tilemap: NO ******
+Pointer:    c21d
+Old meta: 08CB94 - 08CB99
+Old data: 08CB9A - 08CC3E (0xA5 = 165)
+New meta: 
+Map WxH:  
+New data: 08CA6A - 08CB4F
+Translation: 230
+
+Credit 14 tilemap:
+Pointer:    c228
+Old meta: 08CC3F - 08CC44
+Old data: 08CC45 - 08CD47 (0x103 = 259)
+New meta: 
+Map WxH:  
+New data: 08CB56 - 08CC0F
+Translation: 186
+
+Palette for credits: (not changing, but may need to repoint)
+Pointer:    c19c
+Old meta: 08CD48 - 08CD4B
+Old data: 08CD4C - 08CD4F (0x4)
+New meta: 
+New data: 08CC14 - 08CC17
+
+終 graphics:
+Pointer:    c168
+Old meta: 08CD50 - 08CD53
+Old data: 08CD54 - 08CFD9 (0x286 = 646)
+New meta: 
+New data: 08CC1C - 08CD68
+Translation: 333
+
+終 tilemap:
+Pointer:    c233
+Old meta: 08CFDA - 08CFDF
+Old data: 08CFE0 - 08D081 (0xA2 = 162)
+New meta: 
+Map WxH:  
+New data: 08CD6F - 08CDAC
+Translation: 62
+
+完 graphics:
+Pointer:    c16e
+Old meta: 08D082 - 08D085
+Old data: 08D086 - 08D2F7 (0x272 = 626)
+New meta: 
+New data: 08CDB1 - 08CEC4
+Translation: 276
+
+完 tilemap:
+Pointer:    c23e
+Old meta: 08D2F8 - 08D2FD
+Old data: 08D2FE - 08D39A (0x9D = 157)
+New meta: 
+Map WxH:  
+New data: 08CECB - 08CF03
+Translation: 57
+
+----------------------------------------
+

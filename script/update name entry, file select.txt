@@ -1,0 +1,538 @@
+// note: this table file does NOT include kerning pairs due to more limited ROM
+// space for the text we want to replace/update here, as well as how characters
+// should not kern when being printed for the name entry screen
+#VAR(Table, TABLE)
+// #ADDTBL("tables/inserted font LE.tbl", Table)
+#ADDTBL("tables/uncomp font LE.tbl", Table)
+#ACTIVETBL(Table)
+
+#SMA("LOROM00")
+
+#EMBTYPE("LOROM00",16,$0)
+
+// #############################################################################
+// PRINTING CONSTANTS FOR NAME ENTRY AND FILE SELECT SCREENS
+// #############################################################################
+
+// spacing value is 2 pixels by default
+// this one is for the file select screen and the kana/kanji page descriptors
+#JMP($13580)
+<$01>
+
+// default horiz. spacing value is 0x10 pixels for name entry character grid
+// I suggest leaving this alone, but documenting here anyway
+//#JMP($135E0)
+//<$10>
+
+// default vert. spacing value is 0x10 pixels; same, leave alone
+//#JMP($135F5)
+//<$10>
+
+// char grid starts at pixel col (X coord) 0x90, as well as all subsequent rows
+#JMP($135E6)
+<$90>
+
+// new font may be misaligned vertically when in name entry character grid
+// use this to change initial Y coordinate for top row of characters
+#JMP($135EF)
+<$1C>
+
+// change right boundary for character grid on name entry screen to E0 from E6
+// Chunsoft apparently assumed that no characters here would be <= 6 pixels wide
+#JMP($135FB)
+<$E0>
+
+// #############################################################################
+// REPLACE PUNCTUATION, DIGITS, CHOICE OPTION LETTERS
+// #############################################################################
+
+// - lists of punctuation that should not start a new line, or should not be the
+//   last character on a line; note that technically two lists, but only one
+//   seems to be actually used, so can use both lists' space for one big list?
+// - subject to change, will need to figure out how to change line breaking
+//   behavior in code to fit English rather than Japanese
+#JMP($075CE,$075ED)
+...,.”ʼ')]}?!<AUTO ADV 13>?<AUTO ADV 13>!<AUTO ADV 13>. <$FF><$FF>
+
+#JMP($075EE)
+<$FF><$FF>
+
+// update the punctuation that have inherent WAITs and DELAYs
+#JMP($1297C)
+“ʻ”ʼ.,?!<AUTO ADV 13>?<AUTO ADV 13>!
+
+// set the digits from 0 to 9 used in name entry and file select menus
+// there is also a "10" character here that seems to be unused?
+#JMP($12992)
+0123456789 
+
+// set the letters used for the choice options like choice A, B, or C
+// in normal gameplay, only A-E are used, but JP game has values for A-H
+// I decided to have choices use special letters that are bold and underlined
+#JMP($129AA)
+//ABCDEFGH
+A_bold
+B_bold
+C_bold
+D_bold
+E_bold
+<$FF><$FF>
+
+// #############################################################################
+// FILE SELECT SCREEN - OVERWRITE/REPOSITION TEXT
+// #############################################################################
+
+// reposition the player's name, with respect to the first bookmark (game uses
+// these values as a base and add a certain amount for each bookmark down)
+
+// use this to reposition horizontally (default is 0x4A)
+#JMP($1396C)
+<$4D>
+
+// use this to reposition vertically (default is 0x17)
+#JMP($13972)
+<$19>
+
+/////////////////
+
+// when printing digits on name entry screen, the game will skip 8 pixels to the
+// right in cases like " 35" instead of printing "035"; JP font's digits are 7
+// pixels wide except the '1' (5), and the default value here is <$08>
+// change as needed for inserted font and account for spacing
+#JMP($13A5D)
+<$06>
+
+/////////////////
+
+// replace "回目" with "Loop#" for playthrough counter
+// too long for original space, so repoint in ROM
+
+// old approach: put it where honorifics used to be
+//#JMP($12FF8)
+
+// option 2: text in ROM starting at $02A9AA is: "ABCDEFGH|回目|" ('|' = FFFF)
+// FGH are unused, so can (perfectly!) fit text: "ABCDE|Loop#|"
+#JMP($129B6)
+#W16($13996)
+Loop#<$FF><$FF>
+
+// if going the, say, "Loop# 3" route versus the original of "__回目", have to 
+// reposition the text on screen 
+// use this to reposition the "Loop" text; default is 0xD0
+#JMP($1398A)
+<$A4>
+
+// reposition the Y coordinate of the text
+// be sure to make this the same as for the name, for consistency ($13972)
+#JMP($13990)
+<$19>
+
+// use this to reposition the value (test with up to 2 digits); default is 0xA8
+#JMP($1399C)
+<$C9>
+
+/////////////////
+
+// replace "ページ" with "Pg."
+#JMP($129C2)
+Pg.<$FF><$FF>
+
+// do the same thing as the playthrough counter: "Pg. N" instead of "Nページ"
+// use this to reposition the "Pg." text; default is 0x68
+// suggestion: use same value as for name, to make it look consistent
+#JMP($139AD)
+<$4D>
+
+// use this to reposition the pg # (test with up to 3 digits); default is 0x68
+#JMP($139BF)
+<$64>
+
+// reposition both vertically; default is 0x30
+#JMP($139B3)
+<$30>
+
+/////////////////
+
+// reposition the "choices selected" counter horizontally, ideally to match the
+// playthrough counter; default is 0xA2
+#JMP($139D0)
+<$C9>
+
+// reposition it vertically; default is 0x30
+#JMP($139D6)
+<$30>
+
+// #############################################################################
+// HIRAGANA/KATAKANA/KANJI PAGE LABELS - OVERWRITE TEXT
+// #############################################################################
+
+// replace "ひらがな" with "ABC", "カタカナ" with "abc", "漢字" with "Áá@"
+// not including FFFF terminators, try to keep to under 10 characters total
+#JMP($129CA,$129E3)
+ABC<$FF><$FF>
+
+#W16($135A4)
+abc<$FF><$FF>
+
+#W16($135B6)
+Áá@<$FF><$FF>
+//Etc.<$FF><$FF>
+
+#JMP($129E2)
+<$FF><$FF>
+
+// #############################################################################
+// HIRAGANA/KATAKANA/KANJI PAGE LABEL REPOSITIONING
+// #############################################################################
+
+// if needed, reposition the strings ABC, abc, Áá@, and/or the digit
+// for reference, the text "boxes" are 64 pixels wide, with left edge at X = 48
+// heights are 16 pixels, with top edges at Y = 80, 120, 160
+
+// "ABC" text x and y coordinates are (0x35, 0x50) by default
+// center the text, ABC is 8 + 7 + 8 + (2*1) = 25;
+// (64 - 25) / 2 = 19.5 -> use X = 19 + 48 = 67 = 0x43
+#JMP($13586)
+<$43>
+#JMP($1358C)
+<$52>
+
+// "abc" text x and y coordinates are (0x38, 0x78) by default
+// center the text, abc is 6 + 6 + 6 + (2*1) = 20;
+// (64 - 20) / 2 = 22 -> use X = 22 + 48 = 70 = 0x46
+#JMP($13598)
+<$46>
+#JMP($1359E)
+<$7A>
+
+// "Áá@" text x and y coordinates are (0x32, 0xA1) by default
+// game uses a 4 tile wide box between left edge and "<" arrow
+// center text within 32 pixel area; "Áá@" is 8 + 6 + 10 + (2*2) = 28
+// (32 - 28) / 2 = 2 pixels -> use X = 2 + 48 = 50 = 0x32
+#JMP($135AA)
+<$32>
+#JMP($135B0)
+<$A2>
+
+// #############################################################################
+// KANJI PAGE NUMBER REPOSITIONING
+// #############################################################################
+
+// x/y coordinates for this are more complicated because pg # gets redrawn
+// list of default coordinate values here (all Y coordinates are 0xA1):
+// 1. 0x5E - showing '1' when first loading into name entry screen
+// 2. 0xZZ - showing digit from 1 to 9 when changing pages (ZZ loaded from list
+//      at $02A994: 005E, 005C, 005C, 005C, 005C, 005C, 005C, 005C, 005C)
+// 3. 0x5A - showing '1' when going to page 10
+// 4. 0x5F - showing '0' when going to page 10
+
+// game uses a 2 tile wide box between "<" and ">" arrows (left edge is X = 88)
+// center text within 16 pixel area; a single digit is 5 pixels
+// (16 - 5) / 2 = 5.5 pixels -> use X = 5 + 88 = 93 = 0x5D
+
+// case 1: showing 1 when loading into name entry screen
+// game reuses Y coordinate from the text to the left
+#JMP($135BC)
+<$5D>
+
+// case 2: showing digit from 1 to 9 when changing pages (load X from table)
+// change X position for all nine; they all share same Y position
+#JMP($13401)
+<$5D><$00><$5D><$00><$5D><$00>
+<$5D><$00><$5D><$00><$5D><$00>
+<$5D><$00><$5D><$00><$5D><$00>
+
+#JMP($13395)
+<$A2>
+
+// case 3: showing digit 1 when going to page 10
+// case 4: showing digit 0 when going to page 10
+// reuses Y position from case 2
+// center text within 16 pixel area; each digit is 5 pixels
+// (16 - 5*2 + 2) / 2 = 2 pixels -> use X = 2 + 88 = 90 = 0x5A
+// this is X for '1'; the '0' is 5+2 pixels to right -> 0x61
+#JMP($133CB)
+<$5A>
+#JMP($133E0)
+<$62>
+
+// #############################################################################
+// NAME ENTRY SCREEN - NAME REPOSITIONING
+// #############################################################################
+
+// NOTE: I used to keep modifications for name repositioning in this section,
+// but because what I wanted to do involved ASM modifications, I moved them out
+// into an Asar file
+
+// details if you're interested:
+// default position for name is X = 0x1F + (name_length * 0xD) and Y = 0x28
+// the 1F is easy to change, but the 0xD requires ASM changes
+// - game constructs it as L<<3 + L<<2 + L = L*(8+4+1) = L*13
+// - specifically: LDA $1AA3; ASL; ASL; PHA; ASL; ADC $01,S; ADC $1AA3
+// #JMP($13368)
+// <$18>
+
+// #JMP($1336F)
+// <$2A>
+
+// also do this for the solid blue box highlighting a name character
+// #JMP($134C7)
+// <$28><$17>
+
+// to make the box 15 pixels wide instead of 13 pixels wide, change these two
+// values from 0005 to 0007 (X offsets for top right & bottom left 8x8 sprites)
+// #JMP($134CE)
+// <$07>
+
+// #JMP($134DB)
+// <$07>
+
+///////////////
+
+// If you want to use the full range of the 15 pixel limit for font heights, the
+// "erase font at X/Y on screen" subroutine won't erase the top few pixel rows
+// for characters that are 14 (top row) or 15 pixels (two 2 rows) tall.
+// Changing this byte from 0E (14) to 10 (16) will solve this issue.
+#JMP($0F682)
+<$10>
+
+// Similarly for font widths, the game uses a 32-bit bitmask value here for
+// how many (technically, which) columns get erased. By default, it is 0007FFFF,
+// which is to say it erases the left 13 pixel columns for a character (the FFFF
+// allows the "erase font" subroutine to work at an arbitrary X/Y position).
+// Changing the 0007 to 0000 lets it work for characters up to 15 pixels wide.
+#JMP($0F6FF)
+<$00><$00>
+
+// #############################################################################
+// NAME ENTRY MENU CONTENT
+// #############################################################################
+
+// hiragana page, replace with uppercase letters
+// 51 slots for letters per page; force the FFFF terminator for safety
+// NOTE: assumes that unused character slots are pre-filled with 00 bytes
+// Atlas has no "fill bytes with value" command, so an Asar file that gets run
+// before this Atlas script will do that instead
+
+#JMP($129E4)
+#W16($1318E)
+ABCDE
+FGHIJ
+KLMNO
+PQRST
+UVWXY
+Z<AUTO ADV 13>.<AUTO ADV 13>?<AUTO ADV 13>!...
+12345
+67890
++-×÷=
+
+#JMP($12A4A)
+<$FF><$FF>
+
+// katakana page, replace with lowercase letters
+#JMP($12A4C)
+#W16($13190)
+abcde
+fghij
+klmno
+pqrst
+uvwxy
+z[]{}
+~@#$%
+^&*()
+<>/:;
+#JMP($12AB2)
+<$FF><$FF>
+
+// kanji page 1     ----
+#JMP($12AB4)
+#W16($13192)
+ÀÁÂÃÄ
+ÅÆÇÈÉ
+ÊËÌÍÎ
+ÏÐÑÒÓ
+ÔÕÖŒÙ
+ÚÛÜÝ
+#JMP($12B1A)
+<$FF><$FF>
+
+// kanji page 2     ----
+#JMP($12B1C)
+#W16($13194)
+àáâãä
+åæçèé
+êëìíî
+ïðñòó
+ôõöœù
+úûüýÿ
+#JMP($12B82)
+<$FF><$FF>
+
+// kanji page 3     ----
+#JMP($12B84)
+#W16($13196)
+
+#JMP($12BEA)
+<$FF><$FF>
+
+// kanji page 4     ----
+#JMP($12BEC)
+#W16($13198)
+
+#JMP($12C52)
+<$FF><$FF>
+
+// kanji page 5     ----
+#JMP($12C54)
+#W16($1319A)
+
+#JMP($12CBA)
+<$FF><$FF>
+
+// kanji page 6     ----
+#JMP($12CBC)
+#W16($1319C)
+
+#JMP($12D22)
+<$FF><$FF>
+
+// kanji page 7     ----
+#JMP($12D24)
+#W16($1319E)
+
+#JMP($12D8A)
+<$FF><$FF>
+
+// kanji page 8     ----
+#JMP($12D8C)
+#W16($131A0)
+
+#JMP($12DF2)
+<$FF><$FF>
+
+// kanji page 9     ----
+#JMP($12DF4)
+#W16($131A2)
+
+#JMP($12E5A)
+<$FF><$FF>
+
+// kanji page 10    ----
+#JMP($12E5C)
+#W16($131A4)
+
+#JMP($12EC2)
+<$FF><$FF>
+
+// if you don't need all 10 kanji pages, you can use these addresses to change
+// how many the game displays (0x13138 is for looping from max to 1, 0x1311C is
+// for looping from 1 to max); note that [0x13138] = # pages = [0x1311C] + 1
+#JMP($13138)
+<$02>
+#JMP($1311C)
+<$01>
+
+// #############################################################################
+// HONORIFICS
+// #############################################################################
+
+// The default Japanese list of honorifics is much too small for inserting the
+// English romanized equivalents like さん-> "-san"; have to repoint elsewhere.
+// For this patch, I will use the space where Chunsoft put the characters for
+// the "add dakuten to this" subroutine (overwrite かきくけこさしすせそ, etc.).
+#JMP($12EC4)
+#W16($0286F)
+-san<$FF><$FF>
+
+#W16($02871)
+#W16($0287D)
+-kun<$FF><$FF>
+
+// skipping by 4 bytes instead of 2 because index 2 is for "use no honorific"
+#W16($02875)
+-chan<$FF><$FF>
+
+#W16($02877)
+-don<$FF><$FF>
+
+#W16($02879)
+-sama<$FF><$FF>
+
+#W16($0287B)
+-dono<$FF><$FF>
+
+// The original game had kun in both hiragana and katakana.
+// This difference is lost in translation but lets us save 10 bytes.
+// #W16($0287D)
+// -kun<$FF><$FF>
+
+#W16($0287F)
+-senpai<$FF><$FF>
+
+#W16($02881)
+-sensei<$FF><$FF>
+
+#W16($02883)
+-chief<$FF><$FF>
+
+#W16($02885)
+-papa<$FF><$FF>
+
+// #############################################################################
+// PRINTING CONSTANTS FOR NOVEL/GAMEPLAY TEXT 
+// #############################################################################
+
+// change X coordinate for a new line of text, when not a choice option
+// default is 0x0C
+#JMP($018EE)
+<$0C>
+
+// change Y coordinate for a new screen of text
+// default is 0x10
+#JMP($018FB)
+<$10>
+
+// change the height of the first row of characters (?); 0x0E by default
+// TODO fill in better description here
+#JMP($018AF)
+<$0E>
+//<$0F>
+
+// DEPRECATED, patch now uses a separate line breaking routine for novel text
+// change X coordinate of "right screen boundary" = where to auto line break
+// default is 0xF2 = 14 pixels from right
+// #JMP($01908)
+// <$F2>
+
+// change height of line break, measured from bottom of each char row
+// default is 0x17 = 0x0F + 0x08 (max char height + 8 pixels leading)
+// can fit more lines of text on screen by decreasing to, say, 0x13
+#JMP($01922)
+<$13>
+
+// change the pixel spacing between characters; default is 02
+#JMP($0192F)
+<$01>
+
+// change X coordinate of where to print a choice letter
+#JMP($01FA1)
+<$12>
+
+// change X coordinate of where to print the text for a choice option
+#JMP($01FA7)
+<$20>
+#JMP($01ECB)
+<$20>
+
+// offset the "advance text" icon that shows up during WAITs and CHOICEs
+// may have to space up to match with baselines of English letters instead
+// of their descenders (tails for letters like 'y' or 'g')
+// note: doing this for "next page" icon is not as simple; requires ASM changes
+//       because no similar ADC opcode+operand to do a change like this
+// default is [00 02] (XX YY)
+#JMP($01C8B)
+<$00><$FF>
+
+// #############################################################################
+// #############################################################################
+

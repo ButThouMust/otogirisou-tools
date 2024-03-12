@@ -1,0 +1,33 @@
+Change dimensions of highlight rectangles for file select prompts:
+
+All of the translated options are 4 tiles wide at most.
+
+--------------------
+
+$02B7BD - $02B806: Begin/Delete/Cancel or Begin/Cancel
+All choice options here are 4 tiles wide.
+                   Pointer at $02BC83 in LDX.W #$B7BD,X
+
+0000 0400  0800 0180  1000 0180  1800 0180  2000 0180  2800 0440  
+0008 0340  2808 0300                                            
+0010 0480  0810 0100  1010 0100  1810 0100  2010 0100  2810 04C0
+FFFF
+
+Place at $02B7BD (up through $02B7F6):
+00000400080001801000018018000180200001802800044000080340280803000010048008100100101001001810010020100100281004C0FFFF
+
+--------------------
+
+$02B807 - $02B838: From where? / Continue / Beginning or Are you sure? / No / Yes
+All choice options here are 5 tiles wide.
+                   Pointer at $02BC8D in LDX.W #$B807,X
+
+0000 0400  0800 0180  1000 0180  1800 0180  2000 0180  2800 0180  3000 0440
+0008 0340  3008 0300                                              
+0010 0480  0810 0100  1010 0100  1810 0100  2010 0100  2810 0100  3010 04C0
+FFFF
+
+Update pointer at $02BC8D to have data F7 B7.
+Place at $02B7F7 (up through $02B838):
+000004000800018010000180180001802000018028000180300004400008034030080300001004800810010010100100181001002010010028100100301004C0FFFF
+
