@@ -25,6 +25,7 @@ The custom tools for this project are coded in Java. You will need to install Ja
   - Image file for font, as well as a modified table file containing the dimensions for each character for the font.
 
 - `gfx modification`:
+  - TODO still working on this as of initial commit
   - Feel free to use this folder as a space for modifying tilesets and tilemaps for the graphics.
   - Instructions for creating your own graphics edits are included.
 
