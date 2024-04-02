@@ -308,12 +308,12 @@ abc<$FF><$FF>
 // NAME ENTRY MENU CONTENT
 // #############################################################################
 
-// hiragana page, replace with uppercase letters
-// 51 slots for letters per page; force the FFFF terminator for safety
+// 51 (10 rows of 5, plus 1) slots per page; force FFFF terminator for safety
 // NOTE: assumes that unused character slots are pre-filled with 00 bytes
 // Atlas has no "fill bytes with value" command, so an Asar file that gets run
 // before this Atlas script will do that instead
 
+// hiragana page, replace with uppercase letters
 #JMP($129E4)
 #W16($1318E)
 ABCDE
@@ -367,6 +367,14 @@ z[]{}
 úûüýÿ
 #JMP($12B82)
 <$FF><$FF>
+
+// if you don't need all 10 kanji pages, you can use these addresses to change
+// how many the game displays (0x13138 is for looping from max to 1, 0x1311C is
+// for looping from 1 to max); note that [0x13138] = # pages = [0x1311C] + 1
+#JMP($13138)
+<$02>
+#JMP($1311C)
+<$01>
 
 // kanji page 3     ----
 #JMP($12B84)
@@ -423,14 +431,6 @@ z[]{}
 
 #JMP($12EC2)
 <$FF><$FF>
-
-// if you don't need all 10 kanji pages, you can use these addresses to change
-// how many the game displays (0x13138 is for looping from max to 1, 0x1311C is
-// for looping from 1 to max); note that [0x13138] = # pages = [0x1311C] + 1
-#JMP($13138)
-<$02>
-#JMP($1311C)
-<$01>
 
 // #############################################################################
 // HONORIFICS
@@ -490,13 +490,15 @@ z[]{}
 // change Y coordinate for a new screen of text
 // default is 0x10
 #JMP($018FB)
-<$10>
+<$11>
 
 // change the height of the first row of characters (?); 0x0E by default
-// TODO fill in better description here
+// set this to the height of the tallest character in your font
+// if you have 0xF tall characters with this value set to 0xE, the top pixel row
+// of any 0xF tall characters in the first row will get cut off
 #JMP($018AF)
-<$0E>
-//<$0F>
+//<$0E>
+<$0F>
 
 // DEPRECATED, patch now uses a separate line breaking routine for novel text
 // change X coordinate of "right screen boundary" = where to auto line break
@@ -505,10 +507,16 @@ z[]{}
 // <$F2>
 
 // change height of line break, measured from bottom of each char row
-// default is 0x17 = 0x0F + 0x08 (max char height + 8 pixels leading)
+// default is 0x17 = 0x0F + 0x08? (max char height + 8 pixels leading)
 // can fit more lines of text on screen by decreasing to, say, 0x13
+// choosing 0x13 allows 11 lines instead of the 9 possible with 0x17
+//   but adversely affects the "highlight current choice" coloring effect
+//   (bottom few pixels of chars like 'g', 'y', etc.) can appear as wrong color
+//   due to tile boundary misalignment
+// 0x14 is a good middle ground that allows 11 lines if you kern up by a tile
+//   but works fine for 10 lines and doesn't have the wrong color behavior
 #JMP($01922)
-<$13>
+<$14>
 
 // change the pixel spacing between characters; default is 02
 #JMP($0192F)
@@ -527,11 +535,12 @@ z[]{}
 // offset the "advance text" icon that shows up during WAITs and CHOICEs
 // may have to space up to match with baselines of English letters instead
 // of their descenders (tails for letters like 'y' or 'g')
-// note: doing this for "next page" icon is not as simple; requires ASM changes
-//       because no similar ADC opcode+operand to do a change like this
-// default is [00 02] (XX YY)
+// default is [00 02] = (XX YY)
 #JMP($01C8B)
-<$00><$FF>
+<$00><$00>
+
+// you can sort of shift the "next page" icon up/down with "first row height"
+// but more refined control like with "advance text" would require ASM changes
 
 // #############################################################################
 // #############################################################################

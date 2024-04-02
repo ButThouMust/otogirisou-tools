@@ -839,7 +839,7 @@ public class HuffmanFromReinsertedScript {
             startPointData.write((huffScriptOffset >> 16) & 0xFF);
         }
         startPointData.close();
-        System.out.println("Script offsets for the three start points are in \"start points' script offsets.bin\"");
+        System.out.println("Script offsets for the three start points are in \"script/start points' script offsets.bin\"");
     }
 
     /**

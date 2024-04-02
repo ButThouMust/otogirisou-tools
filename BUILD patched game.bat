@@ -61,9 +61,6 @@ tools\atlas.exe %uncompScriptROM% %scriptTranslationFile% > logs\log_atlas_uncom
 :: - Huffman tree structure "flattened out" in the correct format for the game
 :: - a 9 byte file containing the 3 start points for the story
 
-:: IMPORTANT must update value for the end of the script to the end of the file
-:: when you do any script rewrites/updates
-
 @echo Please update the address in the batch file for the end of the uncompressed script...
 @pause
 
@@ -71,7 +68,12 @@ tools\atlas.exe %uncompScriptROM% %scriptTranslationFile% > logs\log_atlas_uncom
 :: %uncompScriptROM% in a hex editor and get the hexadecimal offset for the end*
 :: of the file (if over 2 MB). The batch file will prompt you for this.
 :: *: If this file happens to be 2 MB, use the offset of the last non-zero byte.
-@set uncompScriptEndPos=214703
+@set uncompScriptEndPos=213f71
+
+:: I prefer manually updating the script offset like above (don't need to change
+:: if testing a change to something other than the script), but you can enter
+:: it in as user input if you prefer.
+:: set /P uncompScriptEndPos="Enter the hex offset of the end of the uncompressed script: "
 
 :: Be sure to delete the previous Huffman script so that the new script gets
 :: written into a completely fresh, blank file. Avoids instances where the
@@ -119,7 +121,10 @@ tools\atlas.exe %huffScriptROM% ".\script\update name entry, file select.txt" > 
 :: the Huffman script in the ROM. Go to offset 0x4539B and scroll down until you
 :: find a big wall of [00] bytes (it should be in the first MB, before offset
 :: 0xFFFFF). Change this variable to the position of the last non-zero byte.
-@set huffScriptEndPos=b4e9d
+@set huffScriptEndPos=b49ff
+
+:: Same as before, allow for user input if the end user prefers.
+:: set /P huffScriptEndPos="Enter the hex offset of the end of the Huffman script: "
 
 java -classpath %srcPath% HuffScriptDumper %huffScriptROM% %translationTableFile% %redumpedScriptTranslation% 4539b %huffScriptEndPos%
 

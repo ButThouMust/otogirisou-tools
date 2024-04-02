@@ -23,7 +23,7 @@ public class HuffScriptDumper {
     private static final int NOP_1D = 0x101D;
     private static final int NAME_SAN_20 = 0x1020;
     private static final int NAME_21 = 0x1021;
-    // private static final int SET_FLAG_22 = 0x1022;
+    private static final int SET_FLAG_22 = 0x1022;
     private static final int CLEAR_25  = 0x1025;
     private static final int CLEAR_27  = 0x1027;
 
@@ -577,6 +577,13 @@ public class HuffScriptDumper {
         return isText;
     }
 
+    private static final int FLAG_BASE_ADDRESS = 0x1BEF;
+    private static void printMemAddrOfFlagValue(int progressFlagID) throws IOException {
+        String format = "// See $%04X";
+        int flagAddress = FLAG_BASE_ADDRESS + progressFlagID;
+        scriptOutput.write(String.format(format, flagAddress));
+    }
+
     private static void dumpScript(int scriptStart, int scriptEnd) throws IOException {
         // go to start of script and print the starting position to output script file
         romFile.seek(scriptStart);
@@ -596,11 +603,19 @@ public class HuffScriptDumper {
         // index into script pointer list, and get that pointer's assigned number)
         int currPosInScriptPtrList = 0;
 
+        // it is useful to have the previous character/control code (but usually
+        // not control code arguments) for making the script output pretty
+        int prevCharEncoding = -1;
+
+        // the format of a SET FLAG control code is <code><ID><value>
+        // to print just the flag ID after it, need to keep in separate buffer
+        // because I otherwise discard the arguments for control codes
+        int progressFlagID = -1;
+
         // use this to write current CPU offset after finding an EMBWRITE, but
         // only if we hadn't just written it after a control code where we do
         boolean justWrotePointerComment = false;
 
-        int prevCharEncoding = 0xFFFF;
         boolean printedFirstCharForLine = false;
         boolean onNewLine = true;
 
@@ -654,10 +669,18 @@ public class HuffScriptDumper {
                 onNewLine = false;
             }
             printChar(charEncoding);
+            prevCharEncoding = charEncoding;
 
+            // set script status flags when a text character
+            // but otherwise print out nothing else
+            if (charEncoding < LINE_00) {
+                justWrotePointerComment = false;
+                onNewLine = false;
+                printedFirstCharForLine = true;
+            }
             // if got a control code, have to print its arguments as raw bytes
             // and/or print any pointers
-            if (charEncoding >= LINE_00) {
+            else {
                 // choices are special cases that the regular algorithm doesn't cover
                 if (charEncoding == CHOICE_19 || charEncoding == CHOICE_1A) {
                     // both choice codes use three args and a variable number of
@@ -669,6 +692,10 @@ public class HuffScriptDumper {
                     printArg(arg0);
                     printArg(arg1);
                     printArg(arg2);
+
+                    // arg2 represents a progress flag ID; print it
+                    scriptOutput.newLine();
+                    printMemAddrOfFlagValue(arg2);
 
                     int numPtrs = (arg0 & 0x7) - 1;
                     for (int i = 0; i < numPtrs; i++) {
@@ -698,6 +725,11 @@ public class HuffScriptDumper {
                             case CHAR_ARG:
                                 int arg = readCharacter();
                                 printArg(arg);
+                                // if SET FLAG 22 or JMP.cc 04, note which flag
+                                // is being changed or being checked
+                                if ((charEncoding == SET_FLAG_22 || charEncoding == JMP_CC_04) && i == 0) {
+                                    progressFlagID = arg;
+                                }
                                 break;
                             case PTR_ARG:
                                 int ptr = readPointer();
@@ -723,11 +755,24 @@ public class HuffScriptDumper {
                     // case CREDITS_09:
                     // case CREDITS_0C:
                     case END_CHOICE_1C:
-                    // case SET_FLAG_22:
                         scriptOutput.newLine();
 
                         justWrotePointerComment = false;
                         onNewLine = true;
+                        printedFirstCharForLine = false;
+                        break;
+
+                    case SET_FLAG_22:
+                        scriptOutput.newLine();
+                        // output the memory address that it modifies
+                        printMemAddrOfFlagValue(progressFlagID);
+                        scriptOutput.newLine();
+
+                        justWrotePointerComment = false;
+                        // note: while this does start on a new line, setting
+                        // onNewLine flag to false is intentional to avoid making
+                        // one of these flags just for this one control code
+                        onNewLine = false;
                         printedFirstCharForLine = false;
                         break;
 
@@ -738,6 +783,11 @@ public class HuffScriptDumper {
                     case CHOICE_1A:
                     case CLEAR_25:
                     case CLEAR_27:
+                        if (charEncoding == JMP_CC_04) {
+                            scriptOutput.newLine();
+                            printMemAddrOfFlagValue(progressFlagID);
+                        }
+
                         scriptOutput.newLine();
                         scriptOutput.newLine();
                         printROMFilePos();
@@ -749,15 +799,19 @@ public class HuffScriptDumper {
 
                     // add special script position indicating credits
                     case NOP_1D:
+                        String creditMarker = "// ##############################";
                         scriptOutput.newLine();
                         scriptOutput.newLine();
-                        scriptOutput.write("// --------------------");
+                        scriptOutput.write(creditMarker);
                         scriptOutput.newLine();
                         String format = "[$%06X-%d]";
                         int cpuOffset = getCPUOffsetVar();
-                        scriptOutput.write(String.format("// ROLL CREDITS @ " + format, cpuOffset, bitOffset));
+                        scriptOutput.write(String.format("//   ROLL CREDITS @ " + format, cpuOffset, bitOffset));
+                        scriptOutput.newLine();
+                        scriptOutput.write(creditMarker);
                         scriptOutput.newLine();
                         scriptOutput.newLine();
+
                         justWrotePointerComment = false;
                         onNewLine = true;
                         printedFirstCharForLine = false;
@@ -777,13 +831,6 @@ public class HuffScriptDumper {
                         break;
                 }
             }
-            else {
-                // set script status flags when a text character
-                justWrotePointerComment = false;
-                onNewLine = false;
-                printedFirstCharForLine = true;
-            }
-            prevCharEncoding = charEncoding;
         }
 
         scriptOutput.write("// END OF SCRIPT");
