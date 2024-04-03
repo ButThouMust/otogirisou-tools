@@ -4,9 +4,10 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashSet;
 
 public class GraphicsStructureList {
-    // private GraphicsStructure[] structureList;
+    private GraphicsStructure[] structureList;
     private String folder;
     private int numStructs;
     private int gfxID;
@@ -36,7 +37,7 @@ public class GraphicsStructureList {
         romStream.seek(HelperMethods.getFileOffset(ptrToStructListSize));
 
         numStructs = romStream.readUnsignedByte();
-        // structureList = new GraphicsStructure[size];
+        structureList = new GraphicsStructure[numStructs];
     }
 
     public void dumpData() throws IOException {
@@ -62,24 +63,26 @@ public class GraphicsStructureList {
         // all of the 9 IDs for the credits use the exact same data
         // it's redundant to decompress and dump all the same data 9 times over
         if (gfxID >= 0x5E && gfxID <= 0x65) {
+            // note: this would leave the structure list array as having only
+            // null entries; reinitialize it as an array of length 0 instead
             logFile.write("\nPlease see the log file for graphics ID 0x5D.");
+            structureList = new GraphicsStructure[0];
         }
         else {
             for (int i = 0; i < numStructs; i++) {
                 int structRAMOffset = HelperMethods.getRAMOffset((int) romStream.getFilePointer());
-                // System.out.println("Structure @ $" + Integer.toHexString(structRAMOffset));
                 GraphicsStructure struct = new GraphicsStructure(structRAMOffset);
                 struct.setOutputFolder(outputFolder);
                 struct.dumpData();
+                structureList[i] = struct;
                 romStream.seek(romStream.getFilePointer() + HelperMethods.PTR_SIZE + struct.getNumBytesToSkip());
 
-                logFile.newLine();
-                logFile.newLine();
-                struct.printSummaryToLog(logFile);
+                logFile.write("\n\n" + struct.toString());
             }
         }
 
         romStream.close();
+        logFile.flush();
         logFile.close();
     }
 
@@ -97,5 +100,13 @@ public class GraphicsStructureList {
         }
 
         logFile.write(String.format("%02d automatic SFX IDs @ $%06X: [%s]\n\n", numSFXIDs, ptrToAutoSfxIdList, bytesList));
+    }
+
+    public HashSet<GraphicsStructure> getGfxStructHashSet() {
+        HashSet<GraphicsStructure> gfxStructSet = new HashSet<>();
+        for (GraphicsStructure gfxStruct : structureList) {
+            gfxStructSet.add(gfxStruct);
+        }
+        return gfxStructSet;
     }
 }

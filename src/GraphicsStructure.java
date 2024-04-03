@@ -4,8 +4,31 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
-public class GraphicsStructure {
+public class GraphicsStructure implements Comparable<GraphicsStructure> {
+
+    private static final int INDEP_STRUCT = -1;
+
+    private RandomAccessFile romStream;
+
+    private StructureType type;
+    private int structureLocation;
+    private int ptrToData;
+    private int endOfData;
+    private int uncompDataSize;
+    private int[] structureMetadata;
+    private int[] pointerMetadata;
+
+    private String filenameFormat;
+    private String dataOutputFile;
+    private String logFilename;
+
+    private BufferedWriter logFile;
+
+    // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
 
     public enum StructureType {
         TILE    (4, 3),
@@ -28,20 +51,6 @@ public class GraphicsStructure {
         }
     }
 
-    private RandomAccessFile romStream;
-
-    private StructureType type;
-    private int structureLocation;
-    private int ptrToData;
-    private int endOfData;
-    private int uncompDataSize;
-    private int[] structureMetadata;
-    private int[] pointerMetadata;
-
-    private String filenameFormat;
-    private String dataOutputFile;
-    private String logFilename;
-
     // -------------------------------------------------------------------------
     // -------------------------------------------------------------------------
 
@@ -57,8 +66,16 @@ public class GraphicsStructure {
         return ptrToData;
     }
 
+    public int getDataEndPointer() {
+        return endOfData;
+    }
+
     public int getNumBytesToSkip() {
         return type.getBytesToSkip();
+    }
+
+    public boolean isIndepStruct() {
+        return structureLocation == INDEP_STRUCT;
     }
 
     // -------------------------------------------------------------------------
@@ -72,13 +89,30 @@ public class GraphicsStructure {
         readPointerMetadata();
     }
 
-    private int determinePointerToData() throws IOException {
+    // handle gfx data that no structure explicitly points to
+    public GraphicsStructure(int ptrToData, StructureType type) throws IOException {
+        if (!HelperMethods.isValidRomOffset(ptrToData)) {
+            String format = "Invalid data location for independent structure - $%06X does not map to ROM";
+            throw new IOException(String.format(format, ptrToData));
+        }
+
         romStream = new RandomAccessFile("rom/Otogirisou (Japan).sfc", "r");
+        structureLocation = INDEP_STRUCT;
+        this.ptrToData = ptrToData;
+        this.type = type;
+        structureMetadata = new int[0];
+        readPointerMetadata();
+    }
+
+    private int determinePointerToData() throws IOException {
         if (!HelperMethods.isValidRomOffset(structureLocation)) {
             String format = "Invalid RAM offset for structure - $%06X does not map to ROM";
             throw new IOException(String.format(format, structureLocation));
         }
 
+        romStream = new RandomAccessFile("rom/Otogirisou (Japan).sfc", "r");
+        // the first three bytes at the location of the structure are a 24-bit
+        // pointer to some necessary metadata, and then the data itself
         int romOffset = HelperMethods.getFileOffset(structureLocation);
         // System.out.println(Integer.toHexString(romOffset));
         romStream.seek(romOffset);
@@ -152,25 +186,49 @@ public class GraphicsStructure {
         filenameFormat = outputFolder + "/$%06X %s%s";
     }
 
+    public void setOutputFolderIndepStruct(String outputFolder) throws IOException {
+        String structFolderFormat = "%s/$%06X -- independent %s";
+        String structFolder = String.format(structFolderFormat, outputFolder, ptrToData, type.toString());
+        Files.createDirectories(Paths.get(structFolder));
+        setOutputFolder(structFolder);
+    }
+
     public void dumpData() throws IOException {
         romStream.seek(HelperMethods.getFileOffset(ptrToData) + type.metadataSize);
         int dataStart = (int) romStream.getFilePointer();
         int dataStartRAM = HelperMethods.getRAMOffset(dataStart);
+
         dataOutputFile = String.format(filenameFormat, dataStartRAM, type.toString(), ".bin");
         logFilename = String.format(filenameFormat, dataStartRAM, type.toString(), " log.txt");
 
         switch (type) {
             case TILE:
                 dumpRLEData();
-                generateSNESTileData(dataStartRAM);
+                if (!isIndepStruct()) {
+                    // doing this interleave & pad operation requires info from structure's metadata
+                    generateSNESTileData(dataStartRAM);
+                }
                 break;
             case TILEMAP:
                 dumpRLEData();
                 generateSNESFormatTilemap(dataStartRAM);
                 break;
             case PALETTE:
+                logFile = new BufferedWriter(new FileWriter(logFilename));
                 dumpPaletteData();
                 break;
+        }
+
+        if (isIndepStruct()) {
+            if (type != StructureType.PALETTE) {
+                logFile = new BufferedWriter(new FileWriter(logFilename));
+            }
+            else {
+                logFile.write("\n\n");
+            }
+            logFile.write(this.toString());
+            logFile.flush();
+            logFile.close();
         }
     }
 
@@ -222,12 +280,12 @@ public class GraphicsStructure {
         }
 
         // got 0x80, so done decompressing
-        endOfData = HelperMethods.getRAMOffset((int) romStream.getFilePointer());
+        endOfData = HelperMethods.getRAMOffset((int) romStream.getFilePointer() - 1);
         uncompDataSize = decompressedSize;
         outputFile.close();
     }
 
-    private int getTileBitDepthMinus1() throws IOException {
+    private int getTileBitDepthMinus1() {
         int structByte5 = structureMetadata[2];
         int n = (structByte5 & 0x30) >> 4;
         int returnValue = 0;
@@ -241,9 +299,9 @@ public class GraphicsStructure {
             case 0x2:
                 returnValue = 0x70;
                 break;
-            default:
-                String error = "Error: Bits 5 and 4 of $%06X are 0b11 -- invalid value for tile bit depth";
-                throw new IOException(String.format(error, structureLocation + 5));
+            // default:
+                // String error = "Error: Bits 5 and 4 of $%06X are 0b11 -- invalid value for tile bit depth";
+                // throw new IOException(String.format(error, structureLocation + 5));
         }
         return returnValue;
     }
@@ -352,7 +410,7 @@ public class GraphicsStructure {
         // String outputFilename = String.format(outputFolder + "/$%06X palette.bin", HelperMethods.getRAMOffset(romOffset));
         // FileOutputStream outputFile = new FileOutputStream(outputFilename);
         FileOutputStream outputFile = new FileOutputStream(dataOutputFile);
-        BufferedWriter logFile = new BufferedWriter(new FileWriter(logFilename));
+        // BufferedWriter logFile = new BufferedWriter(new FileWriter(logFilename));
 
         // int size = pointerMetadata[0] - 3;
         int position = HelperMethods.getRAMOffset((int) romStream.getFilePointer());
@@ -364,18 +422,18 @@ public class GraphicsStructure {
         // String firstLineFormat = "$%06X has data for %d colors of a possible %d (%d bpp)";
         // String firstLine = String.format(firstLineFormat, position, colorsUsed, totalColors, colorDepth);
 
-        String firstLineFormat = "$%06X has data for %d colors of a possible %d";
+        String firstLineFormat = "$%06X has data for %d colors of a possible %d\n\n";
         String firstLine = String.format(firstLineFormat, position, colorsUsed, totalColors);
-        String secondLine = "15-bit | 24-bit";
+        String secondLine = "15-bit | 24-bit\n";
         String thirdLine = "-------+-------";
-        String loopLineFormat =   " %04X  | %06X";
+        String loopLineFormat = " %04X  | %06X";
 
         logFile.write(firstLine);
-        logFile.newLine();
-        logFile.newLine();
+        // logFile.newLine();
+        // logFile.newLine();
 
         logFile.write(secondLine);
-        logFile.newLine();
+        // logFile.newLine();
         logFile.write(thirdLine);
 
         for (int i = 0; i < colorsUsed; i++) {
@@ -388,13 +446,14 @@ public class GraphicsStructure {
             outputFile.write(byte0);
             outputFile.write(byte1);
 
-            logFile.newLine();
-            logFile.write(String.format(loopLineFormat, colorValue15, colorValue24));
+            // logFile.newLine();
+            logFile.write(String.format("\n" + loopLineFormat, colorValue15, colorValue24));
         }
         endOfData = HelperMethods.getRAMOffset((int) (romStream.getFilePointer() - 1));
 
         outputFile.close();
-        logFile.close();
+        // note: do not close log file here because need to also output metadata
+        // logFile.close();
     }
 
     public static int convert15BitTo24Bit(int colorValue15) {
@@ -419,7 +478,31 @@ public class GraphicsStructure {
     // -------------------------------------------------------------------------
     // -------------------------------------------------------------------------
 
-    public void printSummaryToLog(BufferedWriter logFile) throws IOException {
+    public boolean equals(Object other) {
+        if (other == null)
+            return false;
+        if (!(other instanceof GraphicsStructure))
+            return false;
+
+        GraphicsStructure gfxStruct = (GraphicsStructure) other;
+        // two structures are the same if they point to the same data in the ROM
+        // regardless of the location of the pointer value itself
+        return ptrToData == gfxStruct.ptrToData;
+    }
+
+    public int compareTo(GraphicsStructure other) { 
+        // first compare by data pointer, then by structure locations
+        int comp = ptrToData - other.ptrToData;
+        if (comp != 0) {
+            return comp;
+        }
+        return structureLocation - other.structureLocation;
+    }
+
+    // this used to print to a BufferedWriter, but I realized later that this is
+    // perfect for a toString() implementation
+    public String toString() {
+        String output = "";
         // print the type of structure, the pointer value, and where the data actually starts
         // addition to a RAM offset may overflow the bank like 00FFFF -> 010000
         // so have to first convert to ROM offset before addition, then back to RAM offset
@@ -427,28 +510,33 @@ public class GraphicsStructure {
         int dataStartROM = dataPtrROM + type.metadataSize;
         int actualDataStart = HelperMethods.getRAMOffset(dataStartROM);
 
-        String format1 = "$%06X: points to %-7s data at $%06X ($%06X)";
-        logFile.write(String.format(format1, structureLocation, type.toString(), ptrToData, actualDataStart));
-        logFile.newLine();
+        if (!isIndepStruct()) {
+            String format1 = "$%06X: points to %-7s data at $%06X ($%06X)\n";
+            output += String.format(format1, structureLocation, type.toString(), ptrToData, actualDataStart);
+        }
+        else {
+            String format1 = "%-7s data at $%06X ($%06X)\n";
+            output += String.format(format1, type.toString(), ptrToData, actualDataStart);
+        }
 
         int dataEndROM = HelperMethods.getFileOffset(endOfData);
         int dataSize = dataEndROM - dataStartROM + 1;
-        String format2 = "Data range in ROM:   0x%05X to 0x%05X (size 0x%X)";
-        logFile.write(String.format(format2, dataStartROM, dataEndROM, dataSize));
-        logFile.newLine();
+        String format2 = "Data range in ROM:   0x%05X to 0x%05X (size 0x%X)\n";
+        output += String.format(format2, dataStartROM, dataEndROM, dataSize);
 
-        String format3 = String.format("Structure @ $%06X: %06X", structureLocation, ptrToData);
-        for (int i = 0; i < type.bytesToSkip; i++) {
-            format3 += String.format(" %02X", structureMetadata[i]);
+        if (!isIndepStruct()) {
+            String format3 = String.format("Structure @ $%06X: %06X", structureLocation, ptrToData);
+            for (int i = 0; i < type.bytesToSkip; i++) {
+                format3 += String.format(" %02X", structureMetadata[i]);
+            }
+            output += format3 + "\n";
         }
-        logFile.write(format3);
-        logFile.newLine();
 
         String format4 = String.format("Metadata  @ $%06X:", ptrToData);
         for (int i = 0; i < type.metadataSize; i++) {
             format4 += String.format(" %02X", pointerMetadata[i]);
         }
-        logFile.write(format4);
+        output += format4;
 
         // add special text that better describes data for each structure type
         // - add more to this as you find out more stuff about data format
@@ -460,21 +548,28 @@ public class GraphicsStructure {
                 // 8 bits/byte and 64 pixels/tile
                 int bitDepthEstimate = (uncompDataSize / numTiles) / 8;
 
-                int paddedBitDepth = ((getTileBitDepthMinus1() >> 4) & 0x7) + 1;
-                boolean createEmptyTile = (structureMetadata[2] & 0x1) == 0;
+                output += "\n";
+                String format5 = "# tiles = 0x%X; uncomp data is 0x%X bytes (%dbpp";
+                output += (String.format(format5, numTiles, uncompDataSize, bitDepthEstimate));
 
-                logFile.newLine();
-                String format5 = "# tiles = 0x%X; uncomp data is 0x%X bytes (%dbpp -> %dbpp)";
-                logFile.write(String.format(format5, numTiles, uncompDataSize, bitDepthEstimate, paddedBitDepth));
+                if (!isIndepStruct()) {
+                    // note: this calculation requires structure metadata
+                    int paddedBitDepth = ((getTileBitDepthMinus1() >> 4) & 0x7) + 1;
+                    output += String.format(" -> %dbpp", paddedBitDepth);
+                }
+                output += ")";
 
                 // check if tile data is for "type 01" instead of "type 00"
                 if ((pointerMetadata[2] & 0x7) == 0x1) {
-                    logFile.write("\nNOTE: This is for \"type 01\" of tile data.");
+                    output += ("\nNOTE: This is for \"type 01\" of tile data.");
                 }
 
-                if (!createEmptyTile) {
-                    // this case applies to tile data for IDs: 5B 5C 81 82 91 92 93 96 98 99 9A 9B 9C
-                    logFile.write("\nNOTE: Game does not generate an empty tile for this.");
+                if (!isIndepStruct()) {
+                    boolean createEmptyTile = (structureMetadata[2] & 0x1) == 0;
+                    if (!createEmptyTile) {
+                        // this case applies to tile data for IDs: 5B 5C 81 82 91 92 93 96 98 99 9A 9B 9C
+                        output += ("\nNOTE: Game does not generate an empty tile for this.");
+                    }
                 }
 
                 break;
@@ -486,27 +581,28 @@ public class GraphicsStructure {
                 int tilemapSizeFlag = pointerMetadata[3];
                 boolean highBytesIncluded = tilemapSizeFlag == 0x01;
 
-                logFile.newLine();
+                output += "\n";
                 String format5 = "High bytes of entries are %s\n";
-                logFile.write(String.format(format5, highBytesIncluded ? "included" : "ALL [00]"));
+                output += (String.format(format5, highBytesIncluded ? "included" : "ALL [00]"));
 
                 String format6 = "Tilemap W*H is 0x%02X*0x%02X%s -> 0x%X bytes\n";
-                logFile.write(String.format(format6, tilemapWidth, tilemapHeight, (highBytesIncluded ? "*2" : ""), uncompDataSize));
+                output += (String.format(format6, tilemapWidth, tilemapHeight, (highBytesIncluded ? "*2" : ""), uncompDataSize));
 
-                String format7 = "Starts on screen @ (X, Y) = (0x%02X, 0x%02X)";
-                int tilemapX = (structureMetadata[6] & 0xF) | ((structureMetadata[5] << 2) & 0x30);
-                int tilemapY = ((structureMetadata[6] >> 4) & 0xF) | (structureMetadata[5] & 0x30);
-                logFile.write(String.format(format7, tilemapX, tilemapY));
+                if (!isIndepStruct()) {
+                    String format7 = "Starts on screen @ (X, Y) = (0x%02X, 0x%02X)";
+                    int tilemapX = (structureMetadata[6] & 0xF) | ((structureMetadata[5] << 2) & 0x30);
+                    int tilemapY = ((structureMetadata[6] >> 4) & 0xF) | (structureMetadata[5] & 0x30);
+                    output += (String.format(format7, tilemapX, tilemapY));
+                }
 
                 // check a value to see if for Mode 7 graphics
                 if (tilemapSizeFlag == 0x80) {
-                    logFile.write("\nNOTE: This tilemap is for Mode 7 graphics!");
-                    // logFile.write(String.format(format8, structureLocation, ptrToData, tilemapSizeFlag));
+                    output += ("\nNOTE: This tilemap is for Mode 7 graphics!");
                 }
 
                 // check if tilemap data is for "type 03" instead of "type 02"
                 if ((pointerMetadata[2] & 0x7) == 0x3) {
-                    logFile.write("\nNOTE: This is for \"type 03\" of tilemap data.");
+                    output += ("\nNOTE: This is for \"type 03\" of tilemap data.");
                 }
 
                 break;
@@ -515,6 +611,6 @@ public class GraphicsStructure {
                 break;
             }
         }
+        return output;
     }
-
 }
