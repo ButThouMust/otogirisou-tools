@@ -453,7 +453,10 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
 
         outputFile.close();
         // note: do not close log file here because need to also output metadata
-        // logFile.close();
+        if (!isIndepStruct()) {
+            logFile.flush();
+            logFile.close();
+        }
     }
 
     public static int convert15BitTo24Bit(int colorValue15) {
