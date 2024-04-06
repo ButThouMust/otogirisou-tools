@@ -16,8 +16,8 @@ The custom tools for this project are coded in Java. You will need to install Ja
 - Decompresses the original Japanese script into an Atlas script file.
 
 `DUMP graphics.bat`
-- Decompresses and dumps all of the game's graphics except for the font and
-  the "Chunsoft Presents" splash screen when you start up the game.
+- Decompresses and dumps all of the game's graphics except the font, which is
+  covered as mentioned above.
 
 `DUMP only necessary graphics.bat`
 - Decompresses and dumps only the graphics that need to be translated for the

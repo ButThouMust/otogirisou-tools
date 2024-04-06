@@ -59,7 +59,7 @@ org $07A4E6
 ; notice no "-> $address" on the incbin; this is to keep the PC's value from
 ; directly after the inserted file, so we can assign it to a label
 org $08AA0A
-    dw $02DC
+    dw $02D9
     skip $2
     incbin "graphics/recompressed 00 english credits TILES - no empty tile.bin"
     warnpc !PaletteForEndFinPtr
@@ -70,9 +70,9 @@ NewCredit1Pointer:
     OldPtr1 = $44282
     incbin "rom/Otogirisou (Japan).sfc":(OldPtr1)-(OldPtr1+!NumMetadataBytesToCopy)
     ; set the new width and height of the tilemap
-    db $16,$07
+    db $17,$07
     ; insert the new tilemap's binary data
-    incbin "graphics/recompressed 01 supervisor author RLE TILEMAP 0x16 x 0x07.bin"
+    incbin "graphics/recompressed 01 supervisor author RLE TILEMAP 0x17 x 0x07.bin"
     warnpc !PaletteForEndFinPtr
 
 NewCredit2Pointer:
@@ -148,8 +148,8 @@ NewCredit11Pointer:
 NewCredit12Pointer:
     OldPtr12 = $44A2E
     incbin "rom/Otogirisou (Japan).sfc":(OldPtr12)-(OldPtr12+!NumMetadataBytesToCopy)
-    db $1F,$0F
-    incbin "graphics/recompressed 12 support pg 2 RLE TILEMAP 0x1F x 0x0F.bin"
+    db $1E,$0F
+    incbin "graphics/recompressed 12 support pg 2 RLE TILEMAP 0x1E x 0x0F.bin"
     warnpc !PaletteForEndFinPtr
 
 NewCredit13Pointer:
