@@ -10,26 +10,6 @@ import java.util.HashMap;
 
 public class HuffScriptDumper {
 
-    // control codes for special cases when interpretting or when printing
-    private static final int NUM_CTRL_CODES = 0x47;
-    private static final int LINE_00 = 0x1000;
-    private static final int JMP_03 =  0x1003;
-    private static final int JMP_CC_04 = 0x1004;
-    // private static final int CREDITS_09 = 0x1009;
-    // private static final int CREDITS_0C = 0x100C;
-    private static final int CHOICE_19 = 0x1019;
-    private static final int CHOICE_1A = 0x101A;
-    private static final int END_CHOICE_1C = 0x101C;
-    private static final int NOP_1D = 0x101D;
-    private static final int NAME_SAN_20 = 0x1020;
-    private static final int NAME_21 = 0x1021;
-    private static final int SET_FLAG_22 = 0x1022;
-    private static final int CLEAR_25  = 0x1025;
-    private static final int CLEAR_27  = 0x1027;
-
-    // -------------------------------------------------------------------------
-    // -------------------------------------------------------------------------
-
     private static RandomAccessFile romFile;
     private static BufferedWriter scriptOutput;
     private static BufferedWriter goryDetails;
@@ -39,15 +19,12 @@ public class HuffScriptDumper {
     // Lists for how many and what types of arguments are there for control codes
     // -------------------------------------------------------------------------
 
-    private static int numArgs[] = new int[NUM_CTRL_CODES];
-    private static int argTypes[] = new int[NUM_CTRL_CODES];
-    private static final int CTRL_CODE_ARG_TBL = 0x0741E;
-    private static final int CHAR_ARG = 0;
-    private static final int PTR_ARG = 1;
+    private static int numArgs[] = new int[HelperMethods.NUM_CTRL_CODES];
+    private static int argTypes[] = new int[HelperMethods.NUM_CTRL_CODES];
 
-    private static void getCtrlCodeArgTable() throws IOException {
-        romFile.seek(CTRL_CODE_ARG_TBL);
-        for (int i = 0; i < NUM_CTRL_CODES; i++) {
+    private static void readCtrlCodeArgTable() throws IOException {
+        romFile.seek(HelperMethods.CTRL_CODE_ARG_TBL);
+        for (int i = 0; i < HelperMethods.NUM_CTRL_CODES; i++) {
             numArgs[i] = romFile.readUnsignedByte();
             argTypes[i] = romFile.readUnsignedByte();
         }
@@ -58,16 +35,13 @@ public class HuffScriptDumper {
     // -------------------------------------------------------------------------
 
     private static ArrayList<Integer> tableHexValues;
-    // private static ArrayList<String> encodings;
     private static HashMap<Integer, String> encodings;
-    private static final int NUM_ENCODINGS = 1700;
-    // private static final String NO_TABLE_MATCH = "N/A";
 
     private static void readTableFile(String tableFilename) throws IOException {
         // assume file is sorted in increasing order by character code value
         BufferedReader tableFileStream = new BufferedReader(new FileReader(tableFilename));
-        tableHexValues = new ArrayList<>(NUM_ENCODINGS);
-        encodings = new HashMap<>(NUM_ENCODINGS);
+        tableHexValues = new ArrayList<>(HelperMethods.NUM_ENCODINGS);
+        encodings = new HashMap<>(HelperMethods.NUM_ENCODINGS);
 
         // basic format of a table file line is "[hex value]=[character]\n"
         String line;
@@ -101,14 +75,7 @@ public class HuffScriptDumper {
     }
 
     private static String getEncoding(int data) {
-        // data &= 0x1FFF;
-        // int index = Collections.binarySearch(tableHexValues, data);
-
         String encoding = encodings.get(data & 0x1FFF);
-        // String encoding = NO_TABLE_MATCH;
-        // if (index >= 0) {
-            // encoding = encodings.get(index);
-        // }
         return encoding;
     }
 
@@ -116,19 +83,12 @@ public class HuffScriptDumper {
     // Data for the Huffman tree structure
     // -------------------------------------------------------------------------
 
-    private static final int HUFF_LEFT_OFFSET = 0x141E1;
-    private static final int HUFF_RIGHT_OFFSET = 0x14D4F;
-    private static final int HUFF_TABLE_ENTRIES = 0x5B7;
-
-    // important: these hard-coded values for script start were changed to match
-    // what the game has as the first start point
-    // private static final int SCRIPT_START_BANK_OFFSET = 0xE401;
-    // private static final int SCRIPT_START_BANK_NUMBER = 0x15;
+    // for original Japanese game, use values 0xE401 and 0x15
     private static int scriptStartBankOffset;
     private static int scriptStartBankNumber;
 
-    private static int[] huffLeftTrees = new int[HUFF_TABLE_ENTRIES];
-    private static int[] huffRightTrees = new int[HUFF_TABLE_ENTRIES];
+    private static int[] huffLeftTrees = new int[HelperMethods.HUFF_TABLE_ENTRIES];
+    private static int[] huffRightTrees = new int[HelperMethods.HUFF_TABLE_ENTRIES];
 
     private static int bitOffset;
     private static int huffmanBuffer;
@@ -138,17 +98,17 @@ public class HuffScriptDumper {
     // pointers in script; they would always be off by one
     private static int currByteOffset;
 
-    private static void getHuffmanTreeData() throws IOException {
-        romFile.seek(HUFF_LEFT_OFFSET);
+    private static void readHuffmanTreeData() throws IOException {
+        romFile.seek(HelperMethods.HUFF_LEFT_OFFSET);
         int data = 0;
-        for (int i = 0; i < HUFF_TABLE_ENTRIES; i++) {
+        for (int i = 0; i < HelperMethods.HUFF_TABLE_ENTRIES; i++) {
             data = romFile.readUnsignedByte();
             data |= (romFile.readUnsignedByte() << 8);
             huffLeftTrees[i] = data;
         }
 
-        romFile.seek(HUFF_RIGHT_OFFSET);
-        for (int i = 0; i < HUFF_TABLE_ENTRIES; i++) {
+        romFile.seek(HelperMethods.HUFF_RIGHT_OFFSET);
+        for (int i = 0; i < HelperMethods.HUFF_TABLE_ENTRIES; i++) {
             data = romFile.readUnsignedByte();
             data |= (romFile.readUnsignedByte() << 8);
             huffRightTrees[i] = data;
@@ -160,6 +120,7 @@ public class HuffScriptDumper {
     // "API" for reading raw binary data from the script
     // -------------------------------------------------------------------------
 
+    /*
     private static int getCPUOffset(int romOffset) {
         int bankOffset = (romOffset & 0xFFFF) | 0x8000;
         int bankNum = 1 + (romOffset - bankOffset) / 0x8000;
@@ -167,15 +128,16 @@ public class HuffScriptDumper {
         int cpuOffset = (bankNum << 16) | bankOffset;
         return cpuOffset;
     }
+    */
 
     // uses the independent "current byte offset"; used for navigating the script
     private static int getCPUOffsetVar() {
-        return getCPUOffset(currByteOffset);
+        return HelperMethods.getRAMOffset(currByteOffset);
     }
 
     // uses the RandomAccessFile's file pointer; used for start points
     private static int getCPUOffsetFP() throws IOException {
-        return getCPUOffset((int) (romFile.getFilePointer() & 0xFFFFFF));
+        return HelperMethods.getRAMOffset((int) (romFile.getFilePointer() & 0xFFFFFF));
     }
 
     // read a byte without advancing file pointer
@@ -187,7 +149,7 @@ public class HuffScriptDumper {
 
     private static int readCharacter() throws IOException {
         // start going left/right from the root of the Huffman tree
-        int huffTreeValue = HUFF_TABLE_ENTRIES - 1;
+        int huffTreeValue = HelperMethods.HUFF_TABLE_ENTRIES - 1;
         int startOffset = getCPUOffsetVar();
         int oldBitOffset = bitOffset;
         String huffCode = "";
@@ -206,7 +168,7 @@ public class HuffScriptDumper {
                 huffmanBuffer = peekByte();
             }
 
-            // LSB = 1 -> left tree ------ LSB = 0 -> right tree
+            // LSB 1 -> use left tree ;; LSB 0 -> use right tree
             boolean useLeftTree = (huffmanBuffer & 0x1) == 1;
 
             // update state of and position in the Huffman buffer
@@ -248,10 +210,7 @@ public class HuffScriptDumper {
         // all possible cases:
         // range from: 3[3333333] [22222222] [11111111] [0]0000000 (offset 7)
         //       to:   33[333333] [22222222] [11111111] [00]000000 (offset 6) 
-        //       to:   333[33333] [22222222] [11111111] [000]00000 (offset 5) 
-        //       to:   3333[3333] [22222222] [11111111] [0000]0000 (offset 4) 
-        //       to:   33333[333] [22222222] [11111111] [00000]000 (offset 3) 
-        //       to:   333333[33] [22222222] [11111111] [000000]00 (offset 2) 
+        //             etc.
         //       to:   3333333[3] [22222222] [11111111] [0000000]0 (offset 1) 
         //       to:   33333333   [22222222] [11111111] [00000000] (offset 0) 
         // byte 0's part of the pointer is already in huffmanBuffer
@@ -274,9 +233,9 @@ public class HuffScriptDumper {
         boolean byteAligned = (bitOffset & 0x7) == 0;
         int shiftAmount = byteAligned ? 8 : bitOffset;
         int rawData = huffmanBuffer;
-        rawData |= byte1 << (1 * 8 - shiftAmount);
-        rawData |= byte2 << (2 * 8 - shiftAmount);
-        rawData |= byte3 << (3 * 8 - shiftAmount);
+        rawData |= byte1 << (1*8 - shiftAmount);
+        rawData |= byte2 << (2*8 - shiftAmount);
+        rawData |= byte3 << (3*8 - shiftAmount);
         rawData = rawData & 0xFFFFFF;
 
         if (shouldWriteDetails) {
@@ -301,7 +260,7 @@ public class HuffScriptDumper {
         if (shouldWriteDetails) {
             String format2 = "%06X-%d: %06X -> %06X-%d\n";
             goryDetails.write(String.format(format2, cpuOffset, bitOffset & 0x7, rawData, pointer >> 3, ptrBitOffset));
-            goryDetails.write(String.format("Huffman buffer: %02X\n", huffmanBuffer));
+            goryDetails.write(String.format("Huffman buffer state: %02X\n", huffmanBuffer));
         }
         return pointer;
     }
@@ -321,7 +280,7 @@ public class HuffScriptDumper {
         // print to the script output text file
         String encoding = getEncoding(charValue);
         if (encoding == null) {
-            String format = "ERROR - character value 0x%04X @ 0x%06X-%d ($%06X-%d) not in table file!\n";
+            String format = "ERROR - character value 0x%4X @ 0x%06X-%d ($%06X-%d) not in table file!\n";
             throw new IOException(String.format(format, charValue, currByteOffset, bitOffset, getCPUOffsetVar(), bitOffset));
         }
         scriptOutput.write(encoding);
@@ -352,8 +311,9 @@ public class HuffScriptDumper {
 
         // calculate convenient data for playtesting: you can alter the three
         // script start points located at $02A627 - $02A62F to immediately jump
-        // anywhere you want in the script on a new file or by selecting "restart"
-        // on continue file prompt; this is the data to put there (repeat 3 times)
+        // anywhere you want in the script without playing the game "normally"
+        // access by starting a new file or by selecting "restart" on continue file prompt
+        // repeat the 3 byte sequence a total of 3 times
         int startPoint = (cpuOffset << 3) | bitOffset;
         int startLow = startPoint & 0xFF;
         int startMid = (startPoint >> 8) & 0xFF;
@@ -364,26 +324,16 @@ public class HuffScriptDumper {
         scriptOutput.newLine();
     }
 
-    private static int getFileOffset(int cpuOffset) {
-        int bankNum = cpuOffset >> 16;
-        int bankOffset = cpuOffset & 0xFFFF;
-        return 0x8000 * (bankNum - 1) + bankOffset;
-    }
-
     // -------------------------------------------------------------------------
     // -------------------------------------------------------------------------
-
-    private static final int START_POINT_LOCATION = 0x12627;
-    private static final int NUM_START_POINTS = 3;
 
     private static ArrayList<HuffScriptPointer> scriptPointers;
     private static int currPtrNum;
-    private static final int NUM_POINTERS = 2500;
 
     private static void getScriptStartPoints() throws IOException {
-        scriptPointers = new ArrayList<>(NUM_POINTERS);
-        romFile.seek(START_POINT_LOCATION);
-        for (int i = 0; i < NUM_START_POINTS; i++) {
+        scriptPointers = new ArrayList<>(HelperMethods.NUM_POINTERS);
+        romFile.seek(HelperMethods.START_POINT_LIST);
+        for (int i = 0; i < HelperMethods.NUM_START_POINTS; i++) {
             int ptrLocation = getCPUOffsetFP();
             int ptr = readStartPoint();
 
@@ -420,9 +370,9 @@ public class HuffScriptDumper {
             // pointers in the script can only appear directly after certain
             // control codes, as in not after actual characters
             int charEncoding = readCharacter();
-            if (charEncoding >= LINE_00) {
+            if (charEncoding >= HelperMethods.LINE_00) {
                 // choices are special cases that the regular algorithm doesn't cover
-                if (charEncoding == CHOICE_19 || charEncoding == CHOICE_1A) {
+                if (charEncoding == HelperMethods.CHOICE_19 || charEncoding == HelperMethods.CHOICE_1A) {
                     // both choice codes use three args and a variable number of
                     // pointers, which is based on the first arg
                     int arg0 = readCharacter();
@@ -448,10 +398,10 @@ public class HuffScriptDumper {
 
                     for (int i = 0; i < argCount; i++) {
                         switch (argType & 0x1) {
-                            case CHAR_ARG:
+                            case HelperMethods.CHAR_ARG:
                                 readCharacter();
                                 break;
-                            case PTR_ARG:
+                            case HelperMethods.PTR_ARG:
                                 int ptrLocation = getCPUOffsetVar();
                                 int ptr = readPointer();
 
@@ -555,32 +505,31 @@ public class HuffScriptDumper {
 
     private static boolean currPointerMatches(int listPos, HuffScriptPointer currHuffPtr) throws IOException {
         boolean inArrayBounds = listPos < scriptPointers.size();
-        boolean matchOffsets = getFileOffset(currHuffPtr.getPtrValue()) == currByteOffset;
+        boolean matchOffsets = HelperMethods.getFileOffset(currHuffPtr.getPtrValue()) == currByteOffset;
         boolean matchBitOffsets = currHuffPtr.getPtrValueBitOffset() == (bitOffset & 0x7);
 
         return inArrayBounds && matchOffsets && matchBitOffsets;
     }
     
     private static boolean isCharEncodingText(int charEncoding) {
-        if (charEncoding < LINE_00) {
+        if (charEncoding < HelperMethods.MIN_CTRL_CODE) {
             return true;
         }
         boolean isText = false;
         switch (charEncoding) {
-            case LINE_00:
-            case END_CHOICE_1C:
-            case NAME_SAN_20:
-            case NAME_21:
+            case HelperMethods.LINE_00:
+            case HelperMethods.END_CHOICE_1C:
+            case HelperMethods.NAME_SAN_20:
+            case HelperMethods.NAME_21:
                 isText = true;
                 break;
         }
         return isText;
     }
 
-    private static final int FLAG_BASE_ADDRESS = 0x1BEF;
     private static void printMemAddrOfFlagValue(int progressFlagID) throws IOException {
         String format = "// See $%04X";
-        int flagAddress = FLAG_BASE_ADDRESS + progressFlagID;
+        int flagAddress = HelperMethods.FLAG_BASE_ADDRESS + progressFlagID;
         scriptOutput.write(String.format(format, flagAddress));
     }
 
@@ -597,7 +546,7 @@ public class HuffScriptDumper {
         huffmanBuffer = peekByte();
 
         // keep track of what number to use for the EMBSETs (direct)
-        currPtrNum = NUM_START_POINTS;
+        currPtrNum = HelperMethods.NUM_START_POINTS;
 
         // keep track of what number to use for the EMBWRITEs (indirect, use as
         // index into script pointer list, and get that pointer's assigned number)
@@ -636,8 +585,8 @@ public class HuffScriptDumper {
                 }
                 if (!justWrotePointerComment) {
                     scriptOutput.newLine();
-                    // avoid double line breaks after this control code
-                    if (prevCharEncoding != END_CHOICE_1C) {
+                    // avoid double line breaks with ptrs after this control code
+                    if (prevCharEncoding != HelperMethods.END_CHOICE_1C) {
                         scriptOutput.newLine();
                     }
                     printROMFilePos();
@@ -673,7 +622,7 @@ public class HuffScriptDumper {
 
             // set script status flags when a text character
             // but otherwise print out nothing else
-            if (charEncoding < LINE_00) {
+            if (charEncoding < HelperMethods.MIN_CTRL_CODE) {
                 justWrotePointerComment = false;
                 onNewLine = false;
                 printedFirstCharForLine = true;
@@ -682,7 +631,7 @@ public class HuffScriptDumper {
             // and/or print any pointers
             else {
                 // choices are special cases that the regular algorithm doesn't cover
-                if (charEncoding == CHOICE_19 || charEncoding == CHOICE_1A) {
+                if (charEncoding == HelperMethods.CHOICE_19 || charEncoding == HelperMethods.CHOICE_1A) {
                     // both choice codes use three args and a variable number of
                     // pointers, which is based on the first arg
                     int arg0 = readCharacter();
@@ -709,7 +658,6 @@ public class HuffScriptDumper {
                         }
                         romFile.readUnsignedByte();
                         huffmanBuffer = peekByte();
-                        // currByteOffset++;
                         bitOffset = 8;
                     }
                 }
@@ -722,16 +670,17 @@ public class HuffScriptDumper {
 
                     for (int i = 0; i < argCount; i++) {
                         switch (argType & 0x1) {
-                            case CHAR_ARG:
+                            case HelperMethods.CHAR_ARG:
                                 int arg = readCharacter();
                                 printArg(arg);
                                 // if SET FLAG 22 or JMP.cc 04, note which flag
                                 // is being changed or being checked
-                                if ((charEncoding == SET_FLAG_22 || charEncoding == JMP_CC_04) && i == 0) {
+                                if ((charEncoding == HelperMethods.SET_FLAG_22 ||
+                                     charEncoding == HelperMethods.JMP_CC_04) && i == 0) {
                                     progressFlagID = arg;
                                 }
                                 break;
-                            case PTR_ARG:
+                            case HelperMethods.PTR_ARG:
                                 int ptr = readPointer();
                                 printPtr(ptr);
                                 if ((bitOffset & 0x7) == 0) {
@@ -751,10 +700,10 @@ public class HuffScriptDumper {
                 // do special stuff for printing to output script
                 switch (charEncoding) {
                     // add line breaks in dump after these control codes
-                    case LINE_00:
-                    // case CREDITS_09:
-                    // case CREDITS_0C:
-                    case END_CHOICE_1C:
+                    case HelperMethods.LINE_00:
+                    // case HelperMethods.CREDITS_09:
+                    // case HelperMethods.CREDITS_0C:
+                    case HelperMethods.END_CHOICE_1C:
                         scriptOutput.newLine();
 
                         justWrotePointerComment = false;
@@ -762,7 +711,7 @@ public class HuffScriptDumper {
                         printedFirstCharForLine = false;
                         break;
 
-                    case SET_FLAG_22:
+                    case HelperMethods.SET_FLAG_22:
                         scriptOutput.newLine();
                         // output the memory address that it modifies
                         printMemAddrOfFlagValue(progressFlagID);
@@ -777,13 +726,13 @@ public class HuffScriptDumper {
                         break;
 
                     // print CPU offset for script after these control codes
-                    case JMP_03:
-                    case JMP_CC_04:
-                    case CHOICE_19:
-                    case CHOICE_1A:
-                    case CLEAR_25:
-                    case CLEAR_27:
-                        if (charEncoding == JMP_CC_04) {
+                    case HelperMethods.JMP_03:
+                    case HelperMethods.JMP_CC_04:
+                    case HelperMethods.CHOICE_19:
+                    case HelperMethods.CHOICE_1A:
+                    case HelperMethods.CLEAR_25:
+                    case HelperMethods.CLEAR_27:
+                        if (charEncoding == HelperMethods.JMP_CC_04) {
                             scriptOutput.newLine();
                             printMemAddrOfFlagValue(progressFlagID);
                         }
@@ -798,7 +747,7 @@ public class HuffScriptDumper {
                         break;
 
                     // add special script position indicating credits
-                    case NOP_1D:
+                    case HelperMethods.NOP_1D:
                         String creditMarker = "// ##############################";
                         scriptOutput.newLine();
                         scriptOutput.newLine();
@@ -826,8 +775,6 @@ public class HuffScriptDumper {
                     // [CLEAR_FADE_OUT][SOME_CTRL_CODE][EMBEDDED_PTR]
                     default:
                         justWrotePointerComment = false;
-                        // onNewLine = false;
-                        // printedFirstCharForLine = false;
                         break;
                 }
             }
@@ -846,8 +793,6 @@ public class HuffScriptDumper {
             return;
         }
 
-        String romFilename = args[0];
-        String tableFilename = args[1];
         // for an unmodified JP ROM, script goes from AE401 to F95A7
         int scriptStart = Integer.parseInt(args[3], 16);
         int scriptEnd = Integer.parseInt(args[4], 16);
@@ -857,14 +802,15 @@ public class HuffScriptDumper {
             return;
         }
 
+        String romFilename = args[0];
         romFile = new RandomAccessFile(romFilename, "r");
-        // scriptOutput = new BufferedWriter(new FileWriter("script/script dump.txt"));
         scriptOutput = new BufferedWriter(new FileWriter(args[2]));
         goryDetails = new BufferedWriter(new FileWriter("script/analysis/detailed output.txt"));
 
+        String tableFilename = args[1];
         readTableFile(tableFilename);
-        getCtrlCodeArgTable();
-        getHuffmanTreeData();
+        readCtrlCodeArgTable();
+        readHuffmanTreeData();
 
         shouldWriteDetails = false;
         getScriptStartPoints();

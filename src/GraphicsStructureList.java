@@ -63,8 +63,8 @@ public class GraphicsStructureList {
         // all of the 9 IDs for the credits use the exact same data
         // it's redundant to decompress and dump all the same data 9 times over
         if (gfxID >= 0x5E && gfxID <= 0x65) {
-            // note: this would leave the structure list array as having only
-            // null entries; reinitialize it as an array of length 0 instead
+            // reinitialize structure list array as having length 0, instead of
+            // containing a non-zero number of null entries
             logFile.write("\nPlease see the log file for graphics ID 0x5D.");
             structureList = new GraphicsStructure[0];
         }
@@ -75,7 +75,7 @@ public class GraphicsStructureList {
                 struct.setOutputFolder(outputFolder);
                 struct.dumpData();
                 structureList[i] = struct;
-                romStream.seek(romStream.getFilePointer() + HelperMethods.PTR_SIZE + struct.getNumBytesToSkip());
+                romStream.seek(romStream.getFilePointer() + HelperMethods.NUM_BYTES_IN_PTR + struct.getNumBytesToSkip());
 
                 logFile.write("\n\n" + struct.toString());
             }

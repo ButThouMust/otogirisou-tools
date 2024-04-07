@@ -90,6 +90,9 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
     }
 
     // handle gfx data that no structure explicitly points to
+    // note: shoehorning in the StructureType parameter was what I came up with
+    //       to have a different signature for this constructor
+    // consider coming up with a better way to handle this
     public GraphicsStructure(int ptrToData, StructureType type) throws IOException {
         if (!HelperMethods.isValidRomOffset(ptrToData)) {
             String format = "Invalid data location for independent structure - $%06X does not map to ROM";
@@ -114,17 +117,16 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         // the first three bytes at the location of the structure are a 24-bit
         // pointer to some necessary metadata, and then the data itself
         int romOffset = HelperMethods.getFileOffset(structureLocation);
-        // System.out.println(Integer.toHexString(romOffset));
         romStream.seek(romOffset);
-        int dataPointer = (romStream.readUnsignedByte()) |
-                    (romStream.readUnsignedByte() << 8) |
-                    (romStream.readUnsignedByte() << 16);
-        if (!HelperMethods.isValidRomOffset(dataPointer)) {
+        int dataPtr = (romStream.readUnsignedByte()) |
+                      (romStream.readUnsignedByte() << 8) |
+                      (romStream.readUnsignedByte() << 16);
+        if (!HelperMethods.isValidRomOffset(dataPtr)) {
             String format = "Structure has invalid RAM offset to data - $%06X @ 0x%05X does not map to ROM";
-            throw new IOException(String.format(format, dataPointer, romOffset));
+            throw new IOException(String.format(format, dataPtr, romOffset));
         }
 
-        return dataPointer;
+        return dataPtr;
     }
 
     private StructureType determineType() throws IOException {
@@ -156,13 +158,13 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
             default:
                 // undefined, throw some kind of error here
                 String format = "Malformed structure - no valid type @ pointer $%06X";
-                throw new IOException(String.format(format, ptrToData + (HelperMethods.PTR_SIZE - 1)));
+                throw new IOException(String.format(format, ptrToData + (HelperMethods.NUM_BYTES_IN_PTR - 1)));
         }
         return type;
     }
 
     private void readStructureMetadata() throws IOException {
-        romStream.seek(HelperMethods.getFileOffset(structureLocation) + HelperMethods.PTR_SIZE);
+        romStream.seek(HelperMethods.getFileOffset(structureLocation) + HelperMethods.NUM_BYTES_IN_PTR);
 
         structureMetadata = new int[type.bytesToSkip];
         for (int i = 0; i < structureMetadata.length; i++) {
@@ -205,7 +207,8 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
             case TILE:
                 dumpRLEData();
                 if (!isIndepStruct()) {
-                    // doing this interleave & pad operation requires info from structure's metadata
+                    // doing this interleave & pad operation requires info from
+                    // structure's metadata; not possible for independent gfx data
                     generateSNESTileData(dataStartRAM);
                 }
                 break;
@@ -220,9 +223,12 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         }
 
         if (isIndepStruct()) {
+            // for independent tile and tilemap data, just need to log metadata
             if (type != StructureType.PALETTE) {
                 logFile = new BufferedWriter(new FileWriter(logFilename));
             }
+            // for independent palette data, first log the table of color values
+            // and then log the metadata for it
             else {
                 logFile.write("\n\n");
             }
@@ -231,13 +237,6 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
             logFile.close();
         }
     }
-
-    /*
-    public void dumpRLEData(int ramOffset) throws IOException {
-        romStream.seek(HelperMethods.getFileOffset(ramOffset));
-        dumpRLEData();
-    }
-    */
 
     // -------------------------------------------------------------------------
     // -------------------------------------------------------------------------
@@ -424,58 +423,32 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
 
         String firstLineFormat = "$%06X has data for %d colors of a possible %d\n\n";
         String firstLine = String.format(firstLineFormat, position, colorsUsed, totalColors);
-        String secondLine = "15-bit | 24-bit\n";
-        String thirdLine = "-------+-------";
-        String loopLineFormat = " %04X  | %06X";
-
         logFile.write(firstLine);
-        // logFile.newLine();
-        // logFile.newLine();
+        logFile.write("15-bit | 24-bit\n");
+        logFile.write("-------+-------");
 
-        logFile.write(secondLine);
-        // logFile.newLine();
-        logFile.write(thirdLine);
-
+        String loopLineFormat = " %04X  | %06X";
         for (int i = 0; i < colorsUsed; i++) {
             int byte0 = romStream.readUnsignedByte();
             int byte1 = romStream.readUnsignedByte() & 0x7F;
 
             int colorValue15 = (byte1 << 8) | byte0;
-            int colorValue24 = convert15BitTo24Bit(colorValue15);
+            int colorValue24 = HelperMethods.convertBGR15ToRGB24(colorValue15);
 
             outputFile.write(byte0);
             outputFile.write(byte1);
 
-            // logFile.newLine();
             logFile.write(String.format("\n" + loopLineFormat, colorValue15, colorValue24));
         }
         endOfData = HelperMethods.getRAMOffset((int) (romStream.getFilePointer() - 1));
-
         outputFile.close();
-        // note: do not close log file here because need to also output metadata
+
+        // note: need to also output metadata if independent structure, so do
+        // not close log file here
         if (!isIndepStruct()) {
             logFile.flush();
             logFile.close();
         }
-    }
-
-    public static int convert15BitTo24Bit(int colorValue15) {
-        // convert 15-bit BGR to 24-bit RGB
-        // 0 BBBBB GGGGG RRRRR -> RRRRRRRR GGGGGGGG BBBBBBBB
-        // source: https://wiki.superfamicom.org/palettes
-        int red5 = colorValue15 & 0x1F;
-        int green5 = (colorValue15 >> 5) & 0x1F;
-        int blue5 = (colorValue15 >> 10) & 0x1F;
-
-        int red8 = red5 << 3;
-        int green8 = green5 << 3;
-        int blue8 = blue5 << 3;
-
-        red8 += red8 >> 5;
-        green8 += green8 >> 5;
-        blue8 += blue8 >> 5;
-        int colorValue24 = (red8 << 16) | (green8 << 8) | blue8;
-        return colorValue24;
     }
 
     // -------------------------------------------------------------------------
@@ -511,15 +484,15 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         // so have to first convert to ROM offset before addition, then back to RAM offset
         int dataPtrROM = HelperMethods.getFileOffset(ptrToData);
         int dataStartROM = dataPtrROM + type.metadataSize;
-        int actualDataStart = HelperMethods.getRAMOffset(dataStartROM);
+        int dataStartCPUAddr = HelperMethods.getRAMOffset(dataStartROM);
 
         if (!isIndepStruct()) {
             String format1 = "$%06X: points to %-7s data at $%06X ($%06X)\n";
-            output += String.format(format1, structureLocation, type.toString(), ptrToData, actualDataStart);
+            output += String.format(format1, structureLocation, type.toString(), ptrToData, dataStartCPUAddr);
         }
         else {
             String format1 = "%-7s data at $%06X ($%06X)\n";
-            output += String.format(format1, type.toString(), ptrToData, actualDataStart);
+            output += String.format(format1, type.toString(), ptrToData, dataStartCPUAddr);
         }
 
         int dataEndROM = HelperMethods.getFileOffset(endOfData);
