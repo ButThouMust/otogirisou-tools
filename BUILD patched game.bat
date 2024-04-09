@@ -68,7 +68,7 @@ tools\atlas.exe %uncompScriptROM% %scriptTranslationFile% > logs\log_atlas_uncom
 :: %uncompScriptROM% in a hex editor and get the hexadecimal offset for the end*
 :: of the file (if over 2 MB). The batch file will prompt you for this.
 :: *: If this file happens to be 2 MB, use the offset of the last non-zero byte.
-@set uncompScriptEndPos=213f71
+@set uncompScriptEndPos=213b0b
 
 :: I prefer manually updating the script offset like above (don't need to change
 :: if testing a change to something other than the script), but you can enter
@@ -121,7 +121,7 @@ tools\atlas.exe %huffScriptROM% ".\script\update name entry, file select.txt" > 
 :: the Huffman script in the ROM. Go to offset 0x4539B and scroll down until you
 :: find a big wall of [00] bytes (it should be in the first MB, before offset
 :: 0xFFFFF). Change this variable to the position of the last non-zero byte.
-@set huffScriptEndPos=b49ff
+@set huffScriptEndPos=b48ba
 
 :: Same as before, allow for user input if the end user prefers.
 :: set /P huffScriptEndPos="Enter the hex offset of the end of the Huffman script: "

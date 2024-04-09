@@ -38,6 +38,27 @@ org $07A4E6
     db $42
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Restoring an unused graphic into the game
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; alters the graphics structure list for graphics ID 0x4E, to replace one knife
+; used for animations with one that ultimately went unused in the game
+
+; all you have to do is change out the tileset and tilemap, and change where the
+; tileset gets drawn on screen
+
+UnusedKnifeTileset = $079653
+UnusedKnifeTilemap = $07997E
+
+org $00BFBA
+    dl UnusedKnifeTileset
+
+org $00BFC0
+    dl UnusedKnifeTilemap
+    skip $5
+    db $00,$6B
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Inserting the tilemaps and tileset for the English credits
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -55,6 +76,8 @@ org $07A4E6
 ; org $01FAFA
     ; dw $7FFF
 
+!JProm = "rom/Otogirisou (Japan).sfc"
+
 ; replace the tileset used for the credits, and update # tiles for it
 ; notice no "-> $address" on the incbin; this is to keep the PC's value from
 ; directly after the inserted file, so we can assign it to a label
@@ -68,7 +91,7 @@ org $08AA0A
 NewCredit1Pointer:
     ; grab 4 bytes from the original pointer
     OldPtr1 = $44282
-    incbin "rom/Otogirisou (Japan).sfc":(OldPtr1)-(OldPtr1+!NumMetadataBytesToCopy)
+    incbin "!JProm":(OldPtr1)-(OldPtr1+!NumMetadataBytesToCopy)
     ; set the new width and height of the tilemap
     db $17,$07
     ; insert the new tilemap's binary data
@@ -77,94 +100,100 @@ NewCredit1Pointer:
 
 NewCredit2Pointer:
     OldPtr2 = $44307
-    incbin "rom/Otogirisou (Japan).sfc":(OldPtr2)-(OldPtr2+!NumMetadataBytesToCopy)
+    incbin "!JProm":(OldPtr2)-(OldPtr2+!NumMetadataBytesToCopy)
     db $14,$07
     incbin "graphics/recompressed 02 planner RLE TILEMAP 0x14 x 0x07.bin"
     warnpc !PaletteForEndFinPtr
 
 NewCredit3Pointer:
     OldPtr3 = $4436A
-    incbin "rom/Otogirisou (Japan).sfc":(OldPtr3)-(OldPtr3+!NumMetadataBytesToCopy)
+    incbin "!JProm":(OldPtr3)-(OldPtr3+!NumMetadataBytesToCopy)
     db $16,$13
     incbin "graphics/recompressed 03 writer RLE TILEMAP 0x16 x 0x13.bin"
     warnpc !PaletteForEndFinPtr
 
 NewCredit4Pointer:
     OldPtr4 = $44491
-    incbin "rom/Otogirisou (Japan).sfc":(OldPtr4)-(OldPtr4+!NumMetadataBytesToCopy)
+    incbin "!JProm":(OldPtr4)-(OldPtr4+!NumMetadataBytesToCopy)
     db $14,$07
     incbin "graphics/recompressed 04 art director RLE TILEMAP 0x14 x 0x07.bin"
     warnpc !PaletteForEndFinPtr
 
 NewCredit5Pointer:
     OldPtr5 = $4450A
-    incbin "rom/Otogirisou (Japan).sfc":(OldPtr5)-(OldPtr5+!NumMetadataBytesToCopy)
+    incbin "!JProm":(OldPtr5)-(OldPtr5+!NumMetadataBytesToCopy)
     db $15,$0B
     incbin "graphics/recompressed 05 graphics RLE TILEMAP 0x15 x 0x0B.bin"
     warnpc !PaletteForEndFinPtr
 
 NewCredit6Pointer:
     OldPtr6 = $445CC
-    incbin "rom/Otogirisou (Japan).sfc":(OldPtr6)-(OldPtr6+!NumMetadataBytesToCopy)
+    incbin "!JProm":(OldPtr6)-(OldPtr6+!NumMetadataBytesToCopy)
     db $1A,$07
     incbin "graphics/recompressed 06 composer RLE TILEMAP 0x1A x 0x07.bin"
     warnpc !PaletteForEndFinPtr
 
 NewCredit7Pointer:
     OldPtr7 = $44675
-    incbin "rom/Otogirisou (Japan).sfc":(OldPtr7)-(OldPtr7+!NumMetadataBytesToCopy)
+    incbin "!JProm":(OldPtr7)-(OldPtr7+!NumMetadataBytesToCopy)
     db $1A,$07
     incbin "graphics/recompressed 07 programming director RLE TILEMAP 0x1A x 0x07.bin"
     warnpc !PaletteForEndFinPtr
 
 NewCredit8Pointer:
     OldPtr8 = $446FE
-    incbin "rom/Otogirisou (Japan).sfc":(OldPtr8)-(OldPtr8+!NumMetadataBytesToCopy)
+    incbin "!JProm":(OldPtr8)-(OldPtr8+!NumMetadataBytesToCopy)
     db $16,$0B
     incbin "graphics/recompressed 08 programmer RLE TILEMAP 0x16 x 0x0B.bin"
     warnpc !PaletteForEndFinPtr
 
 NewCredit9Pointer:
     OldPtr9 = $447E3
-    incbin "rom/Otogirisou (Japan).sfc":(OldPtr9)-(OldPtr9+!NumMetadataBytesToCopy)
+    incbin "!JProm":(OldPtr9)-(OldPtr9+!NumMetadataBytesToCopy)
     db $17,$07
     incbin "graphics/recompressed 09 sound programmer RLE TILEMAP 0x17 x 0x07.bin"
     warnpc !PaletteForEndFinPtr
 
 NewCredit10Pointer:
     OldPtr10 = $44880
-    incbin "rom/Otogirisou (Japan).sfc":(OldPtr10)-(OldPtr10+!NumMetadataBytesToCopy)
+    incbin "!JProm":(OldPtr10)-(OldPtr10+!NumMetadataBytesToCopy)
     db $1B,$07
     incbin "graphics/recompressed 10 original sfx RLE TILEMAP 0x1B x 0x07.bin"
     warnpc !PaletteForEndFinPtr
 
 NewCredit11Pointer:
     OldPtr11 = $4493F
-    incbin "rom/Otogirisou (Japan).sfc":(OldPtr11)-(OldPtr11+!NumMetadataBytesToCopy)
+    incbin "!JProm":(OldPtr11)-(OldPtr11+!NumMetadataBytesToCopy)
     db $19,$0B
     incbin "graphics/recompressed 11 support pg 1 RLE TILEMAP 0x19 x 0x0B.bin"
     warnpc !PaletteForEndFinPtr
 
 NewCredit12Pointer:
     OldPtr12 = $44A2E
-    incbin "rom/Otogirisou (Japan).sfc":(OldPtr12)-(OldPtr12+!NumMetadataBytesToCopy)
+    incbin "!JProm":(OldPtr12)-(OldPtr12+!NumMetadataBytesToCopy)
     db $1E,$0F
     incbin "graphics/recompressed 12 support pg 2 RLE TILEMAP 0x1E x 0x0F.bin"
     warnpc !PaletteForEndFinPtr
 
 NewCredit13Pointer:
     OldPtr13 = $44B94
-    incbin "rom/Otogirisou (Japan).sfc":(OldPtr13)-(OldPtr13+!NumMetadataBytesToCopy)
+    incbin "!JProm":(OldPtr13)-(OldPtr13+!NumMetadataBytesToCopy)
     db $16,$07
     incbin "graphics/recompressed 13 producer director RLE TILEMAP 0x16 x 0x07.bin"
     warnpc !PaletteForEndFinPtr
 
 NewCredit14Pointer:
     OldPtr14 = $44C3F
-    incbin "rom/Otogirisou (Japan).sfc":(OldPtr14)-(OldPtr14+!NumMetadataBytesToCopy)
+    incbin "!JProm":(OldPtr14)-(OldPtr14+!NumMetadataBytesToCopy)
     db $16,$07
     incbin "graphics/recompressed 14 (c) chunsoft RLE TILEMAP 0x16 x 0x07.bin"
     warnpc !PaletteForEndFinPtr
+
+; If you NEED to repoint the palette data, here is some code to do that for you:
+; NewCreditsPalettePointer:
+;     incbin "rom/Otogirisou (Japan).sfc":$44D48-$44D4F
+; org $00C19C
+;     dl NewCreditsPalettePointer
 
 ;;;;;;;;;;;;;;;;;;;;
 
@@ -177,88 +206,92 @@ NewCredit14Pointer:
 ; Tilemap heights I used (7, B, F, 13) -> Y positions (A, 8, 6, 4)
 ; However, keep the 1st credit at Y position 9 so it appears on cue with music.
 
+; A tilemap structure is 10 bytes. The first three bytes are the pointer. The
+; last byte is the Y/X position on screen. So six bytes are ignored.
+!SkipBytes = $A-1-3
+
 ; credit 1
 org $00C192
     dl NewCredit1Pointer
-    skip 6
+    skip !SkipBytes
     db $93
 
 ; credit 2
 org $00C1A4
     dl NewCredit2Pointer
-    skip 6
+    skip !SkipBytes
     db $A3
 
 ; credit 3
 org $00C1AF
     dl NewCredit3Pointer
-    skip 6
+    skip !SkipBytes
     db $43
 
 ; credit 4
 org $00C1BA
     dl NewCredit4Pointer
-    skip 6
+    skip !SkipBytes
     db $A3
 
 ; credit 5
 org $00C1C5
     dl NewCredit5Pointer
-    skip 6
+    skip !SkipBytes
     db $83
 
 ; credit 6
 org $00C1D0
     dl NewCredit6Pointer
-    skip 6
+    skip !SkipBytes
     db $A3
 
 ; credit 7
 org $00C1DB
     dl NewCredit7Pointer
-    skip 6
+    skip !SkipBytes
     db $A3
 
 ; credit 8
 org $00C1E6
     dl NewCredit8Pointer
-    skip 6
+    skip !SkipBytes
     db $83
 
 ; credit 9
 org $00C1F1
     dl NewCredit9Pointer
-    skip 6
+    skip !SkipBytes
     db $A3
 
 ; credit 10
 org $00C1FC
     dl NewCredit10Pointer
-    skip 6
+    skip !SkipBytes
     db $A3
 
 ; credit 11
 org $00C207
     dl NewCredit11Pointer
-    skip 6
+    skip !SkipBytes
     db $83
 
 ; credit 12
 org $00C212
     dl NewCredit12Pointer
-    skip 6
+    skip !SkipBytes
     db $61
 
 ; credit 13
 org $00C21D
     dl NewCredit13Pointer
-    skip 6
+    skip !SkipBytes
     db $A3
 
 ; credit 14
 org $00C228
     dl NewCredit14Pointer
-    skip 6
+    skip !SkipBytes
     db $95
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
