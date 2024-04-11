@@ -8,12 +8,12 @@ public class KerningPunctPairs {
         // "auto" handle kerning with table file, without manually replacing all
         // instances of [ch1][ch2] in the script with [ch1]<KERN><##>[ch2]
         String encodings[] = {
-            "'d", "'m",  "'s", "'t",  "'v", "ac",  "ad",  "adj", "af",  "ag",  "aj",
-            "ao", "at",  "av",  "Aw",  "aw",  "aw,", "ay",  "ay,", "bj",  "bt",  "ej",
-            "Fa", "Fat", "Fe",  "Fo",  "Fu",  "fo",  "ij",  "nj",  "n's", "n't", "of",
-            "oj", "OT",  "o'c", "ox",  "Po",  "pt",  "r,",  "rc",  "rd",  "ro",  "roj",
-            "Tc", "Te",  "To",  "Va",  "Ve",  "w,",  "Wa",  "Wat", "Wo",  "We",  "xc",
-            "xo", "y,",  "Ya",  "Ye",  "Yo",  "zo",
+            "'d", "'m",  "'s",  "'t", "'v", "ac",  "ad", "adj", "af",  "ag",  "aj",
+            "ao", "at",  "av",  "Aw", "aw", "aw,", "ay", "ay,", "bj",  "bt",  "ej",
+            "Fa", "Fat", "Fe",  "Fo", "Fu", "fo",  "ij", "nj",  "n's", "n't", "of",
+            "oj", "OT",  "o'c", "ox", "Po", "pt",  "r,", "rc",  "rd",  "ro",  "roj",
+            "Tc", "Te",  "To",  "Va", "Ve", "w,",  "Wa", "Wat", "Wo",  "We",  "xc",
+            "xo", "y,",  "Ya",  "Ye", "Yo", "zo",
             "...T", "...W", "...Wa", "éj", "“j"
         };
         return encodings;
@@ -46,7 +46,7 @@ public class KerningPunctPairs {
             {"a", KERN_LEFT, ONE_PIXEL, "w"},
             {"a", KERN_LEFT, ONE_PIXEL, "w", KERN_LEFT, ONE_PIXEL, ","},
             {"a", KERN_LEFT, ONE_PIXEL, "y"},
-            {"a", KERN_LEFT, ONE_PIXEL, "y", KERN_LEFT, TWO_PIXELS, ","},
+            {"a", KERN_LEFT, ONE_PIXEL, "y", KERN_LEFT, ONE_PIXEL, ","},
             {"b", KERN_LEFT, TWO_PIXELS, "j"},
             {"b", KERN_LEFT, ONE_PIXEL, "t"},
             {"e", KERN_LEFT, TWO_PIXELS, "j"},
@@ -62,12 +62,12 @@ public class KerningPunctPairs {
             {"n", KERN_LEFT, ONE_PIXEL, apostr, KERN_LEFT, ONE_PIXEL, "s"},
             {"n", KERN_LEFT, ONE_PIXEL, apostr, KERN_LEFT, ONE_PIXEL, "t"},
             {"o", KERN_LEFT, ONE_PIXEL, "f"},
+
             {"o", KERN_LEFT, TWO_PIXELS, "j"},
             // {"o", KERN_LEFT, ONE_PIXEL, "t"},
             {"O", KERN_LEFT, ONE_PIXEL, "T"},
             {"o", KERN_LEFT, ONE_PIXEL, apostr, KERN_LEFT, ONE_PIXEL, "c"},
             {"o", KERN_LEFT, ONE_PIXEL, "x"},
-
             {"P", KERN_LEFT, ONE_PIXEL, "o"},
             {"p", KERN_LEFT, ONE_PIXEL, "t"},
             {"r", KERN_LEFT, ONE_PIXEL, ","},
@@ -75,11 +75,11 @@ public class KerningPunctPairs {
             {"r", KERN_LEFT, ONE_PIXEL, "d"},
             {"r", KERN_LEFT, ONE_PIXEL, "o"},
             {"r", KERN_LEFT, ONE_PIXEL, "o", KERN_LEFT, TWO_PIXELS, "j"},
+
             {"T", KERN_LEFT, TWO_PIXELS, "c"},
             {"T", KERN_LEFT, ONE_PIXEL, "e"},
             {"T", KERN_LEFT, ONE_PIXEL, "o"},
             {"V", KERN_LEFT, ONE_PIXEL, "a"},
-
             {"V", KERN_LEFT, ONE_PIXEL, "e"},
             {"w", KERN_LEFT, ONE_PIXEL, ","},
             {"W", KERN_LEFT, ONE_PIXEL, "a"},
@@ -87,13 +87,14 @@ public class KerningPunctPairs {
             {"W", KERN_LEFT, ONE_PIXEL, "o"},
             {"W", KERN_LEFT, ONE_PIXEL, "e"},
             {"x", KERN_LEFT, ONE_PIXEL, "c"},
+            
             {"x", KERN_LEFT, ONE_PIXEL, "o"},
             {"y", KERN_LEFT, ONE_PIXEL, ","},
             {"Y", KERN_LEFT, ONE_PIXEL, "a"},
             {"Y", KERN_LEFT, ONE_PIXEL, "e"},
             {"Y", KERN_LEFT, TWO_PIXELS, "o"},
-
             {"z", KERN_LEFT, ONE_PIXEL, "o"},
+
             {"...", KERN_LEFT, THREE_PIXELS, "T"},
             {"...", KERN_LEFT, TWO_PIXELS, "W"},
             {"...", KERN_LEFT, TWO_PIXELS, "W", KERN_LEFT, ONE_PIXEL, "a"},

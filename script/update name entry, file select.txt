@@ -166,7 +166,7 @@ Pg.<$FF><$FF>
 // HIRAGANA/KATAKANA/KANJI PAGE LABELS - OVERWRITE TEXT
 // #############################################################################
 
-// replace "ひらがな" with "ABC", "カタカナ" with "abc", "漢字" with "Áá@"
+// replace "ひらがな" with "ABC", "カタカナ" with "abc", "漢字" with "Áá"
 // not including FFFF terminators, try to keep to under 10 characters total
 #JMP($129CA,$129E3)
 ABC<$FF><$FF>
@@ -175,7 +175,8 @@ ABC<$FF><$FF>
 abc<$FF><$FF>
 
 #W16($135B6)
-Áá@<$FF><$FF>
+Áá<$FF><$FF>
+//Áá@<$FF><$FF>
 //Etc.<$FF><$FF>
 
 #JMP($129E2)
@@ -185,7 +186,7 @@ abc<$FF><$FF>
 // HIRAGANA/KATAKANA/KANJI PAGE LABEL REPOSITIONING
 // #############################################################################
 
-// if needed, reposition the strings ABC, abc, Áá@, and/or the digit
+// if needed, reposition the strings ABC, abc, Áá
 // for reference, the text "boxes" are 64 pixels wide, with left edge at X = 48
 // heights are 16 pixels, with top edges at Y = 80, 120, 160
 
@@ -209,8 +210,16 @@ abc<$FF><$FF>
 // game uses a 4 tile wide box between left edge and "<" arrow
 // center text within 32 pixel area; "Áá@" is 8 + 6 + 10 + (2*2) = 28
 // (32 - 28) / 2 = 2 pixels -> use X = 2 + 48 = 50 = 0x32
+//#JMP($135AA)
+//<$32>
+
+// "Áá" text x and y coordinates are (0x32, 0xA1) by default
+// game uses a 4 tile wide box between left edge and "<" arrow
+// center text within 32 pixel area; "Áá" is 8 + 6 + (2*1) = 16
+// (32 - 16) / 2 = 8 pixels -> use X = 8 + 48 = 56 = 0x38
+// I then position it right a pixel to make it look more centered
 #JMP($135AA)
-<$32>
+<$39>
 #JMP($135B0)
 <$A2>
 
@@ -352,7 +361,7 @@ z[]{}
 ÊËÌÍÎ
 ÏÐÑÒÓ
 ÔÕÖŒÙ
-ÚÛÜÝ
+ÚÛÜÝŸ
 #JMP($12B1A)
 <$FF><$FF>
 
@@ -519,6 +528,9 @@ z[]{}
 <$14>
 
 // change the pixel spacing between characters; default is 02
+// something interesting you can do, if you set this to a value like -12 (FFF4),
+// and set "start of new line X coordinate" to a value like E8, you can make the
+// characters print from right to left on screen
 #JMP($0192F)
 <$01>
 
