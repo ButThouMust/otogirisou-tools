@@ -32,6 +32,8 @@ public class HelperMethods {
     // constants related to Huffman encoding for script
     public static final String LEFT_BIT = "0";
     public static final String RIGHT_BIT = "1";
+    public static final int LEFT_BIT_INT = 0;
+    public static final int RIGHT_BIT_INT = 1;
     public static final int NO_HEX_VAL = -1;
     public static final int NUM_HUFFMAN_ENTRIES = 0x5B7;
     public static final int ROOT_ENTRY_POS = NUM_HUFFMAN_ENTRIES - 1;
