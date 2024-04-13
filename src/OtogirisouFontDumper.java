@@ -61,9 +61,13 @@ public class OtogirisouFontDumper {
         int bitmask = (0xFFFF << (16 - width)) & 0xFFFF;
         int bitPos = 0;
 
+        // dump the font data for each character in the group
         for (int chNum = 0; chNum < groupSize; chNum++) {
-            int pixelRows[] = new int[MAX_DIMEN];
+            // Otogirisou measures char heights from the bottom up
+            // get the top row to write pixel data into
             int topRow = pixelRows.length - height;
+
+            int pixelRows[] = new int[MAX_DIMEN];
             for (int r = 0; r < height; r++) {
                 // a row of up to 15 pixels can extend across 3 bytes
                 int bytePos = bitPos >> 3;
@@ -73,8 +77,8 @@ public class OtogirisouFontDumper {
                                    (romStream.readUnsignedByte() << 16);
 
                 // determine if need to align pixels left/right, and by how much
-                // align so that leftmost pixel is on bit F in a two byte value
-                int alignment = (bitPos & 0x7) + width - 0x10;
+                // - align so leftmost pixel is on the MSB of a two byte value
+                int alignment = (bitPos & 0x7) + width - MAX_DIMEN;
                 if (alignment > 0) {
                     rawPixelData >>= alignment;
                 }
@@ -100,21 +104,23 @@ public class OtogirisouFontDumper {
     }
 
     private static void outputTileData(int pixelRows[]) throws IOException {
-        // if you prefer splitting it up across four 8x8 tiles, this will do it
+        // split up font data across four 8x8 tiles (TL, TR, BL, BR)
         // intent is for this to be compatible with more tile editors
 
         // instead of storing as 16 two-byte values, store as 32 one-byte values
         // specifically as four groups of 8 bytes: [TL ; TR ; BL ; BR]
-        final int TILE_SIZE = MAX_DIMEN >> 1;
+        final int TILE_SIZE = MAX_DIMEN / 2;
         int tileData[] = new int[MAX_DIMEN * 2];
         for (int i = 0; i < pixelRows.length; i++) {
             // first 16 bytes = top two tiles; last 16 bytes = bottom two tiles
             int topBottom = (i & TILE_SIZE) * 2;
             int tileRow = i & 0x7;
 
-            // write a row of 8 pixels for left tile
+            // write a row of 8 pixels for left tile (left half of row)
             tileData[tileRow + topBottom] = pixelRows[i] >> TILE_SIZE;
-            // same for the right tile, at the correct array position
+
+            // same for right tile (right half of row)
+            // write data at the correct array position
             tileData[tileRow + topBottom + TILE_SIZE] = pixelRows[i] & 0xFF;
         }
 
