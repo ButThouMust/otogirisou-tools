@@ -165,7 +165,9 @@ public class KerningPunctPairs {
 
             PERI_WAIT + DELAY_STR,  // .<DELAY 17>
             QUES_WAIT + EXCL_WAIT,  // ?!
-            EXCL_WAIT + EXCL_WAIT   // !!
+            EXCL_WAIT + EXCL_WAIT,  // !!
+            
+            AUTO_ADV_STR + QUES_WAIT + EXCL_WAIT // <AUTO ADV 13>?!
         };
         return encodings;
     }
@@ -206,7 +208,9 @@ public class KerningPunctPairs {
 
             {PERI_NO_WAIT, DELAY_STR}, // .<DELAY 17>
             {QUES_NO_WAIT, EXCL_WAIT}, // ?!
-            {EXCL_NO_WAIT, EXCL_WAIT}  // !!
+            {EXCL_NO_WAIT, EXCL_WAIT}, // !!
+            
+            {QUES_NO_WAIT, EXCL_NO_WAIT} // <AUTO ADV 13>?!
         };
         return hexSequenceStrings;
     }
