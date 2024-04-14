@@ -63,11 +63,13 @@ public class OtogirisouFontDumper {
 
         // dump the font data for each character in the group
         for (int chNum = 0; chNum < groupSize; chNum++) {
+            // buffer for the pixel data of one character
+            int pixelRows[] = new int[MAX_DIMEN];
+
             // Otogirisou measures char heights from the bottom up
             // get the top row to write pixel data into
             int topRow = pixelRows.length - height;
 
-            int pixelRows[] = new int[MAX_DIMEN];
             for (int r = 0; r < height; r++) {
                 // a row of up to 15 pixels can extend across 3 bytes
                 int bytePos = bitPos >> 3;
