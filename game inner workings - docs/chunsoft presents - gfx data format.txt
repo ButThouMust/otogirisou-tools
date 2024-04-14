@@ -1,0 +1,116 @@
+Most of the graphics in Otogirisou are stored in the RLE compressed format with
+structures of variable size. The "Chunsoft PRESENTS" splashscreen when you boot
+up Otogirisou is unique in that its data is not stored in this format.
+
+After getting a few trace logs, I determined that for this splashscreen, the
+game does not use bank 7F as a temporary buffer for decompressing graphics into.
+Instead, it uses lists of data for DMAs directly into VRAM.
+
+Effectively, the format is a run-length encoding based on a byte N:
+Value | Meaning
+------+-------------------------------------------------------------
+00-7F | Read the next (N+1) bytes into VRAM
+80    | End of data
+81-FF | Read the next byte, and copy it ([N & 7F] + 1) times to VRAM
+
+This is used for both the tileset and the tilemap.
+The main decompression algorithm is at $028226.
+
+################################################################################
+################################################################################
+
+At a high level, the code at $028004 (access by JSL $028000) does this:
+- $028071: Set attributes for BG Mode 3.
+- $02862C: Create an HDMA table from data in $028690.
+- $028093: Load the graphics and tilemaps for the Chunsoft Presents screen.
+--- Set some control bytes and such.
+- $028311: Generate the colors (greens, yellows, blues) of the spinning Chunsoft
+           logo. Allow the spinning animation to finish.
+- $0283DA: Set the colors for the screen after the spinning animation finishes.
+--- Wait approximately 20 frames (1/3 sec) on the Chunsoft text.
+- $0281C2: Display the "PRESENTS" text (move away 8 obscuring sprites).
+
+################################################################################
+################################################################################
+
+Loading graphics and tilemaps in $028093:
+
+Code at $0280A3:
+  Decomp data @ $028794 - $0293E0 to bus $2118 (VRAM low byte)  at VRAM $2000.
+  Decomp data @ $0293E1 - $029D10 to bus $2119 (VRAM high byte) at VRAM $2000.
+  This is the screen's graphics in 8bpp SNES format. View in Tile Molester with
+  codec "8bpp planar, composite (4x2bpp)".
+
+Code at $0280B1:
+  Decomp data @ $028699 - $028793 to bus $2118 (VRAM low byte)  at VRAM $0100.
+  This is the screen's tilemap.
+
+Call subroutine $0282C0:
+  Copy 0x640 bytes from $029D11 - $02A350 into VRAM starting at $C000.
+
+Call subroutine $028300:
+  Fill 0x0200 bytes from $0C99 - $0E98 in WRAM with 0x00.
+  This accomplishes resetting all of CGRAM to 0000 (black).
+
+Set that during NMI, we have to do DMAs to VRAM and CGRAM.
+
+Code at $0280C0:
+  $0280EF: Construct the tilemap for the spinning logo.
+           Data is 0xEC bytes from $02A351 - $02A43C.
+  $02812C: Read OAM data for the first 7 sprites from $0281E5 to $0281F9
+  $028278: Extend lines on the Chunsoft Presents screen
+
+################################################################################
+################################################################################
+
+- $028311: Generate the colors (greens, yellows, blues) of the spinning Chunsoft
+           logo. Allow the spinning animation to finish.
+
+The colors are generated in software.
+The greens/yellows start with a value of BGR15 01CE (00 0E 0E -> RGB24 737300).
+They increase each component by one as like:
+00 0E 0E -> 01 0F 0F -> 02 10 10 -> ... -> 10 1E 1E -> 11 1F 1F
+The last one is BGR15 7FF1 (11 1F 1F -> RGB24 8CFFFF).
+
+The blues are similar: start with BGR15 5000 (14 00 00 -> RGB24 0000A5).
+Increase each component by one as in:
+14 00 00 -> 15 01 01 -> 16 02 02 -> ... -> 1F 0B 0B
+The last one is BGR15 7D6B (1F 0B 0B -> RGB24 5A5AFF).
+
+Because this is an animation by definition, I will not list out all of the
+colors nor attempt to have them show up in a tile editor.
+
+################################################################################
+################################################################################
+
+- $0283DA: Set the colors for the screen after the spinning animation finishes.
+
+In a nutshell, there is palette data for the screen from $028527 - $02854E (last
+two bytes are FFFF). Their BGR15 and RGB24 values are:
+
+ 15-bit | BB GG RR | 24-bit
+--------+----------+--------
+  739C  | 1C 1C 1C | E7E7E7
+  7D6B  | 1F 0B 0B | 5A5AFF
+  47FF  | 11 1F 1F | FFFF8C
+  3C00  | 0F 00 00 | 00007B
+  5AD6  | 16 16 16 | B5B5B5
+  4A52  | 12 12 12 | 949494
+  2529  | 09 09 09 | 4A4A4A
+  7FFF  | 1F 1F 1F | FFFFFF
+  7DCE  | 1F 0E 0E | 7373FF
+  7E31  | 1F 11 11 | 8C8CFF
+  7E94  | 1F 14 14 | A5A5FF
+  7EF7  | 1F 17 17 | BDBDFF
+  7C63  | 1F 03 03 | 1818FF
+  6400  | 19 00 00 | 0000CE
+  4400  | 11 00 00 | 00008C
+  7D08  | 1F 08 08 | 4242FF
+  7D4A  | 1F 0A 0A | 5252FF
+  337B  | 0C 1B 1B | DEDE63
+  2718  | 09 18 18 | C6C64A
+  7FFF  | 1F 1F 1F | FFFFFF
+
+Code at $028278:
+  32 of [12 00], 32 of [17 00], into $0900 in VRAM
+  and same data into $0E40 in VRAM

@@ -1,0 +1,440 @@
+
+Otogirisou uses two different formats for pointers to specific places in the
+script. One is for the start points in the script, and the other is for all the
+pointers embedded into the script's text for choices and jump codes.
+
+Let's discuss the format for start points first, then do embedded pointers.
+
+--------------------------------------------------------------------------------
+
+(Initial source for information: `void Dump_Layer0()` of `scan.cpp` from Guest)
+There are three pointers for the possible start points for a new game.
+They are located at $02A627 = 0x12627: 08 20 AF, 68 F7 E4, C0 4B C5.
+
+These use an absolute pointer format that encodes a 21-bit CPU offset and a
+3-bit "bit in a byte" offset. Visual representation with examples:
+
+76543210 76543210 76543210 (big endian value)
+7 6543 2107 6543 2107 6543 | 210
+<-Pointer to RAM address-> | Huffman bit offset in byte
+
+AF2008 -> ptr = 15E401-0 - start point 0
+1 0101 1110 0100 0000 0001 | 000
+
+E4F768 -> ptr = 1C9EED-0 - start point 1
+1 1100 1001 1110 1110 1101 | 000
+
+C54BC0 -> ptr = 18A978-0 - start point 2
+1 1000 1010 1001 0111 1000 | 000
+
+Importantly, start point 0 represents the start of the script as a whole.
+Also note that by offset, S0 < S2 < S1.
+
+---
+
+If you care about the logic for how the game picks start points for the player:
+ 1st playthrough: 50/50 chance between start points 0 and 1.
+ 2nd playthrough: 50/50 chance between start points 2, and [1 or 0].
+                  If you do not get start point 2, the game will give you the
+                  start point between 0 and 1 that you did NOT view.
+ 3rd playthrough: Guaranteed to see the remaining unviewed start point.
+ All subsequent:  1/3 chance between all three start points.
+
+The assembly code for this logic is from $02A569 to $02A5EF, which is then
+followed by the code (until $02A626) for reading a start point's value,
+interpretting it, and copying the data to the correct places.
+
+---
+
+It is worth noting that Guest had thought there were only two start points. This
+is reasonable because the game will only let you view start points 0 and 1 on a
+fresh save file. To access start point 2, you must either reach the credits
+once and get lucky, or if you don't, you must reach the credits twice.
+
+Their dumper lists its entry at 18A974-0 after embedded pointer 305. The
+beginning codes and text start after "#EMBWRITE(305) \n <JMP> \n #EMBSET(305)."
+
+The dumper's output differs by 4 bytes. This checks out: the Huffman code for
+JMP (1003) is 8 bits = 1 byte long, and the Huffman pointer is another 3 bytes.
+I decided to manually add this as embedded pointer 2500 into the script dump
+here. As for why I picked 2500, the very last EMBSET in the dump is for 2416,
+and 2500 is a nice "round" number to signify it is special.
+
+---
+
+There is a powerful application of knowing where this data is.
+Let's say you want to access a particular point in the script. If you know the
+offset, you can very quickly and easily access it by setting that offset as a
+playthrough start point, and starting a new file or picking the Restart option.
+In short, you can view text without having to play the game "normally."
+
+I used this all the time when playtesting the translation patch, enough that I
+coded calculating these three bytes into my script dumper for every screen of
+text for me.
+
+This allows for things such as translation playtesting, immediately viewing
+endings, or checking control codes, without necessarily needing to send SRAM or
+save state files around.
+
+--------------------------------------------------------------------------------
+
+The script for Otogirisou embeds pointers for jumps and choices in between all
+the Huffman code text data. Their format specifies a BIT in the compressed
+Huffman text (see writeup "decompression - huffman code.txt" for more details).
+Format is the same between CHOICE 1019, CHOICE 101A, JMP 1003, and JMP.cc 1004.
+
+The very simple explanation for the format is that it is a relative offset from
+the start of the script, encoding the number of bits to advance. This assumes
+a contiguous space in the ROM i.e. no bank wrapping for LoROM addressing.
+
+Some important advantages to this format:
+- You do not need to know where to insert the script as you are generating it.
+- You don't have to recalculate ALL the pointers if you need to move the script,
+  but you do have to recalculate two of the game's start points.
+  You can keep track of their text's position like any other pointer,
+  and just add the absolute offset for start point 0.
+
+From an assembly code point of view, however, the format is more complicated
+because the code has to perform LoROM bank wrapping when it comes up.
+76543210 76543210 76543210 (note: convert to big endian if reading from ROM)
+76 | 5432    | 107 6543 2107 6543 | 210
+?? | # banks | # bytes to add to  | Huff ptr
+   | to add  | start of script    | bit offset
+
+Explanation:
+Byte 0, bits 6-7: unknown, but all the pointers I've seen just have 0b00 for it
+                  game does not explicitly zero them out
+Byte 0, bits 2-5: number of banks to advance (may include bits 6-7?)
+Byte 2, bits 0-2: "bit in a byte" offset (0 - 7) to accomodate Huffman pointers
+
+Byte 0 bit 1 through byte 2 bit 3:
+  - The number of bytes to add to the CPU offset of the start of the script.
+    Essentially, the game has to calculate adding bytes to a LoROM CPU offset
+    while checking for bank wrapping.
+
+--------------------------------------------------------------------------------
+
+1 MB limitation to script pointers
+
+Sacrificing 3 bits to encode the "bit in a byte" offset in the ROM limits the
+addressable space that these pointers can access. Specifically, the maximum
+LoROM pointer value (start point format) is [FF FF FF] -> $1FFFFF-7.
+This corresponds to a limit of 1 MB of ROM space for the Huffman script.
+
+One saving grace about this is that I found a very simple way to free up space
+in the ROM for the script. It happens that the block of data from $08D39B to
+$15E400 consists entirely of sound data. Importantly, this is pointed to by
+exactly ONE pointer that gets constructed in the subroutine at $009081.
+
+All you have to do is move the whole data block somewhere else like an
+additional 0.5 MB and update the pointer to the start of it. Frees up 0x69066
+bytes (~430 KB), which is huge considering the original ROM is 1 MB.
+
+--------------------------------------------------------------------------------
+
+How I deciphered these formats
+
+I originally determined the formats through Guest's source file "scan.cpp",
+specifically the algorithm in Read_Huffman_Ptr(). It is a C++ version of the
+assembly trace in Guest's file "load_1.txt".
+I traced through the C++ version with some example:
+
+------
+Algorithm for how the game manages pointers for choice control codes:
+
+// scan.cpp line #919
+Read three Huffman values for three values, each two bytes
+Determine the number of options for this choice from these bytes (call it "n")
+- Look in first input double byte; n = value in the 3 LSBs, minus one.
+Read n script pointers from the script space
+
+------
+Getting the right data from the ROM
+
+To make the bit counting easier, there are instances in the script where it
+gives you a choice right after the text on screen clears. It so happens the
+first choice in the ROM (at 15E47C-4, with EMBSETs 2, 3, 4) has no text like
+"Then, I:", after the CLEAR code.
+<CHOICE 19><$00><$04><$00><$04><$00><$02>
+
+Note: # choices = (value in 3 LSBs of first two byte input) - 1 = 0004 - 1 = 3
+
+15E47C-4: start point for the page of text
++12 bits: Huffman code for choice code 1019
++22 bits: two Huffman codes for value 0004 (each is 11 bits)
++10 bits: Huffman code for value 0002
+
+The target address represented with EMBSET(2) should then begin 44 bits after
+the start of this page of text. 15E47C-4 + 000005-4 = 15E482-0 (0xAE482).
+
+Sanity check, the last 10 bits before this should have the Huffman code for
+value 0002, which is 0b0011001110:
+2F        73         REVERSE F4         CE       
+0010 1111 0111 0011          1111 01[00 1100 1110]; this checks out
+
+According to the script dump, there are three pointers until 15E48B-0 = 0xAE48B.
+AE48B - AE482 = B - 2 = 9; assume three bytes per pointer
+
+The data here is 250C00 500400 D20700. Let's focus on just the first 3 bytes.
+Because it so happens this is byte-aligned, the barrel data coming in here is
+four bytes = 32 bits = value 250C0050. Convert to big endian value: 5000 0C25
+
+------
+Example run of Read_Huffman_Ptr function
+
+initial state:
+barrel_data = 5000 0C25    // we only care about low 3 bytes here, not "50"
+bit_count = 0;
+
+ptr = barrel data >> 3;    // ptr = 0A00 0184
+num = ptr;                 // num = 0A00 0184
+
+num &=   0x7fff;           // num = 0184; take lowest two bytes, zero out MSB
+
+                           // a note: $15E401 = start of script space
+num +=   0xe401;           // num = E585; add bank offset of script space
+num |=   0x8000;           // num = E585; force bank offset to correspond to ROM
+num += 0x150000;           // num = 15E585; add bank number of script space
+
+num += (ptr*2) & ~0xffff;  // for an int value, ~0xFFFF = 0xFFFF0000;
+                           // (ptr << 1) & 0xFFFF0000 = 14000000
+                           // num += 14000000 = 1415 E585; done with this line
+
+num <<= 3;                 // num = A0AF 2C28
+num |= barrel_data & 7;    // num = A0AF 2C2D; barrel_data & 7 = 5; 8 | 5 = D
+num &= 0xffffff;           // num = 00AF 2C2D
+
+ptr = num;                 // ptr = 00AF 2C2D
+
+// *******************************************************
+// We are actually done calculating the value of ptr here.
+
+Read_Byte(2);                // advance two bytes, discarding the values
+                             // note: after Read_Huffman() does "reload barrel"
+                             // it does Peek_Dword(1) and then Read_Byte(1),
+                             // so effectively, advance three bytes
+barrel_data = Peek_Dword(1); // get the next four bytes i.e. the next Huffman
+                             // pointer plus the high byte of the one after that
+                             // barrel_data = 500400D2 -> D2000450
+
+Read_Byte(1);              // advance one more byte i.e. to after this Huff ptr
+barrel_data >>= bit_count; // barrel_data = D200 0450 >>= 0 = D200 0450
+
+After this, Guest does a whole bunch of embed checking for Atlas, but doesn't
+actually change the value of ptr in any of it and eventually just returns ptr.
+
+// Going back to line 938 in scan.cpp:
+data = Read_Huffman_Ptr();
+fprintf( out_text, "\n//%06X-%d", data>>3, data&7);
+
+// data = ptr = 00AF 2C2D; data>>3 = 15E585; data&7 = 5, so overall "//15E585-5"
+// this indeed matches what the script dump gives me for EMBWRITE(2)!
+
+So essentially, what the algorithm is doing is decoding the correct RAM offset
+and the correct Huffman bit offset in that RAM offset, and just stuffing them
+into one "four" (three) byte value for use with the script dump.
+
+--------------------------------------------------------------------------------
+What if the script pointer is not byte aligned?
+
+Check the next instance where a CHOICE code comes right after a CLEAR 25 code:
+15EF3E-1: <CHOICE 19><$00><$04><$00><$04><$00><$05> with embeds 21, 22, 23
+
+start: 15EF3E-1
++12 bits: Huffman code for choice code 1019
++22 bits: two Huffman codes for value 0004 (each is 11 bits)
++ 9 bits: Huffman code for value 0005
+The target address represented with EMBSET(21) should begin 43 bits after the
+start point: 15EF3E-1 + 000005-3 = 15EF43-4 (0xAEF43).
+
+Another sanity check, data before this should have Huffman code for value 0005,
+which is 0b101111011.
+
+ED   v     CD         REVERSE B7  V     B3
+[11101]101 1100[1101]         101[10111 1011]0011   This checks out.
+
+There are three pointers here. It is important to note that as the dumper reads
+the previous Huffman codes, it updates the barrel_data variable with the bit
+shifts. That is, although the raw data in the ROM is CD B9 05 C0, by the time
+Read_Huffman_Ptr() is executing, it will have already shifted out 4 bits i.e.
+the 0xD in the 0xCD byte (0xD is part of the 0005 Huffman code). In other words,
+we just ignore the 0xD nibble here:
+CDB905C0 -> big endian -> C005B9CD -> shift out the 0xD -> 0C005B9C
+
+Run the Read_Huffman_Ptr() algorithm again with this input state:
+barrel_data = 0C005B9C
+bit_count = 4
+
+ptr = barrel data >> 3;    // ptr = 0180 0B73
+num = ptr;                 // num = 0180 0B73
+
+num &=   0x7fff;           // num = 0B73; take lowest two bytes, zero out MSB
+
+                           // a note: $15E401 = start of script space
+num +=   0xe401;           // num = EF74; add bank offset of script space
+num |=   0x8000;           // num = EF74; force bank offset to correspond to ROM
+num += 0x150000;           // num = 15EF74; add bank number of script space
+
+num += (ptr*2) & ~0xffff;  // for an int value, ~0xFFFF = 0xFFFF0000;
+                           // (ptr << 1) & 0xFFFF0000 = 03000000
+                           // num += 03000000 = 0315 EF74; done with this line
+
+num <<= 3;                 // num = 18AF 7BA0
+num |= barrel_data & 7;    // num = 18AF 7BA4; barrel_data & 7 = 4; 0 | 4 = 4
+num &= 0xffffff;           // num = 00AF 7BA4
+
+ptr = num;                 // ptr = 00AF 7BA4
+
+This pointer corresponds to 15EF74-4. If you look in the script dump, this shows
+up as embed write 21, which checks out!
+
+How to get the next pointer:
+Read_Byte(2);              // advance to 15EF46, discarding the values
+barrel_data = Peek_Dword(1); // get next four bytes:
+                             // C0 A5 05 10 -> big endian -> 1005 A5C0
+
+Read_Byte(1);              // advance one more byte i.e. to after this Huff ptr
+barrel_data >>= bit_count; // barrel_data = 1005 A5C0 >>= 4 = 0100 5A5C (005A5C)
+
+Manually checking the raw data from the ROM:
+0xAE4F3:    CD B9 05 C0 A5 05 10 AE 05 70
+big endian: 7[0 05 AE 1][0 05 A5 C][0 05 B9 C]D
+              embed 23   embed 22   embed 21
+
+ptr = 00200B4B; num = 8B4B -> 15EF4C -> 15EF4C + 400000 = 55EF4C
+num = 55EF4C << 3 = 02AF7A60 -> OR with 4 -> 02AF7A64 -> AF7A64 -> 15EF4C-4
+
+--------------------------------------------------------------------------------
+What about pointers for JMP codes?
+
+The very end of the script (1F95A3-5) has a JMP code that goes to itself.
+This is the largest offset from the beginning of the script space, and it should
+be clear that unlike the previous examples, it is in a different RAM bank than
+the beginning of the script.
+
+Check for the 8 bit JMP code:
+4E         AC
+[010]01110 101[01100] -> 01000110, which indeed is the Huffman code for 1003.
+
+AC         A2           B1           04
+[101]01100 [101][00010] [101][10001] 000[00100]
+
+ACA2B104 -> big endian -> 04B1A2AC -> right shift 5 -> 00258D15
+ptr = 04B1A2 ; num = 0031A2 -> 0115A3 -> 0195A3 -> 1695A3
+Notice how at the step "num += (ptr*2) & ~0xffff;", the RHS of this evaluates to
+0x96344 & 0xFFFF0000 = 0x090000. When you add this to num, you get 1F95A3 i.e.
+this step is updating the bank number we have to go to.
+So 1F95A3 -> FCAD18 -> FCAD18 | 5 = FCAD1D -> 1F95A3-5 - Correct
+
+--------------------
+
+From the example on script pointers for JMP codes, I believe that this is the
+correct format for them:
+
+25       8D       15
+00100101 10001101 00010101
+00 | 1001 | 011 0001 1010 0010 | 101
+?? | # of | 0x31A2 add this to | Huff ptr
+   | banks| script space start | bit offset
+
+general case (note, assume big endian value):
+76543210 76543210 76543210
+76 | 5432    | 107 6543 2107 6543   | 210
+?? | # banks | "bank offset" to add | Huff ptr
+   | to add  | to start of script   | bit offset
+
+---
+
+Let's apply this to our previous examples:
+
+Data for EMBSET(2) is 00 0C 25
+00000000 00001100 00100101
+00 | 0000 | 000 0001 1000 0100 | 101
+Take 0x0184, add it to 0x15E401 (bank wrap as needed to point to ROM), and skip
+5 bits. You get 15E585-5, which matches with what's in the dumper output.
+
+Data for EMBSET(21) is 00 5B 9C
+00000000 01011011 10011100
+00 | 0000 | 000 1011 0111 0011 | 100
+Take 0x0B73, add it to 0x15E401, and skip 4 bits.
+0x15E401 + 0x0B73 = 0x15EF74-4. Again, this matches.
+
+---
+
+A somewhat more involved example:
+
+EMBSET(6) is at 15E582-5 (one byte after a JMP code at 15E581-5):
+Check data at 15E581-5 for JMP code: 58 0C 05 47 01
+01011000 00001100 00000101 01000111 00000001
+Reverse 58 0C bytes: 00011[010 00110]000; you get the Huffman code for 1003.
+
+0C 05 47 01 -> big endian -> 0147050C -> shift right 5, use 3 bytes -> 0A3828
+00001010 00111000 00101000
+00 | 0010 | 100 0111 0000 0101 | 000
+That is, go ahead 2 banks and add 0x4705-0.
+15E401 + 4705 + 020000 = 182B06-0 -> map to ROM -> 18AB06-0  This checks out.
+
+---
+
+Guest's original assembly trace "load_1.txt" used the script pointer at
+$1CA00D-5 (0xE200D-5) as the example for running the assembly code.
+
+The data here is AC 18 3C 23 -> big endian -> 233C18AC
+Shift by 5 -> 0119E0C5 -> ignore most significant byte -> 19E0C5
+00011001 11100000 11000101
+00 | 0110 | 011 1100 0001 1000 | 101
+0x3C18-5 -> add start point 15E401-0 -> 16A019-5 -> add 6 banks -> 1CA019-5
+This matches with the location for EMBWRITE(1734).
+
+---
+
+Note: The first two bits I labeled as "??", at least in the above examples, seem
+to be 0b00. Is there a purpose at all to these bits?
+
+--------------------
+Looking through the assembly trace in load_1.txt
+
+At the line commented "32-bit cache (8-bit overflow)", the game gets the data
+from the script space and puts it into memory here in $000190 - $000193.
+Then shift the bytes right as needed based on the Huffman alignment, and again
+to shift out the 3-bit Huffman offset.
+
+Huffman alignment; shift by 5 (I'm leaving out the high byte here for clarity;
+use logical shifts for $000193 and right rotates for the others; " = set carry):
+$000193 = xx23 -> xx11"-> xx08"-> xx04 -> xx02 -> xx01 
+$000192 = xx3C -> xx9E -> xxCF -> xx67"-> xx33"-> xx19"
+$000191 = xx18 -> xx0C -> xx06 -> xx83 -> xxC1"-> xxE0"
+$000190 = xxAC -> xx56 -> xx2B -> xx15"-> xx8A"-> xxC5 
+Push the 3-bit Huffman bit offset in $000190 (in this case, 0x05) to the stack.
+
+Shift out the 3-bit offset:
+$000193 = xx01 -> xx00"-> xx00 -> xx00
+$000192 = xx19 -> xx8C"-> xx46 -> xx23
+$000191 = xxE0 -> xxF0 -> xx78 -> xx3C
+$000190 = xxC5 -> xx62"-> xx31 -> xx18
+
+At the line commented "32-bit shifting (mx)", the game then calculates the
+target's bank offset using the data here (now in 16-bit mode after REP #$20):
+LDA $10     ; A <- [$000190] = 0x3C18
+ASL $000190 ; $000190 <- (3C18 << 1)  = 7830; carry bit not set
+ROL $000192 ; $000192 <- (0023 ROL 1) = 0046
+
+AND #$7FFF  ; A <- (3C18 & 7FFF) = 3C18
+CLC         ; clear the carry flag
+ADC #$E401  ; A <- (3C18 + E401) = 2019; carry bit is set // adds script start
+ORA #$8000  ; A <- (2019 | 8000) = A019 // set resulting offset to ROM
+
+PHA         ; push value of A = A019 onto the stack
+BCC $02     ; do not take branch because carry bit is set from ADC instruction
+INC $12     ; $000192 <- 0046 + 1 = 0047 // increment the bank number if needed
+
+LDA $12     ; A <- [$000192] = 0047
+CLC         ; clear the carry flag
+ADC #$0015  ; A <- 0046 + 0015 = 005B // add bank number of script start
+STA $12     ; $000192 <- 005B // update bank number in memory
+PLA         ; pop the value A019 back into A register
+
+It is worth noting that adding in the script start bank offset and bank number
+use hard-coded values here, rather than reading from $02A627 (see next section).
+Should you want to use the Huffman code system in a patch, you must update the
+#$0015 and the #$E401 manually to wherever you insert the new script.

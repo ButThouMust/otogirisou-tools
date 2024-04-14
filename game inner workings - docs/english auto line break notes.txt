@@ -1,0 +1,135 @@
+Writeup and/or notes about implementing English style linebreaking in Otogirisou
+for Super Famicom.
+
+First, an examination of the default linebreaking in the original game, plus
+related control flow for how characters get printed onto the screen.
+The subroutine that implements it is at $00A777.
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Original Japanese-style line breaking routine, formatted as an Asar file
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; definitions for constants, variables, pointers
+
+; MostRecentChar = $1A7D
+; TextXPos = $1A7F
+; CharWidth = $1A83
+; LINE_00 = $00A7A2
+
+; RightTextBoundVar = $18CF
+; !RightScreenEdge = #$0100
+
+; CharsNotAtLineStart = $00F5CE
+  ; this has list of chars: 、。,”)]}」』[FFFF]
+; !ListEnder = #$FFFF
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; org $00A777
+; CheckHorizOverflow:
+    ; rep #$30
+    ; clc
+    ; lda.w CharWidth               ; calculate x_pos + char_width
+    ; adc.w TextXPos                ; note that this does not update TextXPos
+
+    ; cmp.w !RightScreenEdge        ; if char would go past right edge of
+    ; bcs PerformAutoLineBreak      ;   screen, force a line break
+
+    ; cmp.w RightTextBound          ; if this is not past horiz. limit for text,
+    ; bcc DoNotLineBreak            ;   don't have to do anything
+
+    ; ldx.w #$0000                  ; otherwise, check if allowed to print
+                                    ; at start of line; init loop counter
+; Loop:
+    ; lda.w CharsNotAtLineStart,X   ; get char value from list, advance ptr
+    ; inx                           ; these chars should NOT start a new line
+    ; inx
+    ; cmp.w !ListEnder              ; if no matches in whole list (char may
+    ; beq PerformAutoLineBreak      ;   start a new line), force a line break
+
+    ; cmp.w MostRecentChar          ; compare list value with script char
+    ; bne Loop                      ; if no match, check next value in list
+    ; bra DoNotLineBreak            ; if match (char should not start a new
+                                    ; line), print it on current line
+; PerformAutoLineBreak:
+    ; jsr.w LINE_00
+; DoNotLineBreak:
+    ; rts
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Control flow for how to print a character on screen in main gameplay mode.
+; At this point, the game has determined that the most recently decompressed
+; script value is actually a printable character, and not a control code.
+
+org $00ABEA
+    lda.w $1a7d     ; get the most recent character's encoding value
+
+    jsr.w $ac15     ; check if it is a character with an auto WAIT or auto DELAY
+
+    jsr.w $ac79     ; write current Y position to some kind of table -- needs 
+                    ;   better description, but unneeded for problem at hand
+
+    jsr.w $a4db     ; read character's font data from ROM (get width, height)
+
+    jsr.w $a777     ; *** check horizontal overflow, and line break if needed
+
+    jsr.w $a611     ; write font data to buffer in bank 7F, to be DMA'd to VRAM
+
+    jsr.w $ac96     ; calculate the X coordinate for next character
+    rts
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Control flow for how to print a character on screen for the file select and
+; name entry screens. This is a subroutine that I labelled as "draw character
+; in A register" in my notes.
+
+; Note: I used the term "wrapper function" to refer to helper subroutines like
+; below. You JSL into code enclosing a JSR to a function in bank 00 with "save
+; the data bank, set program bank (00) to it, ROUTINE, restore data bank, RTL."
+; JSL wrapper -> PHB ; PHK ; PLB ; JSR routine ; PLB ; RTL
+
+; MostRecentChar = $1A7D
+
+org $02B6AF
+DrawCharInA:
+    sta.w $1a7d     ; set encoding in A as most recent character
+    jsl.l $009595   ; wrapper for "load font data"
+    jsl.l $00958D   ; wrapper for "check horizontal overflow & auto line break"
+    jsl.l $00959D   ; wrapper for "write font data to bank 7F to be DMA'd"
+    jsl.l $00957D   ; wrapper for "calculate next X position"
+    rts
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+With the assembly code in hand, here are some observations:
+
+- The main gameplay and the two menus already use separate linebreak logic.
+  Since the two menus work fine as is, I say that we leave that part alone,
+  alter the control flow for the main gameplay, and insert a new linebreaking
+  routine for it into some empty space in bank 00.
+
+- The reason this linebreaking style doesn't work well for English prose is that
+  Japanese uses a more lax "blacklist" for characters that shouldn't end a line.
+  In English, you generally only linebreak after whitespace or punctuation so wo
+  rds don't get split up in the middle like that. However, Japanese is usually
+  fine with splitting up words across lines (or, this was just easier to code).
+
+- Unlike Chunsoft's next sound novel Kamaitachi no Yoru, Otogirisou doesn't seem
+  to keep previous or upcoming characters in RAM. We generally only have access
+  to the character that is currently being printed.
+
+- Considering that limitation, Bootleg Porygon from the RHDN Discord suggested
+  this strategy for English linebreaking. Once we go past the right bound for
+  text, perform a line break at the earliest opportunity. Which is to say, once
+  we find a space or punctuation past the right bound, do a linebreak.
+  Ultimately, I decided to keep this list to two spaces and a dash.
+  
+- Given this strategy, the auto linebreak check should come AFTER "drawing" the
+  character to bank 7F. You can might as well also get the new X position before
+  doing the linebreak check.
+
+You can see the final results of all this in the asm folder in this repository.

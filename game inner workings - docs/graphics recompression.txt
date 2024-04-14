@@ -1,0 +1,141 @@
+Part of my process for translating Otogirisou was determining how the game
+decompresses its graphics, and using that knowledge to write a decompressor.
+After modifying the graphics in our editor of choice, we must then turn it back
+into the target data format and compress the resulting data.
+
+While I had Chunsoft's example to follow for the decompression algorithm, I had
+to create and write a compression algorithm on my own.
+
+--------------------------------------------------------------------------------
+
+Recall the compression format (used for both tilesets and tilemaps):
+Read a control byte.
+- If 0x80, end of data.
+- If 0x00 to 0x7F, compression case for repeated data (a "run" in this writeup).
+  (Control byte + 1) = # times to repeat next literal byte in the ROM.
+- If 0x81 to 0xFF, literal data case (in this writeup, a "sequence").
+  (Control byte & 0x7F) = # bytes of data
+
+Examples:
+- [00 B1] -> [B1],       [81 B1]       -> [B1]
+- [01 2A] -> [2A 2A],    [82 2A 2A]    -> [2A 2A]
+- [02 09] -> [09 09 09], [83 09 09 09] -> [09 09 09]
+- [83 00 01 02] -> [00 01 02]
+
+--------------------------------------------------------------------------------
+
+Some notes:
+1.  Better compression formats exist, but I would much rather work around the
+    existing format than: use a new format, implement a decompressor in ASM,
+    and recompress/reinsert/*repoint* all the game's graphics.
+
+2.  If your graphics replacements fit in the original spaces for graphics, then
+    it saves you work. However, it isn't the end of the world if they don't fit.
+    Even so, I still wanted to figure out how to compress stuff as much as
+    possible given the format.
+
+3.  The max length of a run is 0x80 bytes, but the max length of a literal
+    sequence is 0x7F bytes.
+
+4.  In the vast majority of cases, yes, using the compression case will save
+    space over encoding the repeated value byte by byte. However, there is one
+    specific case of a run of length 2 being better encoded byte by byte:
+
+    - Better to encode as a run [01 xx] when surrounded by two other runs.
+      [02 00    01 01 02 02] -> [00 00 00 01 01 02 02 02]
+      [02 00 82 01 01 02 02] -> [00 00 00 01 01 02 02 02]
+
+    - One byte worse as a run if surrounded by two sequences of literals.
+      (The byte comes from the extra "sequence length" byte)
+      [82 03 04 01 05 82 06 07] -> [03 04 05 05 06 07]
+      [86 03 04 05 05    06 07] -> [03 04 05 05 06 07]
+
+    - Take your pick if surrounded by a run and a sequence of literals.
+      * run, run2, sequence
+      [02 08 01 09 83 0A 0B 0C] -> [08 08 08 09 09 0A 0B 0C]
+      [02 08 85 09 09 0A 0B 0C] -> [08 08 08 09 09 0A 0B 0C]
+
+      * sequence, run2, run
+      [85 0D 0E 0F 10 10 02 11] -> [0D 0E 0F 10 10 11 11 11]
+      [83 0D 0E 0F 01 10 02 11] -> [0D 0E 0F 10 10 11 11 11]
+
+    - Summarize in a "truth table" below:
+           type     | encode as     So we have an easy decision to make:
+      --------------+-----------    - Previous type is run? Encode as run of 2
+       run run2 run |    run        - Previous type is sequence? Encode as seq.
+       run run2 seq |   either
+       seq run2 run |   either
+       seq run2 seq |  sequence
+
+    - To be thorough, this is the case for a run of 2 and a sequence at the
+      beginning of the file. It doesn't matter either way.
+      [01 12 83 13 14 15] <- [12 12 13 14 15]
+      [85 12 12 13 14 15] <- [12 12 13 14 15]
+
+--------------------------------------------------------------------------------
+
+Compression algorithm
+
+Get an array of the bytes for the uncompressed data.
+Keep track of info about the data groups here.
+- Type (run or literal sequence), start index, length. (Note: not data itself)
+- The first group starts at index 0, and say it starts as a group of 1 literal.
+
+Get a list of the groups' info: run/sequence, length, and starting position.
+(For now, don't worry about run 2 special case; always encode runs of 2 as such)
+LOOP: Read the current byte.
+- If in a run
+      If curr byte == previous byte, and run size < max size of a run
+        Run continues
+      Otherwise (byte mismatch, or exceeded run size limit of 0x80 bytes)
+        Add group's current state to list
+        Set up a literal sequence of size 1 starting here
+- If in a literal sequence
+      If curr byte == previous byte
+        Add state of group for all bytes prior to previous byte
+          (Do not create groups of size 0)
+        Set up run of size 2 starting at the previous byte
+      Otherwise
+        Check if at sequence size limit of 0x7F bytes
+        If yes, add group's state to list
+                Create new group with the current byte
+        If no, sequence continues
+Repeat until end of file
+Add state of the current group once end of file has been reached
+
+With the list of groups collected, go through them to see if any runs of 2 can
+  be combined with surrounding sequences
+Create a new list of groups (combined groups)
+Set its first entry to first group from original list
+Iterate over the original list of groups starting with the second entry {
+    Get the current group from original list
+    Get the last combined group
+    - If last combined group is a run
+        Append current group to end of list of combined groups
+    - Otherwise
+        "can combine" means current group is a sequence, or a run of length 2
+        "can fit" means current group and last combined group have total size
+                  at or under limit of 0x7F bytes in a sequence
+      - If can fit AND can combine
+          Combine the current group into last by adding current group's length
+      - If current group is a sequence AND cannot fit
+          Means we have two sequences like last 0x40 and curr 0x45 (0x85 > 0x7F)
+          A better encoding would be to do like sequence 0x7F and sequence 0x6
+          Where you get 0x6 from (sum of lengths) - (max sequence length)
+          Set 0x6 sequence as the current data group, starting 0x7F after last
+      - Otherwise
+          Append current group to end of list of combined groups
+}
+
+With the combined data groups, we can start encoding the data
+Create a new file for the compressed data
+For each combined data group {
+  - If a sequence
+    Write control byte of (sequence's length) | 0x80
+    Copy (length) bytes from original data at (sequence start index)
+
+  - If a run
+    Write control byte of (run's length) - 1
+    Write the data byte for the run: get from original data at (run start index)
+}
+Write the "end of data" 0x80 terminator byte.

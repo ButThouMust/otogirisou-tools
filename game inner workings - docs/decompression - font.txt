@@ -1,0 +1,375 @@
+
+Otogirisou has two sections in ROM that hold data about the font for the script.
+It is 1bpp with variable width and variable height.
+
+0xF95A8 - 0xFFFB8: font space that holds the actual font data
+0x074AC - 0x075CD: lookup table with 58 entries of metadata for the font data
+
+$00A4DB: Subroutine for reading the font data for a character.
+         The relevant assembly code goes until $00A5DF.
+
+Sidenote: I don't know if the data from 0xFFFB9 to 0xFFFFF is important or not.
+If it isn't used for anything, it opens up a larger contiguous space for the
+script if you move the font space around.
+
+--------------------------------------------------------------------------------
+
+Let's first go over the metadata lookup table.
+
+Each table entry is a five byte structure consisting of the following data:
+
+00000000 11111111 22222222 33333333 44444444
+RRRRRRRR WWWWRRRR [bank 1F  offset] 00HHHH00
+
+H = height: height of the character (# of pixel rows)
+W = width:  width of the character  (# of pixel cols)
+R = range:  number of characters with the particular height and width; 12 bit
+            value, 4 LSBs of byte 1 are the four MSBs of R, byte 0 is the rest
+(Source for these three: Guest's notes and font dumper source code)
+
+Bytes 2 and 3 are the bank 1F offset containing the font data.
+(Source: Found this myself)
+For context, the bank number 1F is hard-coded into the assembly instruction at
+$00A56C = 0x0256C: LDA.B #$1F. If you so desire, you can move the font space
+elsewhere and update the bank number accordingly.
+
+Caution: the font data must stay within one bank, because the assembly code does
+not bank wrap for you from, say, $1EFFFF to $1F8000.
+
+For all 58 structures, the four bits surrounding the height value are all 0s.
+According to the assembly code, there shouldn't be any special meaning to this.
+It is most likely just a coincidence that the first character of every new
+dimension range always starts byte-aligned.
+
+Encoding value 0000 is a space character that reuses the dimensions (width) of
+the previously printed character. That's all that happens. Even if you think
+this seems useless, I recommend that you don't tamper with it because lots of
+assembly code for it assumes that its value is 0000, as in like:
+LDA char_value ; BEQ do_something ; BNE do_something_else
+
+---
+
+Example: the data in the first of these structures at 0x074AC is 8C B0 A8 95 30.
+10001100 10110000 10101000 10010101 00110000
+RRRRRRRR WWWWRRRR [bank 1F  offset] --HHHH--
+R = 0000 10001100 = 0x08C
+W = 1011 = 0xB = 11
+H = 1100 = 0xC = 12
+That is, the first 0x08C characters (from 0001 to 008C) are all 11 pixels wide
+and 12 pixels tall. The font data for these characters start at 1F[95A8]-0.
+
+The next structure is at 0x074B1 and is 7E B4 AE 9E 34.
+01111110 10110100 10101110 10011110 00110100
+RRRRRRRR WWWWRRRR [bank 1F  offset] --HHHH--
+R = 0100 01111110 = 0x47E
+W = 1011 = 0xB = 11
+H = 1101 = 0xD = 13
+The next 0x47E characters (from 008D to 050A) are all 11 pixels wide and 13
+pixels tall. The font data for these characters start at 1F[9EAE]-0.
+
+Here is a table summarizing the data for the 58 structures.
+
+ ## |  raw ROM data  | W | H | 1st char | last char | # chars | offset 
+----+----------------+---+---+----------+-----------+---------+--------
+ 00 | 8C B0 A8 95 30 | B | C |   001    |    08C    |    8C   |  95A8
+ 01 | 7E B4 AE 9E 34 | B | D |   08D    |    50A    |   47E   |  9EAE
+ 02 | 16 C0 FB EE 30 | C | C |   50B    |    520    |    16   |  EEFB
+ 03 | 0D 70 87 F0 30 | 7 | C |   521    |    52D    |     D   |  F087
+ 04 | 01 50 10 F1 30 | 5 | C |   52E    |    52E    |     1   |  F110
+ 05 | 1B 90 18 F1 2C | 9 | 7 |   52F    |    549    |    1B   |  F118
+ 06 | 14 80 67 F2 2C | 8 | 7 |   54A    |    55D    |    14   |  F267
+ 07 | 07 70 43 F3 2C | 7 | 7 |   55E    |    564    |     7   |  F343
+ 08 | 03 50 87 F3 2C | 5 | 7 |   565    |    567    |     3   |  F387
+ 09 | 20 B0 9C F3 2C | B | 7 |   568    |    587    |    20   |  F39C
+ 10 | 17 A0 80 F5 2C | A | 7 |   588    |    59E    |    17   |  F580
+ 11 | 07 80 BD F6 20 | 8 | 8 |   59F    |    5A5    |     7   |  F6BD
+ 12 | 02 70 F5 F6 20 | 7 | 8 |   5A6    |    5A7    |     2   |  F6F5
+ 13 | 04 70 03 F7 24 | 7 | 9 |   5A8    |    5AB    |     4   |  F703
+ 14 | 04 30 23 F7 2C | 3 | 7 |   5AC    |    5af    |     4   |  F723
+ 15 | 03 40 34 F7 30 | 4 | C |   5B0    |    5B2    |     3   |  F734
+ 16 | 01 B0 46 F7 20 | B | 8 |   5B3    |    5B3    |     1   |  F746
+ 17 | 03 90 51 F7 20 | 9 | 8 |   5B4    |    5B6    |     3   |  F751
+ 18 | 04 80 6C F7 28 | 8 | A |   5B7    |    5BA    |     4   |  F76C
+ 19 | 01 60 94 F7 20 | 6 | 8 |   5BB    |    5BB    |     1   |  F794
+ 20 | 03 70 9A F7 28 | 7 | A |   5BC    |    5BE    |     3   |  F79A
+ 21 | 04 90 B5 F7 24 | 9 | 9 |   5BF    |    5C2    |     4   |  F7B5
+ 22 | 03 B0 DE F7 24 | B | 9 |   5C3    |    5C5    |     3   |  F7DE
+ 23 | 02 90 04 F8 0C | 9 | 3 |   5C6    |    5C7    |     2   |  F804
+ 24 | 01 90 0B F8 14 | 9 | 5 |   5C8    |    5C8    |     1   |  F80B
+ 25 | 06 90 11 F8 30 | 9 | C |   5C9    |    5CE    |     6   |  F811
+ 26 | 01 50 62 F8 08 | 5 | 2 |   5CF    |    5CF    |     1   |  F862
+ 27 | 01 70 64 F8 34 | 7 | D |   5D0    |    5D0    |     1   |  F864
+ 28 | 01 70 70 F8 04 | 7 | 1 |   5D1    |    5D1    |     1   |  F870
+ 29 | 01 50 71 F8 18 | 5 | 6 |   5D2    |    5D2    |     1   |  F871
+ 30 | 02 90 75 F8 18 | 9 | 6 |   5D3    |    5D4    |     2   |  F875
+ 31 | 01 10 83 F8 30 | 1 | C |   5D5    |    5D5    |     1   |  F883
+ 32 | 01 30 85 F8 14 | 3 | 5 |   5D6    |    5D6    |     1   |  F885
+ 33 | 05 30 87 F8 30 | 3 | C |   5D7    |    5DB    |     5   |  F887
+ 34 | 01 50 9E F8 34 | 5 | D |   5DC    |    5DC    |     1   |  F89E
+ 35 | 01 50 A7 F8 1C | 5 | 7 |   5DD    |    5DD    |     1   |  F8A7
+ 36 | 01 60 AC F8 34 | 6 | D |   5DE    |    5DE    |     1   |  F8AC
+ 37 | 03 60 B6 F8 24 | 6 | 9 |   5DF    |    5E1    |     3   |  F8B6
+ 38 | 0E A0 CB F8 30 | A | C |   5E2    |    5EF    |     E   |  F8CB
+ 39 | 05 80 9D F9 30 | 8 | C |   5F0    |    5F4    |     5   |  F99D
+ 40 | 03 B0 D9 F9 38 | B | E |   5F5    |    5F7    |     3   |  F9D9
+ 41 | 1D A0 13 FA 34 | A | D |   5F8    |    614    |    1D   |  FA13
+ 42 | 07 90 EB FB 34 | 9 | D |   615    |    61B    |     7   |  FBEB
+ 43 | 0B C0 52 FC 34 | C | D |   61C    |    626    |     B   |  FC52
+ 44 | 05 80 29 FD 24 | 8 | 9 |   627    |    62B    |     5   |  FD29
+ 45 | 01 90 56 FD 1C | 9 | 7 |   62C    |    62C    |     1   |  FD56
+ 46 | 05 B0 5E FD 28 | B | A |   62D    |    631    |     5   |  FD5E
+ 47 | 10 C0 A3 FD 2C | C | 7 |   632    |    641    |    10   |  FDA3
+ 48 | 03 D0 AB FE 2C | D | 7 |   642    |    644    |     3   |  FEAB
+ 49 | 03 A0 E1 FE 28 | A | A |   645    |    647    |     3   |  FEE1
+ 50 | 09 90 07 FF 28 | 9 | A |   648    |    650    |     9   |  FF07
+ 51 | 01 A0 6D FF 20 | A | 8 |   651    |    651    |     1   |  FF6D
+ 52 | 01 B0 77 FF 1C | B | 7 |   652    |    652    |     1   |  FF77
+ 53 | 01 70 81 FF 1C | 7 | 7 |   653    |    653    |     1   |  FF81
+ 54 | 02 A0 88 FF 24 | A | 9 |   654    |    655    |     2   |  FF88
+ 55 | 01 C0 9F FF 24 | C | 9 |   656    |    656    |     1   |  FF9F
+ 56 | 01 80 AD FF 18 | 8 | 6 |   657    |    657    |     1   |  FFAD
+ 57 | 01 60 B3 FF 1C | 6 | 7 |   658    |    658    |     1   |  FFB3
+
+--------------------------------------------------------------------------------
+
+Now that we know how the game knows where to get the font data, let's go over
+the storage format and how the game actually gets the font data:
+
+The font data is 1bpp (0 = black, 1 = white) and stored in, as Guest described
+it, "bitpacking format." Each character is stored as a block of (H*W) bits one
+after the other within each dimension range.
+
+The "quick way" to look at the font is to treat character data blocks as long
+big-endian values, and read out pixel rows from right to left. More below.
+
+An example I got while going through the assembly code for the routine myself:
+
+Character 04BA is "道", which means "road" or "way". As for why this character,
+it is the second character at one of the start points (part of "山道") and is
+not symmetric either horizontally or vertically.
+
+According to the above table, it is in the second range from 08D-50A, so B*D.
+For a more programmatic calculation:
+- Take 0x4BA and decrement it to 0x4B9 to account for the 0000 space character.
+- Get # chars in group 0, which is 0x8C.  0x4B9 - 0x8C = 0x42D.
+  - 0x42D > 0, so check the next group.
+- Get # chars in group 1, which is 0x47E. 0x42D - 0x47E = "-0x51"
+  - Result is negative, so found the correct character group.
+
+Range starts at $1F9EAE. Add B*D * (4BA - 8D) = 0x25523 bits = 0x4AA4-3 bytes.
+(Note: the multiplications are their own subroutines. They all call the same
+"helper function" but can return a product that is either 2, 3, or 4 bytes.)
+
+So the character's font data starts at $1FE952-3.
+For the sake of explaining the assembly code, I will only decompress three rows.
+
+--------------------
+
+Get three bytes at the pointer: [35 33 4B]
+We start at bit position 3, using a width of B pixels (bits), and loop D times.
+
+Calculate value: (bit_position & 0x7) + width - 0x10 = 3 + B - 10 = -2 (FFFE)
+
+The best way to explain this value's purpose is that it represents the # of bits
+out of alignment the pixel row is from having its topmost bit (leftmost pixel)
+on the MSB of the middle byte in the three bytes we read from ROM.
+Negative values mean to shift left. Positive values mean to shift right.
+Of course, a 0 means that the pixel row is already aligned correctly.
+
+Little endian is slightly confusing to look at, but big endian makes it clearer.
+35 33 4B                            4B 33 35
+00110]101 00[110011 01001011        01001011 00[110011 00110]101
+
+Anyways, the -2 represents that, here, we have to left shift the 3 bytes twice.
+4B 33 35                     -> 2C CC D4
+01001011 00[110011 00110]101 -> 00101100 [11001100 110]10100
+
+Next, the game calculates: bit_position <- bit_position + width
+This gives us the bit position of the start of the next row, measured from the
+pointer that goes to the start of the character.
+Here, bit_pos <- 3 + B = E. If you prefer, this means 1 byte at bit position 6.
+
+Then, calculate Y <- (width - 1) * 2. Y indexes a list of bitmasks at $00A5F1.
+Each bitmask has the top (width) bits set, and the remaining bits clear.
+The range of values is 8000, C000, E000, F000, F800, ..., FFFE, FFFF
+(Technically, the FFFF is unreachable, requiring a width of 16, but it's there)
+A simple way to calculate this: bitmask = (FFFF << (16 - width)) & FFFF
+
+The bitmask we want uses Y <- (B - 1) * 2 = 0x14. At $00A605, [E0 FF] or FFE0.
+Bitwise AND the bitmask with the bottom two bytes of font data:
+2C CC D4                     ->  CC       C0
+00101100 [11001100 110]10100 -> [11001100 110]00000
+This accomplishes isolating the pixels in just the specific row we want.
+Write the pixel row to a buffer that goes from $1A5D to $1A7A.
+
+--------------------
+
+The next row starts at bit position 0xE (1 byte and 6 bits) from the pointer.
+
+Read 3 bytes from ($1FE952 + 1) = $1FE953.
+33 4B FE, to big endian value -> FE 4B 33
+00]110011 01001011 1111111[0  -> 1111111[0 01001011 00]110011
+
+Calculate (bit_pos & 0x7) + width - 0x10: E&7 + B - 10 = 6 - 5 = 1
+Positive value, so have to bit shift right once.
+FE 4B 33                     -> 7F 25 99
+1111111[0 01001011 00]110011 -> 01111111 [00100101 100]11001
+
+Get back the same bitmask of 0xFFE0 and use it with the two low bytes.
+0xFFE0 & 0x2599 = 0x2580 ([00100101 100]00000)
+This is another pixel row, so store it to buffer.
+
+Bit position <- 0xE + 0xB = 0x19 (3 bytes + 1 bit)
+
+--------------------
+
+The next row starts at bit position 0x19 (3 bytes and 1 bit) from the pointer.
+
+Read 3 bytes from ($1FE952 + 3) = $1FE955.
+FE 01 11, to big endian value -> 11 01 FE
+1111111]0 0000[0001 00010001 -> 00010001 0000[0001 1111111]0
+
+Calculate (bit_pos & 0x7) + width - 0x10: 19&7 + B - 10 = 1 - 5 = -4
+Negative value, so have to bit shift left four times.
+11 01 FE                     -> 10 1F E0
+00010001 0000[0001 1111111]0 -> 00010000 [00011111 111]00000
+
+Get back the same bitmask of 0xFFE0 and use it with the two low bytes.
+0xFFE0 & 0x1FE0 = 0x1FE0 ([00011111 111]00000)
+This is another pixel row, so store it to buffer.
+
+--------------------
+
+Hopefully, that should give you a good idea of the algorithm behind dumping the
+font. To close out this explanation, here is the full character's font data done
+in a more human-readable way.
+
+Raw hex data:
+35 33 4B FE 01 11 BF 0B C5 2F 42 F1 8B 50 FC 06 B8 7F 23
+
+Convert to binary:
+35 33 4B FE 01 11 BF 0B C5
+00110]101 00110011 01001011 11111110 00000001 00010001 10111111 00001011 11000101
+
+2F 42 F1 8B 50 FC 06 B8 7F
+00101111 01000010 11110001 10001011 01010000 11111100 00000110 10111000 01111111
+
+23
+00100011
+
+Rearrange as a single contiguous big endian value:
+23 7F B8 06 FC 50 8B F1 42 2F C5 0B BF 11 01 FE 4B 33 35
+00100011 01111111 10111000 00000110 11111100 01010000 10001011 11110001 01000010
+00101111 11000101 00001011 10111111 00010001 00000001 11111110 01001011 00110011
+00110]101
+
+Count D groups of B pixels going back from the correct offset at the back:
+001000[11 01111111 1][0111000 0000][0110 1111110][0 01010000 10][001011
+11110][001 01000010] [00101111 110][00101 000010][11 10111111 0][0010001
+0000][0001 1111111][0 01001011 00][110011 00110]101
+
+Isolate out the groups
+[11011111111][01110000000][01101111110][00101000010][00101111110][00101000010]
+[00101111110][00101000010][11101111110][00100010000][00011111111][00100101100]
+[11001100110]
+
+Take the rows and reverse their order to arrange them correctly vertically:
+Then replace the 0's with spaces and surround in a BxD box.
+                  0123456789A
+                 +-----------+
+11001100110     0|11  11  11 |  YY-CHR calls this data format "1bpp 16x16".
+00100101100     1|  1  1 11  |  A format compatible with more tile viewers would
+00011111111     2|   11111111|  split this into four 8x8 tiles, and indeed, the
+00100010000     3|  1   1    |  font dumper in Guest's starter pack did this.
+11101111110     4|111 111111 |
+00101000010     5|  1 1    1 |  I decided to write a new dumper that outputs it
+00101111110 ->  6|  1 111111 |  in both the raw 16x16 format and the four 8x8
+00101000010     7|  1 1    1 |  tile format. As for why, I found Guest's font
+00101111110     8|  1 111111 |  dumper source code to be confusing to read due
+00101000010     9|  1 1    1 |  at least in part to not using the bank 1F offset
+01101111110     A| 11 111111 |  (bytes 2 and 3). Also, their included batch file
+01110000000     B| 111       |  did not dump the last two characters' font data
+11011111111     C|11 11111111|  (incorrect but fixable "end of data" offset).
+                 +-----------+  Mine is fully self-contained.
+
+Another motivation for a new dumper was that Chunsoft reused this format for the
+font in Kamaitachi no Yoru, but stored the font metadata table differently.
+
+--------------------------------------------------------------------------------
+
+Guest's font dumper takes all the font data, pads them to 16x16, and puts them
+as four 8x8 tiles into a file: (top left; top right; bottom left; bottom right).
+If I had to name one possible improvement, it would be to take into account that
+Otogirisou measures heights for characters from the bottom up. So instead of
+having the top row of the character in the top row of the 16x16 space, have the
+bottom row of the character in the bottom row of the 16x16 space.
+
+Guest had warned in their file "journal.txt":
+"Font is 1-bpp variable-width and height. Quite literally as everything is
+stored in bitpacking format. Ugly stuff to replace. Highly recommended that
+you code your _own_ font loading routine (see 'font' file)."
+
+According to the source code, the font inserter does not put the font dump back
+into the ROM in the bitpacking format for you. I found it interesting, though,
+that the batch file for the font inserter involved trying to insert font data
+into one of the Phantasy Star II Text Adventures.
+
+--------------------------------------------------------------------------------
+
+Now that we all know how this format works, let's discuss it.
+
+Chunsoft did a good job packing all 0x658 (1624) characters into the space they
+ultimately used. They crammed 0xCB00 (51968) bytes of raw pixel data into 0x6A10
+(27152) bytes in the ROM. This is 52.2% of the original size, cutting out all
+the empty space from only using as many bits as necessary. Importantly, though,
+this shrinks the font to fit within one LoROM bank (0x8000 = 32768 bytes).
+
+That is about all the good I have to say about it, though.
+One big consequence of this format is that characters essentially have to be
+grouped/sorted by their dimensions rather than a more sensible order like ASCII.
+Groups of English letters in the JP encoding include "AHKNQRTVZ" and "BEFLOPS".
+
+Unless you have large groups (e.g. most of the kanji in the JP game are in a
+group of 0x47E characters), this sorting can make the order look like nonsense.
+I say "nonsense" from personal experience inserting a new font in the original
+format, by the way!
+
+You could slightly mitigate this nonsense order issue by using a uniform height
+of 15 pixels for all characters. However, it does not fully fix the underlying
+issue, and it may or may not adversely affect performance in game, from burning
+CPU cycles to read font data and extract out pixel rows of all 0 bits.
+
+More pressing, however, this storage format does not lend itself well to a
+translation patch that can be updated later. Characters being grouped by height
+and width forces you to make an entirely new encoding order if you want to edit
+the font later in some way (add/remove/edit characters, edit their dimensions,
+use different typeface, etc.). This can manifest in the protagonist's name most
+likely getting messed up when users update patch versions.
+
+--------------------------------------------------------------------------------
+
+My own investigation into the original font routine paid off, because once I
+knew the format that the font ultimately gets decompressed to, I did code up
+a routine that uses an uncompressed font storage format.
+
+In a nutshell, the format stores 32 bytes of data for each character:
+   00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F 
+00 WH -- [R1 ] [R2 ] [R3 ] [R4 ] [R5 ] [R6 ] [R7 ]
+10 [R8 ] [R9 ] [R10] [R11] [R12] [R13] [R14] [R15]
+
+- Byte 00: width and height of the character (store to addresses $1A83, $1A85).
+- Byte 01: empty for alignment, or can be used for other things.
+- Bytes 02-1F: raw 1bpp font data's pixel rows, up to 15 in "1bpp 16x16" format.
+- The bank offset is implied by the character number: (char_num - 1) * 0x20.
+
+Again, we can use whatever bank we want. This format allows storing 1024 chars
+(0x8000 / 0x20 = 0x400) into a bank.
+
+Advantages:
+- Bit alignment is no longer necessary.
+- Dimension group sizes don't need to be stored.
+- Calculating the font data offset is easier and faster.
+- Importantly, adding characters is much easier: just tack more of these 32 byte
+  blocks onto the end. Editing characters is also easier.
+
+Of course, the trade off is the reduced data density.

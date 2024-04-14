@@ -1,0 +1,188 @@
+Using CPU offsets for now because looking at ASM. Will convert to "file offsets"
+later if looking at .srm file in a hex editor.
+
+################################################################################
+Overview
+################################################################################
+
+First 0x20 bytes contain:
+- $700000-$700017: two copies of the magic ASCII string: "manabuyamana".
+- $700018-$70001F: Appears to be unused. On an original copy of the game that I
+                   dumped the SRAM from, these eight bytes were all FF.
+
+Then data comes in this format:
+The most recently played save file exists as a 0x5E3 byte data block.
+Then three more blocks of the same size come after that in succession.
+$700020 - $700602: When playing game, scratch space for current file.
+                   After power off, becomes a backup for most recent save file.
+$700603 - $700BE5: Save file 1 (top bookmark).
+$700BE6 - $7011C8: Save file 2 (middle bookmark).
+$7011C9 - $7017AB: Save file 3 (bottom bookmark).
+
+This already comprises 0x17AC bytes of an 8KB (0x2000) SRAM file - almost 75%!
+
+$7017AC - $701FFF: Unused? Similar to the $700018-$70001F section: All FF in an
+                   SRAM dump from original copy of the game.
+
+About "scratch space", I think the game does all its calculations for progress
+and such in WRAM, which then gets mapped back/transferred to the scratch space,
+which further gets copied into the appropriate data block for the file.
+
+################################################################################
+Each save file's block of 0x5E3 bytes
+################################################################################
+
+Note: only offsets for the scratch space will be listed, for the sake of
+simplicity and because it's where all the writes to specific bytes/words of SRAM
+seem to take place.
+
+$700020-021: "sum of bytes" checksum for the rest of the save file.
+The applicable ASM is at $02A76B - $02A794.
+
+$700022-023: Identifies which save file this is for (1, 2, 3). Purposes:
+- Restoring a save file from the backup should the file's checksum not match.
+- How the game knows which save slot to copy the scratch space's data into.
+
+$700024-025: Number of times that the player has reached the credits.
+
+$700026-027: Number of distinct choices that the player has taken.
+
+$700028-029: Current size of the list of pointers to previous pages. For the
+             "scroll page back" functionality to work, this value must be 2+.
+
+$70002A-3D5: List of pointers to a previous page. Not 100% sure about size, but
+             0x3AC bytes (0xEB pointers) long? Each pointer is four bytes:
+             [low, high, bank, bit]
+
+$7003D6-579: Block for progress flags, a total of 0x1A4 bytes.
+             TODO: The game uses 0x0 through 0x192 directly in the script.
+             What are the rest used for? Flags 0x193-0x1A3 = $700569-$700579
+
+$70057A-589: Player's name. Buffer is 0x10 bytes, despite how it should normally
+             only take up 0xE bytes including the FFFF terminator.
+
+$70058A-599: Parallel 0x10 byte array related to the name?
+
+$70059A-59B: Number of pages cleared in the current playthrough.
+
+$70059C-59D: ?
+
+$70059E-59F: ?
+
+$7005A0-5A1: Auto advance flag.
+
+$7005A2-5A3: Related to the text printing rate. I assume purpose is so that if
+             the player actually decides to reset in the auto-advancing text
+             before the credits, it will still persist.
+
+$7005A4-5A5: ?? Whatever this value means, it gets copied to $1BBB (this is the
+             only occurrence of [BB 1B] in the entire ROM). Also, copies of this
+             with 0x1E, 0x3C, and 0x5A added get copied to $1955, $1957, $1959.
+
+$7005A6-5A7: Value for determining which options show up for choices (0,4,6,7).
+
+$7005A8-5A9: Honorific ID value.
+
+$7005AA-5AB: ?
+
+$7005AC-5B0: current position in the script, encoded as 24-bit CPU offset,
+             8-bit "bit in byte" Huffman offset, plus a blank [00] byte
+
+$7005B1-5B2: ?, gets value from $005D in code at $02A83B and $00ACE2
+             gets copied into $1960, $1977, $198E, $19A5
+
+$7005B3-5B4: most recent graphics ID number
+
+$7005B5-5B6: ?
+
+$7005B7-5B8: ?
+
+$7005B9-5BA: ?
+
+$7005BB-5BC: ?
+
+$7005BD-5BE: ?
+
+$7005BF-5C0: ?
+
+$7005C1-5C2: ?
+
+$7005C3-5C4: ?
+
+$7005C5-5C6: ?
+
+$7005C7-5C8: ?
+
+$7005C9-5CA: ?
+
+$7005CB-5CC: ?
+
+$7005CD-5CE: ?
+
+$7005CF-5D0: ?
+
+$7005D1-5D2: ?
+
+$7005D3-5D4: ?
+
+$7005D5-5D6: ?, 0x14 bytes are copied into block here from $005F-$0072 in loop @
+             $02A846. What purpose does this have?
+
+$7005D7-5D8: ?
+
+$7005D9-5DA: ?
+
+$7005DB-5DC: ?
+
+$7005DD-5DE: ?
+
+$7005DF-5E0: ?
+
+$7005E1-5E2: ?
+
+$7005E3-5E4: ?
+
+$7005E5-602: ?, this 0x1E byte block gets copied to corresponding blocks at
+             $18DD, $18FB, $1919, $1937
+
+################################################################################
+Progress flags block
+################################################################################
+
+Each byte in this block represents either "this particular piece of text has
+been viewed," or data about which options the player has chosen for a choice.
+
+When a save file gets initialized, every flag is set to [07].
+The control code 1022 "SET FLAG 22" directly* modifies one of these bytes with a
+specified value. Typically, they just mark it with a 1 for "text is viewed."
+Exact details for how choices modify these bytes is unknown.
+
+Flags 001, 100, and 040 each represent "has start point 0, 1, or 2 been viewed
+yet?" Flags 001 and 100 are used in the game's logic for how to pick a start
+point (see below) if the player has seen the credits exactly 1 or 2 times.
+
+*: Technically, the flags are copied back and forth from a buffer in WRAM and
+the scratchpad save file, which is then copied into the correct save slot.
+
+################################################################################
+How the game picks a start point for a playthrough
+################################################################################
+
+The logic depends on how many times the player has reached the credits.
+
+New file: Generate random byte.
+- Even -> start #0
+- Odd  -> start #1.
+
+1 time:   Generate random byte.
+- Even -> Pick the start point from 0 or 1 that hasn't been viewed yet.
+- Odd  -> start #2.
+
+2 times: Pick the start point from [0,1,2] that hasn't been viewed yet.
+
+3+ times: Randomly pick a start point from [0,1,2] with a 1/3 chance for each.
+- I thought the exact logic in the ASM is interesting: generate a random byte
+  (value 00-FF), multiply it by 3 (value 000-2FE), and take the 256's place.
+
+So the logic will always let the player see the three start points within the
+first three playthroughs. After that, it will randomly pick one of them.

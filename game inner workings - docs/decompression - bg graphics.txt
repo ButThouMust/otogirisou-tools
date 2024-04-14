@@ -1,0 +1,415 @@
+Otogirisou loads most of its background graphics for the story, and a few other
+things, with the graphics control codes like 102C (VFX) or 1036 (IMAGE FADE IN
+BLOCK). The main input is a two byte value that uniquely identifies a graphic.
+
+Graphics identifiers are two byte values that range from 0x00 to 0x9E.
+Some are animated, some are static. How the animations work is outside the scope
+of this document and is not necessary to understand for a translation patch.
+However, a very brief explanation is below.
+
+################################################################################
+################################################################################
+
+General case:
+- The graphic identifier (gfx ID) indexes into a table at $01EEA7. Note that
+  each entry is two bytes wide, so take ID value and double it to get offset.
+
+- There are related tables at $01ED69 (ASM code to execute) and $01EFE5 (SFX to
+  automatically play) for each gfx ID value. While I have not investigated it
+  much, I believe the ASM table is where animations and such work.
+
+- Each table entry is an offset in bank 00 to a list of structures for that
+  particular graphic. The first byte at this offset is the number of structures.
+
+- A structure can either be for TILE data, TILEMAP data, or PALETTE data.
+  * All three types have, as the first three bytes of a structure, a 24-bit
+    pointer to some metadata (see below) for the data.
+  * A structure for TILE data is 6 bytes.
+  * A structure for TILEMAP data is 10 bytes.
+  * A structure for PALETTE data is 7 bytes.
+
+- Note: The purpose for lists is to group these different data types together,
+  and data gets reused between different lists. For example, three lists reuse
+  the same tileset and tilemap for the mansion, but have unique palette lists:
+  one each for yellow/orange, blue, and red.
+
+- Importantly, you must go to the 24-bit pointer's location and look at the
+  metadata (three LSBs of byte 02) to determine what kind of structure we are
+  working with.
+  * If byte 02 ends in binary 000 or 001, this is TILE data.
+      I found that none of the tile structures in the game use the 001 case.
+  * If byte 02 ends in binary 010 or 011, this is TILEMAP data.
+      The 011 tilemap case is reserved for Mode 7 graphics. All others use 010.
+  * If byte 02 ends in binary 100,        this is PALETTE data.
+
+- On top of this, the metadata size at the 24-bit pointer is different for each
+  type of structure. After the metadata, comes the actual data we care about.
+  * TILE    metadata is 4 bytes.
+  * TILEMAP metadata is 6 bytes.
+  * PALETTE metadata is 4 bytes.
+
+TILE    data is stored compressed with run-length encoding (RLE).
+TILEMAP data is also stored compressed with RLE. However, the raw data you get 
+  after decompression needs more processing to use as SNES tilemap entry data.
+  More details about this in a section below.
+PALETTE data is stored in the uncompressed SNES 15-bit color format.
+  - Metadata byte 0 = data block size including the other 3 metadata bytes.
+    So # colors here = (byte0 - 3) >> 1. The last color value has its MSB set.
+
+################################################################################
+################################################################################
+
+RLE format for Otogirisou TILEs and TILEMAPs
+
+Assembly code is at $00B29D; this is a pseudocode representation.
+Apparently, this is similar to the RLE format used in many Konami NES/FC games.
+
+Read a byte B0 of data.
+While B0 is NOT 0x80 {
+    If 0x00 <= B0 < 0x80 {
+        // MSB clear = run length compression case
+        Read a byte B1 of data
+        Repeat the byte B1 a total of (B0 + 1) times
+
+        // example: [04 DA] decompresses to [DA DA DA DA DA]
+    }
+    Else if 0x81 <= B0 <= 0xFF {
+        // MSB set = literal uncompressed data case
+        The number of bytes to copy from the ROM is (B0 & 0x7F)
+        Read this many bytes from the ROM
+    }
+    B0 <- next byte
+}
+// 0x80 is "end of data" case
+
+--------------------
+
+As a table where "value" = N:
+
+Value | Meaning
+------+--------------------------------------------------
+00-7F | Read a byte, and write it to output (N + 1) times
+80    | End of data
+81-FF | Read (N & 0x7F) bytes from ROM into output
+
+################################################################################
+################################################################################
+
+TILEMAP storage optimizations:
+
+Quick reminder: SNES tilemap entries are two byte values, FEDCBA98 76543210.
+Bits 9/8 and the low byte are for tile ID numbers (0x000 to 0x3FF).
+Bits C/B/A are the palette number.
+Bit D is priority bit, and bits F/E are Y/X flip respectively.
+
+Otogirisou uses two optimizations for storing tilemaps:
+- Store the low bytes and high bytes in separate blocks.
+  Purpose: take advantage of RLE compression format.
+  For example, Otogirisou would encode the 2x2 tilemap [00FF 4001 8002 C003]
+  as the byte sequence [FF 01 02 03 ; 00 40 80 C0].
+  This compresses poorly with RLE (88 data 80) but demonstrates the separation.
+  It works well with compressing large blocks of empty tiles (usually 0000) and
+  with compressing blocks of the same two MSBs for the tile ID numbers.
+
+- If ALL of the high bytes are 00, only store and RLE compress the low bytes.
+  Purpose: avoid possibly several copies of RLE data like [7F 00] at the end.
+  In this case, the game will run code to fill in all the high bytes with 00.
+
+Consequence: The decompressed tilemap will be either W*H bytes or W*H*2 bytes.
+If only W*H, you may assume the tilemap will use at most 256 (0x100) tiles, use
+palette 0, and will not use BG priority or Y/X flip.
+
+################################################################################
+################################################################################
+
+Concrete example of the general case:
+Graphics ID 0x5C is for the name entry screen.
+
+The bank offset of the structure is at $01EEA7 + (5C << 1) = $01EF5F (0x0EF5F).
+  In this case, the data is [81 C2] -> $00C281 (0x04281).
+
+The byte at 0x04281 is [04], so there are four structures.
+
+Read 3 bytes at 0x04282 for metadata pointer: [83 DD 07] -> $07DD83 (0x3DD83).
+    The (guaranteed) metadata at 0x3DD83 is [42 00 00].
+    Byte 02 is [00], which ends in binary 000 -> TILE data.
+    Because this is TILE data:
+    - Total metadata is 4 bytes at 0x3DD83: [42 00 00 30].
+    - Structure size is 6 bytes at 0x04282: [83 DD 07 00 40 10].
+    - RLE TILE data ranges from    0x3DD87 to 0x03E2C8 (0x542 bytes).
+
+Skip 6 bytes from start of last TILE structure.
+Read 3 bytes at 0x04288 for metadata pointer: [57 C8 07] -> $07C857 (0x3C857).
+    The guaranteed metadata at 0x3C857 is [06 00 00].
+    Byte 02 is [00], which ends in binary 000 -> TILE data.
+    Because this is TILE data:
+    - Total metadata is 4 bytes at 0x3C857: [06 00 00 00].
+    - Structure size is 6 bytes at 0x04288: [57 C8 07 00 20 11].
+    - RLE TILE data ranges from    0x3C85B to 0x03C86D (0x13 bytes).
+
+Skip 6 bytes from start of last TILE structure.
+Read 3 bytes at 0x0428E for metadata pointer: [ED E2 07] -> $07E2ED (0x3E2ED).
+    The guaranteed metadata at 0x3E2ED is [00 08 02].
+    Byte 02 is [02], which ends in binary 010 -> TILEMAP data.
+    Because this is TILEMAP data:
+    - Total metadata is 6  bytes at 0x3E2ED: [00 08 02 01 20 1C].
+    - Structure size is 10 bytes at 0x0428E: [ED E2 07 00 10 00 08 00 00 00]
+    - RLE TILEMAP data ranges from  0x3E2F3 - 0x3E632 (0x340 bytes).
+
+Skip 10 bytes from start of last TILEMAP structure.
+Read 3 bytes at 0x04298 for metadata pointer: [C9 E2 07] -> $07E2C9 (0x3E2C9).
+    The guaranteed metadata at 0x3E2C9 is [23 00 04].
+    Byte 02 is [04], which ends in binary 100 -> PALETTE data.
+    Because this is PALETTE data:
+    - Total metadata is 4 bytes at 0x3E2ED: [23 00 04 00].
+    - Structure size is 7 bytes at 0x0428E: [ED E2 07 00 10 00 08]
+    - Palette data is [23] - 3 bytes = 0x20 (32 bytes = 16 color values).
+
+################################################################################
+################################################################################
+
+Metadata explanations (fill in important info as needed):
+
+TILE metadata:
+
+Bytes 0 and 1 indicate the number of tiles (00 ID for empty not counted).
+Above example: metadata at 0x3DD83 [42 00 00 30] -> 0x0042 tiles
+
+If you know the size of the decompressed graphics, you can estimate the bit
+depth. In this case, the graphics decompress to 0x840 bytes.
+0x840 bytes / 0x42 tiles = 0x20 bytes per 8x8 tile. Do some unit conversions:
+32 bytes/tile * 8 bits/byte * (1 tile/64 pixels) = 4 bits/pixel = 4bpp
+So the formula is: bit_depth = decomp_size_bytes / num_tiles / 8
+
+However, note that this is only an estimate based on the uncompressed size. For
+the exact bit depth that the game pads (may pad) the tile data to, see below.
+
+Bytes 2 and 3: ?? Might have something to do with VRAM addresses? Don't know.
+
+---
+
+TILE structure data:
+
+(Bytes 0, 1, 2: Pointer to metadata)
+
+Bytes 3 and 4: ??
+
+Byte 5: Packs data about target bit depth and whether or not to generate an
+empty tile as tile 00 in VRAM. Specifically:
+- LSB 0 -> create empty tile; LSB 1 -> do not create empty tile
+- Bits 5 and 4 specify a target bit depth of either 2, 4, or 8 bpp.
+  * 0b00 -> 2bpp, 0b01 -> 4bpp, 0b10 -> 8bpp, 0b11 undefined behavior
+
+------------------------------
+
+TILEMAP metadata explanations:
+
+- Bytes 0, 1, 2: ??
+- Byte 3 is a flag with 3 distinct values:
+  * 00 = high bytes not included, assumed to be all 00
+  * 01 = high bytes included with low bytes (each is in its own W*H byte block)
+  * 80 = like 00 case, but indicates the tilemap is for Mode 7 graphics
+- Bytes 4 and 5 indicate the tilemap dimensions [WW HH].
+  Above example: metadata at 0x3E2ED [00 08 02 01 20 1C] -> W = 0x20, H = 0x1C
+
+As a consequence, formula for target size of uncompressed tilemap data:
+uncomp_tilemap_size = [(byte3 & 0x1) + 1] * byte4 * byte5
+
+---
+
+TILEMAP structure data:
+
+- (Bytes 0, 1, 2: Pointer to metadata)
+
+- Bytes 3, 4, 5, 6, 7: ??
+
+- Bytes 8, 9: Encodes the position of where to draw the the top left tile of the
+  tilemap "on screen," or perhaps more precisely where in a background layer.
+
+  Specific formulas:                           Visual data layout (bits)
+  X = (byte9 & 0xF) | ((byte8 << 2) & 0x30)        88888888 99999999
+  Y = ((byte9 >> 4) & 0xF) | (byte8 & 0x30)          yyxx   YYYYXXXX
+ 
+  For example, if you have the bytes [10 1E], the position would be:
+  X = (1E & F) | ((10 << 2) & 30) = E | (40 & 30) = E   00010000 00011110
+  Y = ((1E >> 4) & F) | (10 & 30) = (1 & F) | 10 = 11     yyxx   YYYYXXXX
+
+------------------------------
+
+Thing(s) to possibly figure out some day (not important to a patch):
+- How does the game know where (OAM, VRAM, CGRAM, etc.) to send the data?
+
+################################################################################
+################################################################################
+
+If you were to keep track of the data blocks for all the structures, you would
+find some blocks in the ROM that are not accounted for.
+
+Consequences of not having structures associated with them:
+- Tilemaps: cannot determine where they are to be drawn to, as in (X, Y)
+- Tiles:    cannot determine what bit depth to pad to, or if to make empty tile
+
+For context, the graphics are all from $02DA00 - $08D39A (0x13A00 - 0x4539A),
+except for one at $00E00C. Six blocks are not covered with structures.
+I ultimately opted to hard code this list of pointers into my graphics dumper
+because each block can have multiple structures inside.
+
+--------------------
+
+$03B910 - $03B991: Don't know what this is. An animation of some kind, perhaps?
+    Tile    metadata [06 00 00 20]       at $03B910
+    Tile    data from $03B914 - $03B981 (0x1B914 - 0x1B981)
+
+    Palette metadata [0F 00 04 00]       at $03B982
+    Palette data from $03B986 - $03B991 (0x1B986 - 0x1B991)
+
+--------------------
+
+$079653 - $079A05: Graphics data for a knife that seems to be unused.
+    Pointers are unknown.
+    Tile    metadata [2C 00 00 20]       at $079653
+    Tile    data from $079657 - $07997D (0x39657 - 0x3997D)
+
+    Tilemap metadata [00 08 02 01 0A 12] at $07997E
+    Tilemap data from $079984 - $079A05 (0x39984 - 0x39A05)
+
+    To be precise, tilemap (W,H) = (0x0A, 0x12) with high bytes included.
+    Strangely, all the high bytes in the tilemap are 00, except one entry FC00.
+    This means "use tile ID 000, with Y flip, X flip, high priority, palette 7."
+    I don't know the context as to why it uses palette 7 there.
+
+    The palette for a knife graphic that IS used in the game does fit well with
+    this unused knife graphic. See $079643 in the data for graphics ID 0x4E.
+
+--------
+
+You can get this graphic to show up in the original Japanese game:
+- Have the script start on a screen that uses graphics ID 0x4E.
+  It turns out there is exactly one: $1CC93D-5, [ED 49 E6] in the Japanese game.
+  For incorporating into a translation patch, leave the start points alone.
+
+- Change the data for the structure list for graphics ID 0x4E, at $00BFB9.
+- Alter the tile    data pointer at $00BFBA from [65 91 07] to [53 96 07].
+- Alter the tilemap data pointer at $00BFC0 from [BE 95 07] to [7E 99 07].
+
+- Alter the top left YX position of the tilemap on screen.
+  Original [10 1E] -> (X, Y) = (0x0E, 0x11). Center on a (0x20, 0x1E) screen.
+  (0x20-0x0A)/2 = 0x0B, (0x1E-0x12)/2 = 0x06    X = 00 1011, Y = 00 0110
+  Assemble into the correct format: __00 00__ 0110 1011 -> 00 6B
+  Put [00 6B] into the position $00BFC8.
+
+--------------------
+
+$07C6B9 - $07C856: Two separate things here.
+
+$07C6B9 - $07C7FD: Block of 4bpp graphics for the digits 0 to 9. Unused?
+    This data is uncompressed and can be viewed in a tile editor.
+    As such, it is not processed by my graphics dumper.
+
+    Metadata block [42 01 00 0A 0C 00]   at $07C6B9
+    Graphics data:    $07C6BF - $07C7FD (0x3C6BF - 0x3C7FD)
+    Incidentally, 0x142 is the difference between $07C7FD and $07C6BB, after the
+        two bytes [42 01]. Size marker? I don't know, this is unique.
+
+$07C7FE - $07C856: Tile/palette data for "advance text" and "next page" icons.
+
+    Tile    metadata [08 00 00 10]      at $07C7FE.
+    Tile    data from $07C802 - $07C84A (0x3C802 - 0x3C84A)
+    Pointer split up at $0096B5 and $0096BA.
+
+    Palette metadata [0B 00 04 00]      at $07C84B
+    Palette data from $07C84F - $07C856 (0x3C84F - 0x3C856)
+
+--------------------
+
+$07DCF3 - $07DD4C: Two groups of palette data.
+
+    Palette metadata [2B 00 04 00]      at $07DCF3
+    Palette data from $07DCF7 - $07DD1E (0x3DCF7 - 0x3DD1E)
+    Pointer and purpose unknown.
+
+    Palette metadata [2D 00 04 00]      at $07DD1F
+    Palette data from $07DD23 - $07DD4C (0x3DD23 - 0x3DD4C)
+    Pointer hidden in data in $00D7BF [1F DD 87 21]. Gets used during the
+        animation for the tree lightning strike, when the tree is about to turn
+        red and split in half after the lightning.
+
+--------------------
+
+$07F38B - $07F57C: Three groups of palette data related to the bookmarks on the
+    title screen. Specifically, this contains the palette cycle values for the
+    bookmarks' flashing effect. Each group has 8 blocks of 0xA colors.
+
+    Yellow bookmark: $07F38B - see $02BE47, LDA.L $07F391,X
+    Palette metadata [A5 00 04 00]      at $07F38B
+    Palette data from $07F38F - $07F430 (0x3F38F - 0x3F430)
+
+    Pink bookmark:   $07F431 - see $02BE4E, LDA.L $07F437,X
+    Palette metadata [A5 00 04 00]      at $07F431
+    Palette data from $07F431 - $07F4D6 (0x3F431 - 0x3F4D6)
+
+    Bookmark ribbon: $07F4D7 - see $02BE55, LDA.L $07F4DD,X
+    Palette metadata [A5 00 04 00]      at $07F4D7
+    Palette data from $07F4DB - $07F57C (0x3F4DB - 0x3F57C)
+
+--------------------
+
+$0889E5 - $0889F9: Contains a tilemap for something, don't know what.
+    Tilemap metadata [00 08 02 01 20 07] at $0889E5
+    Tilemap data from $0889EB - $0889F9 (0x409EB - 0x409F9).
+    Perhaps note that all of the high bytes are [04], i.e. all palette 01.
+
+################################################################################
+################################################################################
+
+Other notes:
+
+While most of the game's graphics do not have any text in them, several of them
+do. Below is a table of those graphics:
+
+  ID  | ptr  | description
+------+------+-----------------------------------------------------------
+ 0x0C | B765 | desk with dictionaries
+ 0x0D | B787 | dictionary spines
+ 0x1A | B941 | diary (red)
+ 0x1B | B963 | diary (blue), shares tileset with 1A
+These four use English text, and may need to be translated if you want to
+translate the game into another language besides English.
+
+ 0x33 | BE73 | newspaper clipping with a prominent headline in Japanese
+      |      | explained fine through the novel text
+
+ 0x49 | BEFB | two maternity health books
+ 0x4A | BF1D | one maternity health book (same tileset, different tilemap)
+The tops of the books have the text "母子健康手帳", "maternal and child health
+notebook" or "maternity health book." Virtually every instance these show up,
+the script explains what they are. I think it's okay to leave these alone.
+
+ 0x5A | C125 | title screen (title logo)
+
+ 0x5B | C29F | file select screen (tiles for file management prompts)
+      |      | the bookmark text like "Page N" or "Nth time" is independent
+
+ 0x5C | C281 | name entry screen (four buttons in bottom right, plus "NAME" in
+             | the top left if translating to a language other than English)
+
+  **  | C161 | credits tiles, credit tilemap "supervisor", 終/完 tiles + palette
+      |      | ** same structure pointer shared for IDs 0x5D - 0x65
+ 0x66 | C1A3 | credit tilemap "planner"
+ 0x67 | C1AE | credit tilemap "writer"
+ 0x68 | C1B9 | credit tilemap "art director"
+ 0x69 | C1C4 | credit tilemap "graphics"
+ 0x6A | C1CF | credit tilemap "composer"
+ 0x6B | C1DA | credit tilemap "programming director"
+ 0x6C | C1E5 | credit tilemap "programmer"
+ 0x6D | C1F0 | credit tilemap "sound programmer"
+ 0x6E | C1FB | credit tilemap "original sfx"
+ 0x6F | C206 | credit tilemap "support pg 1"
+ 0x70 | C211 | credit tilemap "support pg 2"
+ 0x71 | C21C | credit tilemap "producer director"
+ 0x72 | C227 | credit tilemap "(c) chunsoft co. ltd."
+ 0x73 | C232 | 終 tilemap
+ 0x74 | C23D | 完 tilemap
+
+ 0x7B | C0A7 | 奈美 "Nami" graphic - this one is important to translate in order
+      |      | to have the proper effect in the context of the story
