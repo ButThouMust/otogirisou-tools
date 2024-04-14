@@ -13,7 +13,7 @@ public class KerningPunctPairs {
             "Fa", "Fat", "Fe",  "Fo", "Fu", "fo",  "ij", "nj",  "n's", "n't", "of",
             "oj", "OT",  "o'c", "ox", "Po", "pt",  "r,", "rc",  "rd",  "ro",  "roj",
             "Tc", "Te",  "To",  "Va", "Ve", "w,",  "Wa", "Wat", "Wo",  "We",  "xc",
-            "xo", "y,",  "Ya",  "Ye", "Yo", "zo",
+            "xo", "y,",  "Ya",  "Ye", "Yo", "zo",  "17",
             "...T", "...W", "...Wa", "éj", "“j"
         };
         return encodings;
@@ -94,6 +94,7 @@ public class KerningPunctPairs {
             {"Y", KERN_LEFT, ONE_PIXEL, "e"},
             {"Y", KERN_LEFT, TWO_PIXELS, "o"},
             {"z", KERN_LEFT, ONE_PIXEL, "o"},
+            {"1", KERN_LEFT, TWO_PIXELS, "7"},
 
             {"...", KERN_LEFT, THREE_PIXELS, "T"},
             {"...", KERN_LEFT, TWO_PIXELS, "W"},
