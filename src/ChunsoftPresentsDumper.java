@@ -131,6 +131,48 @@ public class ChunsoftPresentsDumper {
         rawData.close();
     }
 
+    // The graphics are 8bpp which makes it not very compatible with most SNES
+    // graphics viewers. I found that binxelview can work, and as such I formatted
+    // the .pal file to be compatible with it. However, consider this a nice
+    // bonus to the tile and tilemap data being dumped.
+    private static void dumpChunsoftPalette() throws IOException {
+        final int CHUNSOFT_PALETTE_OFFSET = 0x10527;
+        final int NUM_PALETTE_VALS = 20;
+
+        String outputFileFormat = outputFolder + "/chunsoft palette $028527.pal";
+        FileOutputStream paletteOutput = new FileOutputStream(outputFileFormat);
+
+        String logFileFormat = outputFolder + "/LOG chunsoft palette.txt";
+        BufferedWriter logFile = new BufferedWriter(new FileWriter(logFileFormat));
+
+        String line = "  %04X  | %06X\n";
+        logFile.write(" 15-bit | 24-bit\n");
+        logFile.write("--------+--------\n");
+
+        RandomAccessFile romStream = new RandomAccessFile("rom/Otogirisou (Japan).sfc", "r");
+        romStream.seek(CHUNSOFT_PALETTE_OFFSET);
+        for (int i = 0; i < NUM_PALETTE_VALS; i++) {
+            // read a BGR15 color value and convert it to an RGB24 color value
+            int bgr15 = romStream.readUnsignedByte() | 
+                        (romStream.readUnsignedByte() << 8);
+            int rgb24 = HelperMethods.convertBGR15ToRGB24(bgr15);
+
+            // write the RGB24 value to its own file to be used with binxelview
+            // byte order is [red8 green8 blue8] for each color i.e. big endian
+            paletteOutput.write((rgb24 >> 16) & 0xFF);
+            paletteOutput.write((rgb24 >> 8) & 0xFF);
+            paletteOutput.write(rgb24 & 0xFF);
+
+            logFile.write(String.format(line, bgr15, rgb24));
+        }
+
+        paletteOutput.flush();
+        paletteOutput.close();
+        logFile.flush();
+        logFile.close();
+        romStream.close();
+    }
+
     public static void main(String args[]) throws IOException {
         // lazy implementation, presence of any CLI arguments -> turn on debug output
         DEBUG = args.length != 0;
@@ -154,6 +196,8 @@ public class ChunsoftPresentsDumper {
         actualSize = decompress(GFX_LOW_BYTE_OFFSET, FillType.EVEN, "combine low bytes");
         actualSize += decompress(GFX_HI_BYTE_OFFSET, FillType.ODD, "combine high bytes");
         dumpVRAMBufferToFile(actualSize, "low + high bytes 8bpp");
+
+        dumpChunsoftPalette();
     }
     
 }
