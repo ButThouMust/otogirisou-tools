@@ -31,6 +31,10 @@ The custom tools for this project are coded in Java and use batch files. You wil
 # Folder contents
 `asm`
 - Asar text files containing assembly code, "include file's binary contents here" directives, etc. for patch.
+- Also included: A [DiztinGUIsh](https://github.com/IsoFrieze/DiztinGUIsh)
+  project file that includes a mostly complete disassembly of the game.
+- Not everything is filled in, but I tried to document everything that was
+  either relevant to the patch or was interesting enough to look into.
 
 `font`
 - Image file for font, as well as a modified table file containing the dimensions for each character for the font.
