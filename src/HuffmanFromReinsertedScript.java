@@ -566,8 +566,16 @@ public class HuffmanFromReinsertedScript {
         for (Integer hexVal : tableHexValues) {
             String huffCode = huffmanCodes.get(hexVal);
             if (huffCode != null && !huffCode.equals("")) {
+                // if no available encoding for hex value, use the value itself
+                // in brackets as the String encoding (only used as code input)
+                String encoding = encodings.get(hexVal);
+                if (encoding == null) {
+                    encoding = String.format("[%04X]", hexVal);
+                }
+
                 String format = "0x%04X '%s' has %2d bit Huff code: %s";
-                huffmanWriter.write(String.format(format, hexVal, encodings.get(hexVal), huffCode.length(), huffCode));
+                huffmanWriter.write(String.format(format, hexVal, encoding, huffCode.length(), huffCode));
+                huffmanWriter.newLine();
             }
             /*
             else {
@@ -629,7 +637,8 @@ public class HuffmanFromReinsertedScript {
 
         // combine the Huffman code (assume up to 32 bits; in practice up to 20)
         // with the current state of the Huffman buffer (up to 7 bits) into a long
-        long combinedBuffer = huffmanBuffer | (((long) huffCode) << huffmanBitOffset);
+        // long combinedBuffer = huffmanBuffer | (((long) huffCode) << huffmanBitOffset);
+        int combinedBuffer = huffmanBuffer | (huffCode << huffmanBitOffset);
         int combinedSize = length + huffmanBitOffset;
 
         // write as many groups of 8 bits as possible
@@ -639,7 +648,8 @@ public class HuffmanFromReinsertedScript {
             combinedSize -= HelperMethods.BYTE;
             combinedBuffer >>= HelperMethods.BYTE;
         }
-        huffmanBuffer = (int) (combinedBuffer & 0xFF);
+        // huffmanBuffer = (int) (combinedBuffer & 0xFF);
+        huffmanBuffer = combinedBuffer & 0xFF;
         huffmanBitOffset = combinedSize;
     }
 
