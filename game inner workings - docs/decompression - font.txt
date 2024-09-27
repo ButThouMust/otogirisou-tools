@@ -135,7 +135,7 @@ Here is a table summarizing the data for the 58 structures.
 Now that we know how the game knows where to get the font data, let's go over
 the storage format and how the game actually gets the font data:
 
-The font data is 1bpp (0 = black, 1 = white) and stored in, as Guest described
+Font data is 1bpp (0 = transparent, 1 = text) and stored in, as Guest described
 it, "bitpacking format." Each character is stored as a block of (H*W) bits one
 after the other within each dimension range.
 
@@ -191,7 +191,7 @@ Here, bit_pos <- 3 + B = E. If you prefer, this means 1 byte at bit position 6.
 
 Then, calculate Y <- (width - 1) * 2. Y indexes a list of bitmasks at $00A5F1.
 Each bitmask has the top (width) bits set, and the remaining bits clear.
-The range of values is 8000, C000, E000, F000, F800, ..., FFFE, FFFF
+The list of bitmasks is 8000, C000, E000, F000, F800, ..., FFFE, FFFF
 (Technically, the FFFF is unreachable, requiring a width of 16, but it's there)
 A simple way to calculate this: bitmask = (FFFF << (16 - width)) & FFFF
 

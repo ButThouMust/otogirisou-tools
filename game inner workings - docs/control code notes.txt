@@ -1,0 +1,683 @@
+
+General overview of control codes
+
+Guest's table file listed a total of 71 different control codes. The codes'
+purposes include doing sound effects in various ways, doing visual effects,
+doing special stuff with the text (choices), jumping to different places in the
+script, etc. Of the 71 listed, 43 are directly used in the script. I found in
+February 2023 that some are indirectly called when executing END CHOICE 1C,
+namely CODEs 0E, 0F, and 1B.
+
+Regarding names for codes in the table file, the ones with actual names like
+LINE or WAIT are the ones that Guest originally identified (see their original
+SJIS table file). I added suggestions for new, more descriptive names for codes
+e.g. CODE 2C does visual effects, so I suggested naming it VFX 2C.
+
+Most of the control codes take input. Two kinds of inputs exist:
+- raw data as two byte values (as few as 0, as many as 3)
+  - durations, sound identifiers, image/visual effect identifiers, etc.
+- pointers to locations in the script
+  - needed for jumps and choices
+
+The game knows how to interpret these values with a table at $00F41E. Each entry
+is two bytes and encodes: (low byte) # arguments, (high byte) argument types.
+You take the low N bits of the high byte: 0 = script value, 1 = script pointer
+
+If you would like examples of how the game reads the script data, see the two
+writeups about decompression of Huffman codes and of script pointers.
+
+I've qualitatively documented most of the codes, but not all of them. There are
+some details I am not 100% sure about regarding the graphics and sound codes.
+However, I felt spending time on determining their exact purposes and underlying
+mechanism would be better spent on other things.
+
+Addendum August 7, 2022
+Guest determined that ROM offset 0x07390 contains the RAM locations for all the
+control codes' actual SNES assembly code. I added those RAM offsets and the
+converted ROM offsets to each control code's description.
+
+--------------------------------------------------------------------------------
+
+################################################################################
+------SCRIPT JUMPS------
+################################################################################
+
+1003=<JMP> (0x028A1 = 00A8A1)
+- input is a script pointer i.e. an EMBSET after the JMP code
+- self-explanatory, jumps to a different point in the script
+- changed name to JMP 03 in dump
+
+1004=<JMP.cc 04> (0x028A7 = 00A8A7)
+- input has 2 values, plus a script pointer as with regular JMP
+- conditional jump that checks a progress flag to see if should take jump
+  * progress flags are copied from SRAM into a block in WRAM at $1BEF
+- first value indicates which flag to check
+  * flags that JMP.cc check: 0011 x2, 0024, 0026, 00C4, 00C6, 00FC, 00FE, 018D,
+    018F, 0190, 0192
+  * these are typically set with CODE 22 = "SET FLAG 22"
+- second value (all are 0001 except for one that is 0002) is what the progress
+  flag value should match for the jump to be taken
+- If I have to guess what the "cc" means, it could be like "check condition".
+
+1005=<JMP.cc 05> (0x028AE = 00A8AE)
+- input has 2 values, plus a script pointer as with regular JMP
+- This unused code is almost the same as JMP.cc 04, but has a different rule
+  for determining whether or not to take the jump. Specifically, the progress
+  flag value must NOT match the code's second value, for the jump to be taken.
+
+################################################################################
+-----CREDITS CODES------
+################################################################################
+
+1009=<CODE 09> (0x028D1 = $00A8D1)
+- 0 values; this pops up after ending scenarios with JMP.cc 04 codes in them
+- they all have the format EMBWRITE(NUMBER) / CODE 09 / WAIT / CLEAR 25
+- seven instances like this; there is also one instance at 18A6A0-4 where it's
+  sandwiched between <NAME> and a <WAIT>
+- since CODE 0C slows down the text scroll speed, I think CODE 09 returns the
+  speed back to normal (could be used to increase speed? probably not)
+- suggested new name: REG TEXT SPEED 09
+
+100C=<CODE 0C> (0x028D1 = $00A8D1)
+- 0 values; this pops up in situations where the credits are going to roll soon
+- the rate at which text appears on screen seems to slow down when this code
+  appears, probably for dramatic effect when the text scrolls automatically
+- 16 instances in the script
+- suggested new name: SLOW TEXT 0C
+
+A note:
+- Control codes with a value in the range 1009 - 1012 reuse the same ASM code.
+  It uses (ctrl_code_value - 1009) to modify a memory address related to the
+  text printing rate, i.e. # frames to wait between printing each character.
+  Typically 1 char per 2 frames, but 100C sets it to about 1 char per 3 frames.
+- Importantly, the other unused control codes (0A, 0B, 0D, 0E, 0F, 10, 11, 12)
+  should be free for the taking to implement your own custom code.
+
+101D=<NOP 1D> (0x0299E = $00A99E)
+- 0 values; this is the last code executed before every single ending
+
+################################################################################
+------TEXT EFFECTS------
+################################################################################
+
+1000=<LINE> (0x027A2 = $00A7A2)
+- 0 values; advances text down a line, usually after punctuation like 。？！」』
+- changed name to LINE 00 in dump
+
+1013=<CODE 13> (0x028E8 = $00A8E8)
+- 0 values; normally, the game auto WAITs with the punctuation 。？！」』
+  CODE 13 "escapes" that input requirement and tells the script engine to
+  advance the text on its own.
+- suggested new name: AUTO ADV 13
+
+1016=<WAIT> (0x027F8 = $00A7F8)
+- 0 values; stops text scroll until the player advances it by pressing a button
+- the script engine automatically puts a WAIT after the punctuation 。？！」』
+- changed name to WAIT 16 in dump
+
+1017=<CODE 17> (0x027FF = $00A7FF)
+- 1 value; stops the game from reading/printing the next character or executing
+  the next code for a given amount of time
+- the value indicates the duration in multiples of 6 frames (~0.1 seconds)
+  This 0.1 second figure is useful for timing certain credits sequences to
+  appear on cue with music. You can just use a stopwatch to time them.
+- related: when the script has a "、", the duration is 10 frames
+- suggested new name: DELAY 17
+
+1018=<CODE 18> (0x0280C = $00A80C)
+- 1 value; like DELAY 17, but uses different unit for measuring the delay length
+- the value indicates the duration in individual frames (i.e. no multiply by 6)
+- not used in the script, but I will suggest a new name of ALT DELAY 18
+
+101E=<CODE 1E> (0x02813 = $00A813)
+- 1 value; sets the X position for text to the value of the argument
+- While this is not used in the script, it is executed every time the game
+  executes a CHOICE code, to set the x position of the choice letter (A, B, C,
+  or D) and of the text for that option.
+- suggested new name: SET X POS 1E
+
+101F=<CODE 1F> (0x0281C = $00A81C)
+- 1 value; sets the Y position for text to the value of the argument
+- Similar, not used in the script, but could be helpful for special text.
+- suggested new name: SET Y POS 1F
+
+1020=<NAME> (0x0283A = $00A83A)
+- 0 values; prints the player's name, possibly with or without an honorific.
+  - The first thing this control code does is JSR to the ASM code for CODE 21.
+- Based on the assembly code here, the game loads a value (an array offset) from
+  the SRAM at $7005A8 to determine what honorific to use here. There is a table
+  of offsets for bank 02 at 0x0286F after the RTS for this control code.
+- Honorifics I got in my playthroughs when translating:
+  1st - 2nd: san
+  3rd - 4th: N/A
+  5th:       kun (katakana)
+  6th:       N/A
+  7th:       kun (hiragana)
+  8th:       don
+  9th:       N/A
+  10th:      dono
+  11th:      sama
+  12th:      N/A
+  13th:      chan
+  14th:      san
+  15th:      chief
+  16th:      senpai
+  17th:      kun (katakana)
+  18th:      san
+  19th:      kun (katakana) - didn't complete this playthrough
+- suggested new name: NAME-SAN 20
+
+Note: I suppose the dynamic honorifics qualify as a sort of game mechanic, but
+      I realize not everyone likes having honorifics written out in English.
+      Look into solutions for options to either keep them in or leave them out
+      altogether. Potentially release two versions of the patch?
+
+1021=<CODE 21> (0x02825 = $00A825)
+- 0 values; prints player's name, but always without an honorific of any kind
+- CODE 21 is much less common than NAME 20, but it does pop up occasionally.
+- The script sometimes has "forced" honorifics with text like "<CODE 21>さん".
+- suggested new name: NAME 21
+
+1025=<CLEAR 25> (0x027BB = $00A7BB)
+- 0 values; clears the text on screen before printing out more text
+  I'm pretty sure CLEAR is also when the game auto-saves your progress
+
+################################################################################
+--------CHOICES---------
+################################################################################
+
+1019=<CHOICE 19> (0x01DAE = $009DAE)
+101A=<CHOICE 1A> (0x01DAE = $009DAE)
+
+3 input values, then a variable number of script pointers
+
+Qualitatively speaking, choices do the following:
+- determine how many options are available
+- determine which options to print
+- read the text data from the right ROM addresses until a CODE 1C (see below)
+- do for all options that should be printed:
+  - print an option prefixed with a letter from A-E (ignore non-text* codes)
+  - wait a little bit
+- let the player press up/down and then either A or L to pick an option
+- clear the text on screen, and jump to the right location in the script
+
+The game's main replayability mechanic is that for most choices, you get more
+options to pick after each playthrough you finish.
+The short version of how this mechanic works on a technical level:
+- The first two input values contain three groups of 5 bits.
+- Each bit represents how to handle a choice option: print (0) or ignore (1).
+- Each group represents a different "milestone" with progress in the game:
+  roughly "one loop done", "a specific ending viewed", and "pink bookmark".
+
+Getting the pink bookmark seems to automatically unlock all the options you can
+get without the pink bookmark. It also unlocks options that lead to text you can
+only access once you get the pink bookmark.
+
+I don't know what's different between the two separate codes 1019 and 101A.
+
+I put some much more detailed notes about the ASM for these into their own file.
+The purpose for this was to see if I could incorporate an unused choice back
+into the game, but appropriately lock it down until the pink bookmark is gotten.
+
+*: The list of control codes to EXECUTE when printing a choice option is at
+   $00AC01 - $00AC14: END CHOICE 1C, EC HELPER 1B, NAME-SAN 20, NAME 21,
+                      LINE 00, SET X POS 1E, SET Y POS 1F, DELAY 17, WAIT 16.
+   Which is to say, ignore codes for JMPs, SFX, graphics, SET FLAGs, etc.
+   If you want to alter this list, I suggest overwriting codes 1E, 1F, and 16.
+
+----
+
+101C=<CODE 1C> (0x01EF2 = $009EF2)
+- 0 values; this pops up with options for choices and serves two purposes:
+  * when reading the text as part of a CHOICE code, this marks the end of the
+    text that shows up for each option the player can pick
+  * when reading the text after the player chooses an option, simply perform a
+    LINE break ($009EF7: JMP.W $00A7A2 -> LINE 00 code)
+- part of executing this control code is calling assembly for CODE 1B, see below
+  * for more info, see entry in ROM offset file for 0x01F31
+
+- suggested new name: END CHOICE 1C
+
+----
+
+101B=<CODE 1B> (0x01F39)
+- 0 values; this is executed as part of executing <END CHOICE 1C>
+- for more info, see entry in ROM offset file for 0x01F99, but TL;DR it does:
+  1017 0005 1000 101E 0012 0000 101E 0020 FFFF
+  <DELAY 17><$00><$05><LINE 00><SET X POS 1E><$00><$12>　<SET X POS 1E><$00>$20>[end text]
+- suggested new name: EC HELPER 1B
+
+################################################################################
+-----UNCATEGORIZED------
+################################################################################
+
+1022=<CODE 22> (0x02889 = $00A889)
+- 2 values; alters certain game progress flags for two purposes:
+  * deciding whether or not to take JMP.cc codes
+  * marking ending paths as being viewed, which in turn tells the game how to
+    determine which and how many options to show for choices
+
+Value 1 is which flag to alter (0000 to 0192).
+Value 2 is what value to assign to the (low 3 bits of the) flag.
+
+Specifically, value 1 indicates a byte offset from $1BEF in memory.
+So flag 0xFE is for $1BEF + 0xFE = $1CED
+
+- sets values for these flags: 0000 x4, 0001, 0009, (0011 x4), (0024 x3),
+  (0026 x2), 002C, 003B, 003F, 0040, 006C, 0087, (00C4), (00C6), (00FC), (00FE),
+  0100, 0135, 0152, (018D), (018F), (0190), (0192)
+
+According to the ASM at $01F79A, the game has three different lists of flags to
+check for determining overall game progress in terms of endings.
+The important value for progress is $1BBD (00, 04, 06, 07).
+00: no endings viewed
+04: any one of the flags [0135, 0152, 003B, 002C, 003F] is set to 1
+06: flag [006C] is set to 1 (takes priority over check for value 04)
+07: ALL flags [0135, 0152, 003B, 002C, 003F, 006C, 0087, 00C4, 00FC] set to 1
+
+So theoretically, it is possible to get the pink bookmark on your file with the
+loop counter still in the single digits. You would have to take the route for
+either 002C or 003B as your last ending of the nine listed, and reset the game
+at the point where those two paths converge.
+
+suggested new name: SET FLAG 22
+
+------
+
+1045=<CODE 45> (0x02969 = $00A969)
+- 1 value; see below
+1046=<CODE 46> (0x0296A = $00A96A)
+- 1 value; see below
+
+CODE 45 and CODE 46 always seem to come in pairs with the same input
+- they also often seem to come before choices
+  - however, they can also surround text and/or other control codes
+- you can stack them like at 16C9F3-5, with 45<A>45<B>46<B>46<A>; 
+
+I don't know what they do, but I just left the instances alone without any
+repercussions on the patch.
+
+################################################################################
+-----VISUAL EFFECTS-----
+################################################################################
+
+Check: do some of the different visual codes only affect certain graphic layers?
+
+1027=<CODE 27> (0x027EA = $00A7EA)
+- 1 value; this makes the whole screen fade out to black; input is a duration
+- also acts as a CLEAR 25 code; jumps to code for CLEAR 25
+- suggested new name: CLEAR FADE OUT 27
+
+// describing 2B out of order before 2A is intentional
+102B=<CODE 2B> (0x02AFE = $00AAFE)
+- 0 values; cuts out text graphics layer until script finds instance of CODE 2A
+- suggested new name: TEXT CUT OUT
+102A=<CODE 2A> (0x02AEB = $00AAEB)
+- 0 values; cuts back in text graphics layer; four appearances in the script
+- suggested new name: TEXT CUT IN
+
+102C=<CODE 2C> (0x02AC9 = $00AAC9)
+- 1 value, visual effects and certain animations for things; a few examples:
+  0x0076 = rain
+  0x007E = oncoming car sequence
+  0x0085 = screen flashes white
+  0x008E = screen shakes
+- suggested new name: VFX 2C
+
+102E=<CODE 2E> (0x029CC = $00A9CC)
+- 1 value; immediately change (cut w/o fade) the background to a certain image
+- suggested new name: IMAGE CUT 2E
+
+102F=<CODE 2F> (0x029D9 = $00A9D9)
+- 1 value; same as CODE 2E, but the whole tilemap is mirrored horizontally
+- suggested new name: IMAGE CUT H-MIRROR 2F
+
+1030=<CODE 30> (0x02A7E = $00AA7E)
+- 2 values; fade in a new background image; first two bytes could be duration
+  (it's usually just 0001); last two bytes are image selector
+- suggested new name: IMAGE FADE IN 30
+
+1032=<CODE 32> (0x029E3 = $00AAE3)
+- 2 values; also used for fading in a new background image
+- suggested new name: IMAGE FADE IN 32
+
+1033=<CODE 33> (0x029DE = $00A9DE)
+- 2 values, only appears once in the entire script, after 179A81-5
+- suggested new name: GFX 33 // better name available?
+
+1034=<CODE 34> (0x02A85 = $00AA85)
+- 1 value; this fades out the non-text graphics to black; input is a duration?
+- suggested new name: FADE IMAGE BLACK 34
+
+1035=<CODE 35> (0x02A1C = $00AA1C)
+- 1 value; fade out the current background image and load in a new one; allow
+  text to appear on screen during the fade out + fade in transitions
+- suggested new name: IMAGE FADE IN 35
+
+1036=<CODE 36> (0x02A25 = $00AA25)
+- 2 values; fade out the current background image and load in a new one, but do
+  not allow text to appear on screen during the fade out + fade in transitions
+- first two bytes = duration? (usually just 0001), last two = image selector
+- suggested new name: IMAGE FADE IN BLOCK 36
+
+1037=<CODE 37> (0x02A79 = $00AA79)
+- 2 values; similar to code 36, but horizontally mirror the background image
+- suggested new name: IMAGE FADE IN BLOCK H-MIRROR 37
+
+1038=<CODE 38> (0x02AA4 = $00AAA4)
+- 0 values; immediately cut the background image to black
+- suggested new name: CUT IMAGE BLACK 38
+
+################################################################################
+-----SOUND EFFECTS-----
+################################################################################
+
+For all these codes, the last input value indicates which sound to play.
+- Unknown: where is the game reading the sound data from?
+
+1039=<CODE 39> (0x028F1 = $00A8F1)
+- 1 value, basic code for playing/starting sound effects and music
+- suggested new name: SFX 39
+
+103A=<CODE 3A> (0x028FE = $00A8FE)
+- 2 values; seems to do like a fade-in for sound effects
+- first value is fade duration
+- suggested new name: SFX FADE IN 3A
+
+103B=<CODE 3B> (0x028F8 = $00A8F8)
+- 1 value - abruptly cut out sound effect; input is which one to stop
+- suggested new name: STOP SFX 3B
+
+103C=<CODE 3C> (0x02908 = $00A908)
+- 2 values; fade out songs or sound effects; first two bytes are fade duration,
+  last two identify which song/sound to apply the fade to
+- seems to allow visual effects to play during fade out, but does not let other
+  sound effects start until the fade finishes
+- suggested new name: SFX FADE OUT 3C
+
+103D=<CODE 3D> (0x02926 = $00A926)
+- 1 value; does sound effects, but it blocks the script engine from advancing
+  (print text, execute next control code, etc.) until the sound finishes
+  Most other sound control codes allow parsing/displaying text during sfx.
+- According to ASM, this is actually a mnemonic for passing arg to 1039 & 103E.
+- suggested new name: SFX TEXT DELAY 3D
+
+103E=<CODE 3E> (0x02933 = $00A933)
+- 1 value; if the sfx in question is playing when the code is encountered, allow
+  it to finish before any text after the code appears on the screen
+- suggested new name: SFX LET FINISH 3E
+
+103F=<CODE 3F> (0x02912 = $00A912)
+- 2 values; changes the volume of sound effects; volume value is absolute value
+  i.e. not relative; 1st two bytes for volume, last two bytes for which sound
+- special note: song identifiers 0006 and 0007 have two variants that CODE 3F
+  allows switching between
+- suggested new name: SFX VOLUME 3F
+
+1040=<CODE 40> (0x0291C = $00A91C)
+- 2 values, starts sound effects that immediately fade out without another code
+- similarly, if a repeating sound effect is already playing, it lets the sound
+  effect fully play before it stops, i.e. a fade out rather than just cutting it
+- first two bytes for fade duration; last two bytes for which sound
+- suggested new name: SFX FADE OUT 40
+
+1041=<CODE 41> (0x02939 = $00A939)
+- 3 values; this seems to do sound effects where it can change the volume on
+  either the left or right sound channels individually e.g. to only play a sound
+  on the left sound channel; I think volume controls are the first two values (I
+  don't know for sure), and as usual, last value controls which sound.
+- suggested new name: SFX STEREO 41
+
+1042=<CODE 42> (0x02947 = $00A947)
+- 3 values; ten instances in the script, seems to change the volume of sound
+  effects that are already playing
+- suggested new name: SFX VOLUME 42
+
+1043=<CODE 43> (0x0295A = $00A95A)
+- 0 values; all music and sound abruptly cut out
+- suggested new name: FULL MUTE 43
+
+################################################################################
+CODES NOT IN THE DUMP
+################################################################################
+
+Guest identified/listed these, but they don't appear in the script dump I got.
+In fact, none of these control code values appear in the Huffman tree for the
+script.
+
+1001=<NOP 01> (0x0299E)
+1002=<NOP 02> (0x0299E)
+1005=<JMP.cc 05> (0x028AE)
+1006=<NOP 06> (0x0299E)
+1007=<NOP 07> (0x0299E)
+1008=<NOP 08> (0x0299E)
+1014=<NOP 14> (0x0299E)
+1015=<NOP 15> (0x0299E)
+1026=<CLEAR 26> (0x027BB)
+
+100A=<CODE 0A> (0x028D1)
+100B=<CODE 0B> (0x028D1)
+100D=<CODE 0D> (0x028D1)
+100E=<CODE 0E> (0x028D1)
+100F=<CODE 0F> (0x028D1)
+1010=<CODE 10> (0x028D1)
+1011=<CODE 11> (0x028D1)
+1012=<CODE 12> (0x028D1)
+1018=<CODE 18> (0x0280C)
+1023=<CODE 23> (0x0613F)
+1024=<CODE 24> (0x061DD)
+1028=<CODE 28> (0x02B3A)
+1029=<CODE 29> (0x02B1A)
+102D=<CODE 2D> (0x02AC9)
+1031=<CODE 31> (0x02A79)
+1044=<CODE 44> (0x02955)
+
+################################################################################
+RAW LIST OF ASSEMBLY LOCATIONS
+################################################################################
+
+----USED-----
+
+1000: $00A7A2
+1003: $00A8A1
+1004: $00A8A7
+1009: $00A8D1
+100c: $00A8D1
+1013: $00A8E8
+1016: $00A7F8
+1017: $00A7FF
+1019: $009DAE
+101a: $009DAE
+101c: $009EF2
+101d: $00A99E
+1020: $00A83A
+1021: $00A825
+1022: $00A889
+1025: $00A7BB
+1027: $00A7EA
+102a: $00AAEB
+102b: $00AAFE
+102c: $00AAC9
+102e: $00A9CC
+102f: $00A9D9
+1030: $00AA7E
+1032: $00A9E3
+1033: $00A9DE
+1034: $00AA85
+1035: $00AA1C
+1036: $00AA25
+1037: $00AA79
+1038: $00AAA4
+1039: $00A8F1
+103a: $00A8FE
+103b: $00A8F8
+103c: $00A908
+103d: $00A926
+103e: $00A933
+103f: $00A912
+1040: $00A91C
+1041: $00A939
+1042: $00A947
+1043: $00A95A
+1045: $00A969
+1046: $00A96A
+
+---UNUSED----
+
+These are equivalent to <NOP 1D>:
+1001: $00A99E - gets run under the hood when printing text
+1002: $00A99E - gets run under the hood when printing text
+1006: $00A99E - gets run under the hood when printing the 1st option for choices
+
+1007: $00A99E - free for the taking?
+1008: $00A99E - free for the taking?
+1014: $00A99E - free for the taking?
+1015: $00A99E - free for the taking?
+
+1005: $00A8AE
+
+These point to the same assembly code as <CODE 09> and <CODE 0C>:
+100a: $00A8D1
+100b: $00A8D1
+100d: $00A8D1
+100e: $00A8D1
+100f: $00A8D1
+1010: $00A8D1
+1011: $00A8D1
+1012: $00A8D1
+
+1018: $00A80C - alternate DELAY code
+101b: $009F39 - helper subroutine for <END CHOICE 1C>
+101e: $00A813 - set x position
+101f: $00A81C - set y position
+1023: $00E13F
+1024: $00E1DD
+1026: $00A7BB - another CLEAR code
+1028: $00AB3A
+1029: $00AB1A
+102d: $00AAC9
+1031: $00AA79 - based on $00AE77, this is like gfx code 30, but w/ horiz. mirror
+1044: $00A955
+
+--------------------------------------------------------------------------------
+
+Summary of choice code argument table @ $00F41E
+
+LINE
+1000: 00 00 - 0 args
+
+NOP, unknown purpose
+1001: 01 01 - 1 pointer
+1002: 00 00 - 0 args
+
+JMP codes
+1003: 01 01 - 1 pointer
+1004: 03 04 - 2 script values, 1 pointer
+1005: 03 04 - 2 script values, 1 pointer
+
+NOP, unknown purpose
+1006: 00 00 - 0 args
+1007: 00 00
+1008: 00 00
+
+Text speed codes
+1009: 00 00 - 0 args
+100A: 00 00
+100B: 00 00
+100C: 00 00
+100D: 00 00
+100E: 00 00
+100F: 00 00
+1010: 00 00
+1011: 00 00
+1012: 00 00
+
+AUTO ADV
+1013: 00 00
+
+NOP, unknown purpose
+1014: 00 00
+1015: 00 00
+
+WAIT, DELAY, ALT DELAY
+1016: 00 00 - 0 args
+1017: 01 00 - 1 script value
+1018: 01 00 - 1 script value
+
+CHOICE codes
+1019: 63 3E - choice code, special case
+101A: 63 3E - choice code, special case
+
+EC HELPER, END CHOICE
+101B: 00 00 - 0 args
+101C: 00 00 - 0 args
+
+NOP, marks credits
+101D: 00 00 - 0 args
+
+SET X, SET Y
+101E: 01 00 - 1 script value
+101F: 01 00 - 1 script value
+
+NAME-SAN, NAME
+1020: 00 00 - 0 args
+1021: 00 00 - 0 args
+
+SET FLAG
+1022: 02 00 - 2 script values
+
+Unknown
+1023: 00 00 - 0 args
+1024: 00 00 - 0 args
+
+CLEAR codes
+1025: 00 00 - 0 args
+1026: 00 00 - 0 args
+1027: 01 00 - 1 script value
+
+Unknown
+1028: 01 00 - 1 script value
+1029: 01 00 - 1 script value
+
+TEXT CUT IN/OUT
+102A: 00 00 - 0 args
+102B: 00 00 - 0 args
+
+"Load image" codes
+102C: 01 00 - 1 script value
+102D: 01 00 - 1 script value
+102E: 01 00 - 1 script value
+102F: 01 00 - 1 script value
+1030: 02 00 - 2 script values
+1031: 02 00 - 2 script values
+1032: 02 00 - 2 script values
+1033: 02 00 - 2 script values
+1034: 01 00 - 1 script value
+1035: 01 00 - 1 script value
+1036: 02 00 - 2 script values
+1037: 02 00 - 2 script values
+
+CUT IMAGE BLACK
+1038: 00 00
+
+SFX codes
+1039: 01 00 - 1 script value
+103A: 02 00 - 2 script values
+103B: 01 00 - 1 script value
+103C: 02 00 - 2 script values
+103D: 01 00 - 1 script value
+103E: 01 00 - 1 script value
+103F: 02 00 - 2 script values
+1040: 02 00 - 2 script values
+1041: 03 00 - 3 script values
+1042: 03 00 - 3 script values
+
+FULL MUTE
+1043: 00 00 - 0 args
+
+Unknown
+1044: 00 00 - 0 args
+
+CODEs 45 and 46
+1045: 01 00 - 1 script value
+1046: 01 00 - 1 script value

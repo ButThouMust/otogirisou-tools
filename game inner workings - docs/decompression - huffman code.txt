@@ -1,14 +1,18 @@
-
-Otogirisou stores the text for its script in compressed Huffman code format:
+Otogirisou stores the text for its script in compressed Huffman code format.
+If you are not familiar with Huffman coding, it is a method of text compression
+that, given a text string and a list of frequencies of all the unique characters
+in it (e.g. 5 of 'a', 1 of 'b'), assigns shorter bit sequences to more common
+characters like 'e' and longer bit sequences for more rare characters like 'q'.
+I recommend reading: https://en.wikipedia.org/wiki/Huffman_coding
 
 Location of the Huffman trees' data:
-- Left  subtree data: 0x141E1 - 0x14D4E.
-- Right subtree data: 0x14D4F - 0x158BC
+- Right subtree data: 0x141E1 - 0x14D4E.
+- Left  subtree data: 0x14D4F - 0x158BC
 
 Location of the script space: 0xAE401 - 0xF95A8
 
 It also mixes in script pointers with the text for JMP codes and choices.
-See "script pointer decompression.txt" for more info.
+See "decompression - script pointer.txt" for more info.
 
 --------------------------------------------------------------------------------
 
@@ -26,37 +30,37 @@ The root of the tree is the very last entry for each tree space.
 
 In the ROM, you can think of each tree space as an array of 0x5B7 entries.
 Indexing from zero, the array offset lets you determine the ROM offset by doing:
-- left  = 0x141E1 + 2 * index
-- right = 0x14D4F + 2 * index
+- right = 0x141E1 + 2 * index
+- left  = 0x14D4F + 2 * index
 
 Example: the root of the tree is entry 0x5B6.
-- root's left  subtree entry is at: 0x141E1 + 2 * 0x5B6 = 0x14D4D
-- root's right subtree entry is at: 0x14D4F + 2 * 0x5B6 = 0x158BB
+- root's right subtree entry is at: 0x141E1 + 2 * 0x5B6 = 0x14D4D
+- root's left  subtree entry is at: 0x14D4F + 2 * 0x5B6 = 0x158BB
 
 There are two kinds of tree nodes that these entry values can represent:
 - leaf nodes:  a node that does not connect to any nodes "below" it
 - inner nodes: a node that connects to at least one node "below" it
 
      root     Conceptually, this is what the Huffman tree structure looks like.
-    /    \    Here, root, 1, and 2 are inner nodes. 3, 4, 5 are leaf nodes.
-   1      2
-  / \    / 
- 3   4  5   
+    /    \    Here, inner nodes are root, 1, and 2. Leaf nodes are 3, 4, 5.
+   1      2     Index: | root | 1      | 2
+  / \    /      Right: | ->2  | val(4) | null
+ 3   4  5       Left:  | ->1  | val(3) | val(5)
 
 The way to tell inner and leaf nodes apart is simple: inner nodes have a value
 with an MSB of 0; leaf nodes have a value with an MSB of 1. In practice, leaf
 node values start with 8 or 9 in hex; inner node values start with 0 in hex.
-Note that the values are little endian (1D00 in ROM = actual value of 001D).
+Note that the values are little endian ([1D 00] in ROM = actual value of 001D).
 
-Example: values for the tree at position 0x037 are:
-left:  0x141E1 + 2 * 0x37 = 0x1424F; data is 1D00 -> 001D, an inner node
-right: 0x14D4F + 2 * 0x37 = 0x14DBD; data is 5784 -> 8457, a leaf node
+Example: values for Otogirisou's Huffman tree at position 0x037 are:
+right: 0x141E1 + 2 * 0x37 = 0x1424F; data is [1D 00] -> 001D, an inner node
+left:  0x14D4F + 2 * 0x37 = 0x14DBD; data is [57 84] -> 8457, a leaf node
 
 For inner nodes, the data is the index of the next node to look at in the tree.
 For leaf nodes, the data is the character code itself, but with an MSB of 1.
 Continuing with the example above:
-- The left node leads you to index 0x01D.
-- The right node is the character value 0x0457, which represents the kanji 胆.
+- The right node leads you to index 0x01D.
+- The left  node is the character value 0x0457, which represents the kanji 胆.
 
 --------------------------------------------------------------------------------
 
@@ -65,10 +69,14 @@ Using the script space data with the Huffman trees
 The applicable assembly code for this algorithm is in Guest's trace file
 "script_0.txt", and Guest's C++ version is in Read_Huffman() in "scan.cpp".
 
+Note: Guest's code (lines 566, 1317) labels the left trees as using 1 and the
+right trees as using 0. Even though it's ultimately an arbitrary choice, I opted
+to change this to the more common standard of left 0 and right 1 in my code.
+
 How the game reads bits from the script space:
 - read a byte from the script space into the accumulator register
 - take the LSB
-- if LSB = 0, use the right Huffman tree; if LSB = 1, use the left Huffman tree
+- if LSB = 0, use the left Huffman tree; if LSB = 1, use the right Huffman tree
   - if the data you get is an inner node, continue traversing the trees
   - if the data you get is a leaf node, you have your character data value
 - right shift the copy of the byte in memory, and repeat with next LSB
@@ -88,7 +96,7 @@ you would have to reverse it to 0xE1 (1110 0001).
 Example of decompressing characters from the script space
 
 A very common word in the game is the name of the protagonist's girlfriend, 奈美
-"Nami". If you search for [15E63A-1] in the script dump, you can see that her
+"Nami". If you search for [15E63A-1] in the JP script dump, you can see that her
 name is the first two characters at this particular offset. Let's do an example
 with her name 奈美.
 
@@ -106,30 +114,30 @@ the "reverse" bit order.
  ^                  | I only reversed the bit order i.e. 76543210 -> 01234567
 
 The root is at offset 0x5B6:
-- root's left subtree is at:  0x141E1 + 2 * 0x5B6 = 0x14D4D
-- root's right subtree is at: 0x14D4F + 2 * 0x5B6 = 0x158BB
+- root's right subtree is at: 0x141E1 + 2 * 0x5B6 = 0x14D4D
+- root's left subtree is at:  0x14D4F + 2 * 0x5B6 = 0x158BB
 
 For this example, I will leave out the offset calculations.
-0: Right Huffman tree; data @ offset 0x5B6 (0x158BB) = B405 -> 05B4; inner node
-0: Right Huffman tree; data @ offset 0x5B4 (0x158B7) = B005 -> 05B0; inner node
-0: Right Huffman tree; data @ offset 0x5B0 (0x158AF) = A805 -> 05A8; inner node
-1: Left  Huffman tree; data @ offset 0x5A8 (0x14D31) = 9905 -> 0599; inner node
-0: Right Huffman tree; data @ offset 0x599 (0x15881) = 8105 -> 0581; inner node
-0: Right Huffman tree; data @ offset 0x581 (0x15851) = 8482 -> 8284; leaf!
+0: left  Huffman tree; data @ offset 0x5B6 (0x158BB) = B4 05 -> 05B4; inner node
+0: left  Huffman tree; data @ offset 0x5B4 (0x158B7) = B0 05 -> 05B0; inner node
+0: left  Huffman tree; data @ offset 0x5B0 (0x158AF) = A8 05 -> 05A8; inner node
+1: right Huffman tree; data @ offset 0x5A8 (0x14D31) = 99 05 -> 0599; inner node
+0: left  Huffman tree; data @ offset 0x599 (0x15881) = 81 05 -> 0581; inner node
+0: left  Huffman tree; data @ offset 0x581 (0x15851) = 84 82 -> 8284; leaf!
 
 The code is 6 bits long: 000100. If you zero out the MSB of the data value, it
 is 0284, which checks out with the table value for the character "奈". Also, a
 good sanity check: the offsets monotonically decrease while you calculate them.
 
 Repeat the exercise for the next character "美" (table value 00E7). Notice that
-the next four bits (start at0xAE63A-7) are 0001, same as "奈". In this case, we
+the next four bits (start at 0xAE63A-7) are 0001, same as "奈". In this case, we
 can copy/paste our previous work here, and continue with the different bit, 1:
-0: Right Huffman tree; data @ offset 0x5B6 (0x158BB) = B405 -> 05B4; inner node
-0: Right Huffman tree; data @ offset 0x5B4 (0x158B7) = B005 -> 05B0; inner node
-0: Right Huffman tree; data @ offset 0x5B0 (0x158AF) = A805 -> 05A8; inner node
-1: Left  Huffman tree; data @ offset 0x5A8 (0x14D31) = 9905 -> 0599; inner node
-1: Left  Huffman tree; data @ offset 0x599 (0x14D13) = 8205 -> 0582; inner node
-0: Right Huffman tree; data @ offset 0x582 (0x15853) = E780 -> 80E7; leaf!
+0: left  Huffman tree; data @ offset 0x5B6 (0x158BB) = B4 05 -> 05B4; inner node
+0: left  Huffman tree; data @ offset 0x5B4 (0x158B7) = B0 05 -> 05B0; inner node
+0: left  Huffman tree; data @ offset 0x5B0 (0x158AF) = A8 05 -> 05A8; inner node
+1: right Huffman tree; data @ offset 0x5A8 (0x14D31) = 99 05 -> 0599; inner node
+1: right Huffman tree; data @ offset 0x599 (0x14D13) = 82 05 -> 0582; inner node
+0: left  Huffman tree; data @ offset 0x582 (0x15853) = E7 80 -> 80E7; leaf!
 
 The code is also 6 bits long: 000110. Zero out MSB, 80E7 -> 00E7, checks out.
 For some reference, with the original Japanese script, the shortest Huffman
@@ -154,26 +162,26 @@ the English alphabet.
 
 Simply take your table value, set the MSB to 1, and search for it in the Huffman
 tree spaces. Make sure to turn it into a little endian value. It could be in the
-left subtree data, the right subtree data, or not at all. (Offset should be odd)
+right subtree data, the left subtree data, or not at all. (Offset should be odd)
 
 Example: The period character "。" has table value 05C7.
-Set MSB -> 85C7, little endian -> C785.
-If you search for C785 in the Huffman tree data, it is at 0x15891.
+Set MSB -> 85C7, little endian -> C7 85.
+If you search for [C7 85] in the Huffman tree data, it is at 0x15891.
 
 Use the reverse formulas to get the index that points to this location.
-- left  = 0x141E1 + 2 * index; index = (left  - 0x141E1) / 2
-- right = 0x14D4F + 2 * index; index = (right - 0x14D4F) / 2
+- right = 0x141E1 + 2 * index; index = (right - 0x141E1) / 2
+- left  = 0x14D4F + 2 * index; index = (left  - 0x14D4F) / 2
 
-Start at 0x15891. This is within the right subtree's data (see top of file).
+Start at 0x15891. This is within the left subtree's data (see top of file).
 index = (0x15891 - 0x14D4F) / 2 = 0x5A1. Convert to a little endian value, A105.
 This value is at 0x14D30. Repeat with the indices you get until you reach the
-root, either 0x14D4D for the left or 0x158BB for the right.
+root, either 0x14D4D for the right or 0x158BB for the left.
 
-C785 is @ 0x15891. Right subtree (0). index = (0x15891 - 0x14D4F) / 2 = 0x5A1.
-A105 is @ 0x14D39. Left subtree  (1). index = (0x14D39 - 0x141E1) / 2 = 0x5AC.
-AC05 is @ 0x158B3. Right subtree (0). index = (0x158B3 - 0x14D4F) / 2 = 0x5B2.
-B205 is @ 0x158B9. Right subtree (0). index = (0x158B9 - 0x14D4F) / 2 = 0x5B5.
-B505 is @ 0x14D4D. Left subtree  (1) for the root, so we are done.
+[C7 85] @ 0x15891. Left  subtree (0). index = (0x15891 - 0x14D4F) / 2 = 0x5A1.
+[A1 05] @ 0x14D39. Right subtree (1). index = (0x14D39 - 0x141E1) / 2 = 0x5AC.
+[AC 05] @ 0x158B3. Left  subtree (0). index = (0x158B3 - 0x14D4F) / 2 = 0x5B2.
+[B2 05] @ 0x158B9. Left  subtree (0). index = (0x158B9 - 0x14D4F) / 2 = 0x5B5.
+[B5 05] @ 0x14D4D. Right subtree (1) for the root, so we are done.
 
 If you work backwards, the Huffman code is 10010.
 Similar sanity check: for reverse method, offsets should monotonically increase.
@@ -186,15 +194,15 @@ Huffman coding is a known compression format for which you can easily find
 implementations online. Should you wish to reuse the Huffman compression in a
 translation patch, here are some insights I found with the process.
 
-- At the heart of Huffman coding is knowing the number of occurrences for each
-  character in the text string's alphabet. In this case, you need the counts for
-  each character, control code, and control code argument. That Guest had dumped
-  the Japanese script as an Atlas file means that we can use Atlas as a text
-  parser and table file format converter, and then iterate over the script in
-  its uncompressed two byte encoding to count characters.
+- At the heart of Huffman coding is knowing the frequency of each character in
+  the text string's alphabet. Here, you need the counts for each character,
+  control code, and control code argument. That Guest had dumped the Japanese
+  script as an Atlas file means that we can use Atlas as a text parser and table
+  file format converter, and then iterate over the script in its uncompressed
+  two byte encoding to count characters.
   
 - After generating a Huffman tree structure, you will have to "flatten" it out
   and convert it to the correct game format. To do this, use a queue to do a
   breadth-first traversal to assign a unique integer to the non-leaf nodes. This
-  integer represents an array index to either the left or right subtrees' data
+  integer represents an array index to either the right or left subtrees' data
   at a particular point in the tree.

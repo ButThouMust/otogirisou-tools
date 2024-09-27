@@ -136,7 +136,7 @@ Read 3 bytes at 0x04282 for metadata pointer: [83 DD 07] -> $07DD83 (0x3DD83).
     Because this is TILE data:
     - Total metadata is 4 bytes at 0x3DD83: [42 00 00 30].
     - Structure size is 6 bytes at 0x04282: [83 DD 07 00 40 10].
-    - RLE TILE data ranges from    0x3DD87 to 0x03E2C8 (0x542 bytes).
+    RLE TILE data ranges from    0x3DD87 to 0x3E2C8 (0x542 bytes).
 
 Skip 6 bytes from start of last TILE structure.
 Read 3 bytes at 0x04288 for metadata pointer: [57 C8 07] -> $07C857 (0x3C857).
@@ -145,7 +145,7 @@ Read 3 bytes at 0x04288 for metadata pointer: [57 C8 07] -> $07C857 (0x3C857).
     Because this is TILE data:
     - Total metadata is 4 bytes at 0x3C857: [06 00 00 00].
     - Structure size is 6 bytes at 0x04288: [57 C8 07 00 20 11].
-    - RLE TILE data ranges from    0x3C85B to 0x03C86D (0x13 bytes).
+    RLE TILE data ranges from    0x3C85B to 0x3C86D (0x13 bytes).
 
 Skip 6 bytes from start of last TILE structure.
 Read 3 bytes at 0x0428E for metadata pointer: [ED E2 07] -> $07E2ED (0x3E2ED).
@@ -154,7 +154,7 @@ Read 3 bytes at 0x0428E for metadata pointer: [ED E2 07] -> $07E2ED (0x3E2ED).
     Because this is TILEMAP data:
     - Total metadata is 6  bytes at 0x3E2ED: [00 08 02 01 20 1C].
     - Structure size is 10 bytes at 0x0428E: [ED E2 07 00 10 00 08 00 00 00]
-    - RLE TILEMAP data ranges from  0x3E2F3 - 0x3E632 (0x340 bytes).
+    RLE TILEMAP data ranges from  0x3E2F3 - 0x3E632 (0x340 bytes).
 
 Skip 10 bytes from start of last TILEMAP structure.
 Read 3 bytes at 0x04298 for metadata pointer: [C9 E2 07] -> $07E2C9 (0x3E2C9).
@@ -163,7 +163,7 @@ Read 3 bytes at 0x04298 for metadata pointer: [C9 E2 07] -> $07E2C9 (0x3E2C9).
     Because this is PALETTE data:
     - Total metadata is 4 bytes at 0x3E2ED: [23 00 04 00].
     - Structure size is 7 bytes at 0x0428E: [ED E2 07 00 10 00 08]
-    - Palette data is [23] - 3 bytes = 0x20 (32 bytes = 16 color values).
+    Palette data is [23] - 3 bytes = 0x20 (32 bytes = 16 color values).
 
 ################################################################################
 ################################################################################
