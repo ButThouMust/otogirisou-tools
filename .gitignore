@@ -24,6 +24,8 @@ OLD/
 script/DUMP*.txt
 script/analysis/**
 script/*.bin
+tables/huffman code dump.txt
+tables/raw huffman tree data.txt
 
 # Do not upload any log files
 logs/**
