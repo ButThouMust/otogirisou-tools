@@ -61,19 +61,18 @@ tools\atlas.exe %uncompScriptROM% %scriptTranslationFile% > logs\log_atlas_uncom
 :: - Huffman tree structure "flattened out" in the correct format for the game
 :: - a 9 byte file containing the 3 start points for the story
 
-@echo Please update the address in the batch file for the end of the uncompressed script...
-@pause
-
 :: Important: Whenever you update %scriptTranslationFile%, you must open
 :: %uncompScriptROM% in a hex editor and get the hexadecimal offset for the end*
 :: of the file (if over 2 MB). The batch file will prompt you for this.
 :: *: If this file happens to be 2 MB, use the offset of the last non-zero byte.
-@set uncompScriptEndPos=213822
+:: @echo Please update the address in the batch file for the end of the uncompressed script...
+:: @pause
+:: @set uncompScriptEndPos=2132dd
 
 :: I prefer manually updating the script offset like above (don't need to change
 :: if testing a change to something other than the script), but you can enter
 :: it in as user input if you prefer.
-:: set /P uncompScriptEndPos="Enter the hex offset of the end of the uncompressed script: "
+@set /P uncompScriptEndPos="Enter the hex offset of the end of the uncompressed script: "
 
 :: Be sure to delete the previous Huffman script so that the new script gets
 :: written into a completely fresh, blank file. Avoids instances where the
@@ -101,6 +100,11 @@ tools\asar.exe "asm\linebreaking, kerning, honorifics.asm" %huffScriptROM%
 tools\asar.exe "asm\insert graphics.asm" %huffScriptROM%
 tools\asar.exe "asm\otogirisou expand ROM + insert font + insert huff script.asm" %huffScriptROM%
 
+:: optional patch to modify the game's font shadowing routine to hopefully make
+:: text more readable when the background graphics is just solid white
+:: feel free to comment this line out if you so desire
+tools\asar.exe "asm\modify font shadowing.asm" %huffScriptROM%
+
 :: update the text for the file select and name entry screen (what characters,
 :: plus their positions on screen), as well as text for choice options
 tools\atlas.exe %huffScriptROM% ".\script\update name entry, file select.txt" > logs\log_atlas_huff_script.txt
@@ -114,17 +118,17 @@ tools\atlas.exe %huffScriptROM% ".\script\update name entry, file select.txt" > 
 :: the redumped script will contain what data to set at $02A627 (linear 0x12627)
 :: three times, to let you view a specific screen of text from a new save file
 
-@echo Please update the address in the batch file for the end of the Huffman script...
-@pause
 
 :: Similarly, the batch file will prompt you again to change the end offset for
 :: the Huffman script in the ROM. Go to offset 0x4539B and scroll down until you
 :: find a big wall of [00] bytes (it should be in the first MB, before offset
 :: 0xFFFFF). Change this variable to the position of the last non-zero byte.
-@set huffScriptEndPos=b4714
+:: @echo Please update the address in the batch file for the end of the Huffman script...
+:: @pause
+:: @set huffScriptEndPos=b45a7
 
 :: Same as before, allow for user input if the end user prefers.
-:: set /P huffScriptEndPos="Enter the hex offset of the end of the Huffman script: "
+@set /P huffScriptEndPos="Enter the hex offset of the end of the Huffman script: "
 
 java -classpath %srcPath% HuffScriptDumper %huffScriptROM% %translationTableFile% %redumpedScriptTranslation% 4539b %huffScriptEndPos%
 
