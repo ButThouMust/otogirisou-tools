@@ -42,10 +42,10 @@ org $07A4E6
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; alters the graphics structure list for graphics ID 0x4E, to replace one knife
-; used for animations with one that ultimately went unused in the game
+; used in graphics ID 0x52 with a knife that ultimately went unused in the game
 
 ; all you have to do is change out the tileset and tilemap, and change where the
-; tileset gets drawn on screen
+; tileset gets drawn on screen; the existing palette works fine
 
 UnusedKnifeTileset = $079653
 UnusedKnifeTilemap = $07997E
