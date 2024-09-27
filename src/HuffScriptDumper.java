@@ -169,7 +169,8 @@ public class HuffScriptDumper {
             }
 
             // LSB 1 -> use left tree ;; LSB 0 -> use right tree
-            boolean useLeftTree = (huffmanBuffer & 0x1) == 1;
+            // boolean useLeftTree = (huffmanBuffer & 0x1) == 1;
+            boolean useLeftTree = (huffmanBuffer & 0x1) == HelperMethods.LEFT_BIT_INT;
 
             // update state of and position in the Huffman buffer
             bitOffset = (bitOffset + 1) & 0x7;
@@ -182,11 +183,13 @@ public class HuffScriptDumper {
 
             if (useLeftTree) {
                 huffTreeValue = huffLeftTrees[huffTreeValue];
-                huffCode += "1";
+                // huffCode += "1";
+                huffCode += HelperMethods.LEFT_BIT;
             }
             else {
                 huffTreeValue = huffRightTrees[huffTreeValue];
-                huffCode += "0";
+                // huffCode += "0";
+                huffCode += HelperMethods.RIGHT_BIT;
             }
 
             // put spaces between every 8 bits in a Huffman code

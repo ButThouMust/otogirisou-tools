@@ -320,17 +320,17 @@ public class HuffmanFromReinsertedScript {
     // -------------------------------------------------------------------------
 
     /**
-     * Given a table file hex value, obtain its Huffman code. Note that these
-     * are currently stored as Strings in the interest of not losing leading 0
-     * bits. You may be able to get a performance boost with integer variables.
+     * Given a table file hex value, obtain its Huffman code. Note about this
+     * implementation: Huffman codes are stored primarily as ints with their
+     * lengths separate, and secondarily as Strings of binary digits.
      * For both the original Japanese script and my English scripts, 32-bit ints
-     * hold enough data for the codes themselves. You also need to keep track of
-     * their lengths separately.
+     * hold enough data for the codes themselves. You might even be able to pack
+     * each code/length pair into one int variable, but not worth the extra
+     * coding work to me.
      */
-    private static HashMap<Integer, String> huffmanCodes;
-
     private static HashMap<Integer, Integer> huffmanCodesBits;
     private static HashMap<Integer, Integer> huffmanCodeLengths;
+    private static HashMap<Integer, String> huffmanCodes;
 
     private static class HuffmanNode implements Comparable<HuffmanNode> {
         private int hexValue;
