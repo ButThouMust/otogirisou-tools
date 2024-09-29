@@ -87,8 +87,8 @@ public class HuffScriptDumper {
     private static int scriptStartBankOffset;
     private static int scriptStartBankNumber;
 
-    private static int[] huffLeftTrees = new int[HelperMethods.HUFF_TABLE_ENTRIES];
-    private static int[] huffRightTrees = new int[HelperMethods.HUFF_TABLE_ENTRIES];
+    private static int[] huffLeftTrees;
+    private static int[] huffRightTrees;
 
     private static int bitOffset;
     private static int huffmanBuffer;
@@ -99,16 +99,18 @@ public class HuffScriptDumper {
     private static int currByteOffset;
 
     private static void readHuffmanTreeData() throws IOException {
+        huffLeftTrees = new int[HelperMethods.HUFF_TABLE_ENTRIES];
         romFile.seek(HelperMethods.HUFF_LEFT_OFFSET);
         int data = 0;
-        for (int i = 0; i < HelperMethods.HUFF_TABLE_ENTRIES; i++) {
+        for (int i = 0; i < huffLeftTrees.length; i++) {
             data = romFile.readUnsignedByte();
             data |= (romFile.readUnsignedByte() << 8);
             huffLeftTrees[i] = data;
         }
 
+        huffRightTrees = new int[HelperMethods.HUFF_TABLE_ENTRIES];
         romFile.seek(HelperMethods.HUFF_RIGHT_OFFSET);
-        for (int i = 0; i < HelperMethods.HUFF_TABLE_ENTRIES; i++) {
+        for (int i = 0; i < huffRightTrees.length; i++) {
             data = romFile.readUnsignedByte();
             data |= (romFile.readUnsignedByte() << 8);
             huffRightTrees[i] = data;
@@ -119,16 +121,6 @@ public class HuffScriptDumper {
     // -------------------------------------------------------------------------
     // "API" for reading raw binary data from the script
     // -------------------------------------------------------------------------
-
-    /*
-    private static int getCPUOffset(int romOffset) {
-        int bankOffset = (romOffset & 0xFFFF) | 0x8000;
-        int bankNum = 1 + (romOffset - bankOffset) / 0x8000;
-
-        int cpuOffset = (bankNum << 16) | bankOffset;
-        return cpuOffset;
-    }
-    */
 
     // uses the independent "current byte offset"; used for navigating the script
     private static int getCPUOffsetVar() {
@@ -169,7 +161,6 @@ public class HuffScriptDumper {
             }
 
             // LSB 1 -> use left tree ;; LSB 0 -> use right tree
-            // boolean useLeftTree = (huffmanBuffer & 0x1) == 1;
             boolean useLeftTree = (huffmanBuffer & 0x1) == HelperMethods.LEFT_BIT_INT;
 
             // update state of and position in the Huffman buffer
@@ -183,12 +174,10 @@ public class HuffScriptDumper {
 
             if (useLeftTree) {
                 huffTreeValue = huffLeftTrees[huffTreeValue];
-                // huffCode += "1";
                 huffCode += HelperMethods.LEFT_BIT;
             }
             else {
                 huffTreeValue = huffRightTrees[huffTreeValue];
-                // huffCode += "0";
                 huffCode += HelperMethods.RIGHT_BIT;
             }
 
@@ -555,8 +544,9 @@ public class HuffScriptDumper {
         // index into script pointer list, and get that pointer's assigned number)
         int currPosInScriptPtrList = 0;
 
-        // it is useful to have the previous character/control code (but usually
-        // not control code arguments) for making the script output pretty
+        // it is useful to know the previous character/control code (but usually
+        // not control code arguments) for making the script output easier to
+        // read and edit for a translation
         int prevCharEncoding = -1;
 
         // the format of a SET FLAG control code is <code><ID><value>
@@ -609,7 +599,7 @@ public class HuffScriptDumper {
             }
 
             // get a character and print it to the text file
-            // also do a line break before it if a line in script begins with a
+            // also do line break before it if line in script begins with a
             // bunch of non-text control codes
             int charEncoding = readCharacter();
             boolean isText = isCharEncodingText(charEncoding);
@@ -704,8 +694,6 @@ public class HuffScriptDumper {
                 switch (charEncoding) {
                     // add line breaks in dump after these control codes
                     case HelperMethods.LINE_00:
-                    // case HelperMethods.CREDITS_09:
-                    // case HelperMethods.CREDITS_0C:
                     case HelperMethods.END_CHOICE_1C:
                         scriptOutput.newLine();
 
@@ -714,6 +702,7 @@ public class HuffScriptDumper {
                         printedFirstCharForLine = false;
                         break;
 
+                    case HelperMethods.JMP_CC_04:
                     case HelperMethods.SET_FLAG_22:
                         scriptOutput.newLine();
                         // output the memory address that it modifies
@@ -728,18 +717,43 @@ public class HuffScriptDumper {
                         printedFirstCharForLine = false;
                         break;
 
-                    // print CPU offset for script after these control codes
+                    // typically, you will want to print the script position
+                    // after a JMP 03 code; however, you shouldn't if the JMP
+                    // is right after a pointer target (EMBWRITE) for a choice
+                    // i.e. the option's text is not the same as the text that
+                    // gets printed when you actually select the option
                     case HelperMethods.JMP_03:
-                    case HelperMethods.JMP_CC_04:
+                        if (justWrotePointerComment) {
+                            switch (prevCharEncoding) {
+                                // got this list by searching through the script
+                                // dump myself for EMBWRITEs just before JMPs
+                                case HelperMethods.JMP_03:
+                                case HelperMethods.CHOICE_19:
+                                case HelperMethods.CHOICE_1A:
+                                case HelperMethods.END_CHOICE_1C:
+                                    justWrotePointerComment = false;
+                                    onNewLine = true;
+                                    printedFirstCharForLine = false;
+
+                                    break;
+                                default:
+                                    scriptOutput.newLine();
+                                    scriptOutput.newLine();
+                                    printROMFilePos();
+
+                                    justWrotePointerComment = true;
+                                    onNewLine = true;
+                                    printedFirstCharForLine = false;
+                                    break;
+                            }
+                        }
+                        break;
+
+                    // always print script position after these control codes
                     case HelperMethods.CHOICE_19:
                     case HelperMethods.CHOICE_1A:
                     case HelperMethods.CLEAR_25:
                     case HelperMethods.CLEAR_27:
-                        if (charEncoding == HelperMethods.JMP_CC_04) {
-                            scriptOutput.newLine();
-                            printMemAddrOfFlagValue(progressFlagID);
-                        }
-
                         scriptOutput.newLine();
                         scriptOutput.newLine();
                         printROMFilePos();
