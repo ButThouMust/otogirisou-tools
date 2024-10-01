@@ -362,9 +362,9 @@ public class HuffScriptDumper {
             // pointers in the script can only appear directly after certain
             // control codes, as in not after actual characters
             int charEncoding = readCharacter();
-            if (charEncoding >= HelperMethods.LINE_00) {
+            if (HelperMethods.isCtrlCode(charEncoding)) {
                 // choices are special cases that the regular algorithm doesn't cover
-                if (charEncoding == HelperMethods.CHOICE_19 || charEncoding == HelperMethods.CHOICE_1A) {
+                if (HelperMethods.isChoiceCode(charEncoding)) {
                     // both choice codes use three args and a variable number of
                     // pointers, which is based on the first arg
                     int arg0 = readCharacter();
@@ -504,7 +504,7 @@ public class HuffScriptDumper {
     }
     
     private static boolean isCharEncodingText(int charEncoding) {
-        if (charEncoding < HelperMethods.MIN_CTRL_CODE) {
+        if (!HelperMethods.isCtrlCode(charEncoding)) {
             return true;
         }
         boolean isText = false;
@@ -615,7 +615,7 @@ public class HuffScriptDumper {
 
             // set script status flags when a text character
             // but otherwise print out nothing else
-            if (charEncoding < HelperMethods.MIN_CTRL_CODE) {
+            if (!HelperMethods.isCtrlCode(charEncoding)) {
                 justWrotePointerComment = false;
                 onNewLine = false;
                 printedFirstCharForLine = true;
@@ -624,7 +624,7 @@ public class HuffScriptDumper {
             // and/or print any pointers
             else {
                 // choices are special cases that the regular algorithm doesn't cover
-                if (charEncoding == HelperMethods.CHOICE_19 || charEncoding == HelperMethods.CHOICE_1A) {
+                if (HelperMethods.isChoiceCode(charEncoding)) {
                     // both choice codes use three args and a variable number of
                     // pointers, which is based on the first arg
                     int arg0 = readCharacter();

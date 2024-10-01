@@ -1,9 +1,9 @@
 public class HelperMethods {
 
     public static final int MAX_ROM_BANK = 0x1F;
-    public static final int BYTE = 8;
+    public static final int NUM_BITS_IN_BYTE = 8;
     public static final int NUM_BYTES_IN_PTR = 3;
-    public static final int PTR_SIZE_BITS = BYTE * NUM_BYTES_IN_PTR;
+    public static final int PTR_SIZE_BITS = NUM_BITS_IN_BYTE * NUM_BYTES_IN_PTR;
 
     // constants for control code argument table
     public static final int NUM_CTRL_CODES = 0x47;
@@ -49,6 +49,9 @@ public class HelperMethods {
     // memory address for start of save file progress flags
     public static final int FLAG_BASE_ADDRESS = 0x1BEF;
 
+    // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+
     // convert a LoROM offset into a "hex editor" file offset
     public static int getFileOffset(int ramOffset) {
         int bankNum = (ramOffset >> 16) & 0xFF;
@@ -74,10 +77,28 @@ public class HelperMethods {
         // return bankOffset >= 0x8000; && bankNum <= MAX_ROM_BANK;
     }
 
+    // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+
     public static String removeFileExtension(String filename) {
         int periodIndex = filename.lastIndexOf('.');
         return periodIndex == -1 ? filename : filename.substring(0, periodIndex);
     }
+
+    // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
+
+    public static boolean isCtrlCode(int charEncoding) {
+        return charEncoding >= MIN_CTRL_CODE &&
+               charEncoding <= MIN_CTRL_CODE + NUM_CTRL_CODES - 1;
+    }
+
+    public static boolean isChoiceCode(int charEncoding) {
+        return charEncoding == CHOICE_19 || charEncoding == CHOICE_1A;
+    }
+
+    // -------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
 
     public static int convertBGR15ToRGB24(int colorValue15) {
         // convert 15-bit BGR to 24-bit RGB
