@@ -15,8 +15,19 @@ incbin "graphics/recompressed TL'd title logo TILEMAP.bin" -> $07D4B5
 
 ; replace file select prompts like "begin" or "delete"
 ; tileset must be <= 536 bytes; tilemap must be <= 389 bytes
-incbin "graphics/recompressed TL'd file select TILES.bin" -> $07E637
-incbin "graphics/recompressed TL'd file select TILEMAP.bin" -> $07E855
+; incbin "graphics/recompressed TL'd file select TILES.bin" -> $07E637
+incbin "graphics/recompressed file select prompts - new EN tileset squish 'D' no file.bin" -> $07E637
+; update the number of tiles that get copied in
+org $07E633
+    db $2d
+; incbin "graphics/recompressed TL'd file select TILEMAP.bin" -> $07E855
+incbin "graphics/recompressed file select prompts - new EN tilemap squish 'D' no file.bin" -> $07E855
+; circularly shift the palette values back one position
+;   purpose: versus the stock palette, the palette that superfamiconv generated
+;   for the tileset ended up saving a lot of space when compressing the tileset
+;   specifically, 557 (not fit) vs 415 (fits)
+org $07E9E0
+    dw $0842, $3610, $D2F7
 
 ; use new dimensions for the rectangles that surround file select prompts
 ; update which sprite IDs are used, and update a pointer to one of them
@@ -33,7 +44,7 @@ incbin "graphics/recompressed TL'd name entry TILES.bin" -> $07DD87
 ; tileset must be <= 1336 bytes; tilemap must be <= 163 bytes
 incbin "graphics/recompressed TL'd nami TILES.bin" -> $07A4EA
 incbin "graphics/recompressed TL'd nami TILEMAP.bin" -> $07AA34
-; also update the number of tiles that are copied in
+; update the number of tiles that are copied in
 org $07A4E6
     db $42
 
@@ -42,7 +53,7 @@ org $07A4E6
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; alters the graphics structure list for graphics ID 0x4E, to replace one knife
-; used in graphics ID 0x52 with a knife that ultimately went unused in the game
+; that is also used in graphics ID 0x52, with a knife that went unused
 
 ; all you have to do is change out the tileset and tilemap, and change where the
 ; tileset gets drawn on screen; the existing palette works fine
