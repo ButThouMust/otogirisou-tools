@@ -89,4 +89,4 @@ SHA-256: d85b6764a35f4dcee3ab5843df1c467ebdfe5f02236043a4e466e6975a3f70ca
   [Atlas](https://www.romhacking.net/utilities/224/),
   [Floating IPS](https://www.romhacking.net/utilities/1040/), and
   [superfamicheck](https://github.com/Optiroc/SuperFamicheck).
-  [xkas]https://www.romhacking.net/utilities/269/) is also included but not really required for this particular patch.
+  [xkas](https://www.romhacking.net/utilities/269/) is also included but not really required for this particular patch.
