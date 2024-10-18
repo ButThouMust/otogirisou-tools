@@ -1,4 +1,6 @@
 
+package generate_font;
+
 public class FontInfo implements Comparable<FontInfo> {
     private short hexValue;
     private String encoding;

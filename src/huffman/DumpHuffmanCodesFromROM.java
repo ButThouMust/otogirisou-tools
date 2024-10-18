@@ -1,6 +1,8 @@
 
 // code adapted from scan.cpp from Guest
 
+package huffman;
+
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,6 +12,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Stack;
 import java.io.BufferedReader;
+
+import static header_files.HelperMethods.*;
 
 public class DumpHuffmanCodesFromROM {
 
@@ -126,8 +130,8 @@ public class DumpHuffmanCodesFromROM {
         RandomAccessFile romStream = new RandomAccessFile(romFilename, "r");
 
         // start reading data for the left subtrees for the Huffman tree
-        romStream.seek(HelperMethods.HUFF_LEFT_OFFSET);
-        for (int i = 0; i < HelperMethods.HUFF_TABLE_ENTRIES; i++) {
+        romStream.seek(HUFF_LEFT_OFFSET);
+        for (int i = 0; i < HUFF_TABLE_ENTRIES; i++) {
             treeData.add(new HuffmanNode());
             HuffmanNode node = treeData.get(i);
 
@@ -139,8 +143,8 @@ public class DumpHuffmanCodesFromROM {
             node.leftHuffCode = "";
         }
 
-        romStream.seek(HelperMethods.HUFF_RIGHT_OFFSET);
-        for (int i = 0; i < HelperMethods.HUFF_TABLE_ENTRIES; i++) {
+        romStream.seek(HUFF_RIGHT_OFFSET);
+        for (int i = 0; i < HUFF_TABLE_ENTRIES; i++) {
             HuffmanNode node = treeData.get(i);
 
             node.rightHuffOffset = romStream.getFilePointer();
@@ -162,10 +166,10 @@ public class DumpHuffmanCodesFromROM {
     }
 
     // outputs all the lines as described above to a text file
-    private static void treeDataFileOutput() throws IOException {
-        FileWriter treeOutputWriter = new FileWriter("tables\\raw huffman tree data.txt");
+    private static void treeDataFileOutput(String treeOutputFilename) throws IOException {
+        FileWriter treeOutputWriter = new FileWriter(treeOutputFilename);
 
-        for (int i = 0; i < HelperMethods.HUFF_TABLE_ENTRIES; i++) {
+        for (int i = 0; i < HUFF_TABLE_ENTRIES; i++) {
             HuffmanNode node = treeData.get(i);
             treeOutputWriter.write(treeDataLineOutput(i, node));
             treeOutputWriter.flush();
@@ -180,7 +184,7 @@ public class DumpHuffmanCodesFromROM {
     private static void getHuffLeaves() {
         // get all the Huffman leaves by doing a depth-first traversal
         Stack<HuffmanNode> stack = new Stack<HuffmanNode>();
-        HuffmanNode huffmanRoot = treeData.get(HelperMethods.ROOT_ENTRY_POS);
+        HuffmanNode huffmanRoot = treeData.get(ROOT_ENTRY_POS);
         stack.push(huffmanRoot);
 
         while (!stack.isEmpty()) {
@@ -190,7 +194,7 @@ public class DumpHuffmanCodesFromROM {
             // 0x0000 thru 0x8000 = 0 thru 32768;   inner node, push
             // 0x8001 thru 0xFFFF = -32767 thru -1; leaf node, done
             // examine left subtree, push onto stack if data value is < 0x8000
-            String leftHuff = node.leftHuffCode + HelperMethods.LEFT_BIT;
+            String leftHuff = node.leftHuffCode + LEFT_BIT;
             if (node.l_data >= 0) {
                 HuffmanNode leftNode = treeData.get(node.l_data);
                 leftNode.leftHuffCode = leftHuff;
@@ -205,7 +209,7 @@ public class DumpHuffmanCodesFromROM {
             }
 
             // same process but with the right subtree
-            String rightHuff = node.rightHuffCode + HelperMethods.RIGHT_BIT;
+            String rightHuff = node.rightHuffCode + RIGHT_BIT;
             if (node.r_data >= 0) {
                 HuffmanNode rightNode = treeData.get(node.r_data);
                 rightNode.leftHuffCode = rightHuff;
@@ -220,8 +224,8 @@ public class DumpHuffmanCodesFromROM {
         }
     }
 
-    private static void huffCodesFileOutput() throws IOException {
-        FileWriter huffCodeWriter = new FileWriter("tables\\huffman code dump.txt");
+    private static void huffCodesFileOutput(String huffCodesOutput) throws IOException {
+        FileWriter huffCodeWriter = new FileWriter(huffCodesOutput);
 
         if (SORT_BY_TBL_VALUE) {
             Collections.sort(huffLeaves);
@@ -237,22 +241,24 @@ public class DumpHuffmanCodesFromROM {
     // *************************************************************************
 
     public static void main(String[] args) throws IOException {
-        if (args.length != 2) {
-            System.out.println("Sample usage: java DumpHuffmanCodesFromROM romFile tableFile");
+        if (args.length != 4) {
+            System.out.println("Sample usage: java DumpHuffmanCodesFromROM romFile tableFile treeRawDataOutput huffCodesOutput");
             return;
         }
         String romFilename = args[0];
         String tableFilename = args[1];
+        String treeRawDataOutput = args[2];
+        String huffCodesOutput = args[3];
 
-        treeData = new ArrayList<>(HelperMethods.HUFF_TABLE_ENTRIES);
-        huffLeaves = new ArrayList<>(HelperMethods.HUFF_TABLE_ENTRIES);
+        treeData = new ArrayList<>(HUFF_TABLE_ENTRIES);
+        huffLeaves = new ArrayList<>(HUFF_TABLE_ENTRIES);
         tableFileMap = new HashMap<>();
 
         readTableFile(tableFilename);
         getTreeData(romFilename);
         getHuffLeaves();
 
-        treeDataFileOutput();
-        huffCodesFileOutput();
+        treeDataFileOutput(treeRawDataOutput);
+        huffCodesFileOutput(huffCodesOutput);
     }
 }

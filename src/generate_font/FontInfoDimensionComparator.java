@@ -1,3 +1,6 @@
+
+package generate_font;
+
 import java.util.Comparator;
 
 /**

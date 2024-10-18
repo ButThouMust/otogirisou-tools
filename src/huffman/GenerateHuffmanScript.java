@@ -1,3 +1,6 @@
+
+package huffman;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -13,7 +16,9 @@ import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
-public class HuffmanFromReinsertedScript {
+import static header_files.HelperMethods.*;
+
+public class GenerateHuffmanScript {
 
     private static RandomAccessFile romFile;
 
@@ -21,12 +26,12 @@ public class HuffmanFromReinsertedScript {
     // Lists for how many and what types of arguments are there for control codes
     // -------------------------------------------------------------------------
 
-    private static int numArgs[] = new int[HelperMethods.NUM_CTRL_CODES];
-    private static int argTypes[] = new int[HelperMethods.NUM_CTRL_CODES];
+    private static int numArgs[] = new int[NUM_CTRL_CODES];
+    private static int argTypes[] = new int[NUM_CTRL_CODES];
 
     private static void getCtrlCodeArgTable() throws IOException {
-        romFile.seek(HelperMethods.CTRL_CODE_ARG_TBL);
-        for (int i = 0; i < HelperMethods.NUM_CTRL_CODES; i++) {
+        romFile.seek(CTRL_CODE_ARG_TBL);
+        for (int i = 0; i < NUM_CTRL_CODES; i++) {
             numArgs[i] = romFile.readUnsignedByte();
             argTypes[i] = romFile.readUnsignedByte();
         }
@@ -56,9 +61,9 @@ public class HuffmanFromReinsertedScript {
         try {
             // assume file is sorted in increasing order by character code value
             BufferedReader tableFileStream = new BufferedReader(new FileReader(tableFilename));
-            tableHexValues = new ArrayList<>(HelperMethods.NUM_ENCODINGS);
-            encodings = new HashMap<>(HelperMethods.NUM_ENCODINGS);
-            charCounts = new HashMap<>(HelperMethods.NUM_ENCODINGS);
+            tableHexValues = new ArrayList<>(NUM_ENCODINGS);
+            encodings = new HashMap<>(NUM_ENCODINGS);
+            charCounts = new HashMap<>(NUM_ENCODINGS);
 
             // basic format of a table file line is "[hex value]=[character]\n"
             String line;
@@ -132,7 +137,7 @@ public class HuffmanFromReinsertedScript {
 
     private static int getCPUOffset() throws IOException {
         int romOffset = (int) (romFile.getFilePointer() & 0xFFFFFF);
-        return HelperMethods.getRAMOffset(romOffset);
+        return getRAMOffset(romOffset);
     }
 
     // -------------------------------------------------------------------------
@@ -187,8 +192,8 @@ public class HuffmanFromReinsertedScript {
         ptrValues = new HashMap<>();
         ptrsWithPositionAsValue = new HashMap<>();
 
-        romFile.seek(HelperMethods.START_POINT_LIST);
-        for (int i = 0; i < HelperMethods.NUM_START_POINTS; i++) {
+        romFile.seek(START_POINT_LIST);
+        for (int i = 0; i < NUM_START_POINTS; i++) {
             int location = (int) romFile.getFilePointer();
             ptrLocations.add(location);
 
@@ -210,7 +215,7 @@ public class HuffmanFromReinsertedScript {
     private static void countCharacters() throws IOException {
         System.out.println("Getting frequencies of characters...");
         romFile.seek(scriptStart);
-        numPointers = HelperMethods.NUM_START_POINTS;
+        numPointers = NUM_START_POINTS;
 
         // go to start of reinserted script and start reading characters
         while (romFile.getFilePointer() < scriptEnd) {
@@ -220,9 +225,9 @@ public class HuffmanFromReinsertedScript {
 
             // if got a control code, have to count its non-pointer arguments
             // take note of the uncompressed pointers' positions and values
-            if (HelperMethods.isCtrlCode(charEncoding)) {
+            if (isCtrlCode(charEncoding)) {
                 // choices are special cases that the regular algorithm doesn't cover
-                if (HelperMethods.isChoiceCode(charEncoding)) {
+                if (isChoiceCode(charEncoding)) {
                     // both choice codes use three args and a variable number of
                     // pointers, which is based on the first arg
                     int arg0 = readCharacter();
@@ -251,10 +256,10 @@ public class HuffmanFromReinsertedScript {
 
                     for (int i = 0; i < argCount; i++) {
                         switch (argType & 0x1) {
-                            case HelperMethods.CHAR_ARG:
+                            case CHAR_ARG:
                                 incrementCount(readCharacter());
                                 break;
-                            case HelperMethods.PTR_ARG:
+                            case PTR_ARG:
                                 int location = (int) romFile.getFilePointer();
                                 int value = readPointer();
 
@@ -269,7 +274,7 @@ public class HuffmanFromReinsertedScript {
                 }
 
                 // indicate general progress as program runs
-                if (charEncoding == HelperMethods.NOP_1D) {
+                if (charEncoding == NOP_1D) {
                     String format = "Got to ending @ [$%06X]";
                     System.out.println(String.format(format, getCPUOffset()));
                 }
@@ -384,7 +389,7 @@ public class HuffmanFromReinsertedScript {
         while (q.size() > 1) {
             HuffmanNode first = q.remove();
             HuffmanNode second = q.remove();
-            HuffmanNode combine = new HuffmanNode(HelperMethods.NO_HEX_VAL, first.count + second.count);
+            HuffmanNode combine = new HuffmanNode(NO_HEX_VAL, first.count + second.count);
             combine.left = first;
             combine.right = second;
             q.add(combine);
@@ -402,8 +407,8 @@ public class HuffmanFromReinsertedScript {
     private static void convertTreeToGameFormat(HuffmanNode root) throws IOException {
         // target data format: two linear data blocks each with 0x5B7 entries for
         // how to navigate the Huffman tree; take all of the non-leaf nodes
-        int leftSubtreeData[] = new int[HelperMethods.NUM_HUFFMAN_ENTRIES];
-        int rightSubtreeData[] = new int[HelperMethods.NUM_HUFFMAN_ENTRIES];
+        int leftSubtreeData[] = new int[NUM_HUFFMAN_ENTRIES];
+        int rightSubtreeData[] = new int[NUM_HUFFMAN_ENTRIES];
 
         // An array index corresponds to a particular non-leaf node in the tree.
         //     -0-      Left: An example indexing for a perfect 3 level tree.
@@ -415,7 +420,7 @@ public class HuffmanFromReinsertedScript {
 
         // assign a unique number to all the non-leaves as above; note that the
         // game expects root to be at the end, so go in decreasing order to match
-        int dataIndex = HelperMethods.ROOT_ENTRY_POS;
+        int dataIndex = ROOT_ENTRY_POS;
         HashMap<HuffmanNode, Integer> dataIndexForNode = new HashMap<>();
         traversal.add(root);
         while (!traversal.isEmpty()) {
@@ -445,8 +450,8 @@ public class HuffmanFromReinsertedScript {
         if (dataIndex < 0) {
             System.out.println("WARNING: Huffman tree will not fit in original space");
             String format = "Used 0x%X non-leaf nodes of 0x%X";
-            int numEntriesUsed = HelperMethods.NUM_HUFFMAN_ENTRIES - dataIndex;
-            System.out.println(String.format(format, numEntriesUsed, HelperMethods.NUM_HUFFMAN_ENTRIES));
+            int numEntriesUsed = NUM_HUFFMAN_ENTRIES - dataIndex;
+            System.out.println(String.format(format, numEntriesUsed, NUM_HUFFMAN_ENTRIES));
         }
 
         // with all the values collected, fill in the data arrays
@@ -517,8 +522,8 @@ public class HuffmanFromReinsertedScript {
             return;
         }
         // assemble bits for the code from left to right with Strings
-        collectHuffmanCodeStrings(node.left, code + HelperMethods.LEFT_BIT);
-        collectHuffmanCodeStrings(node.right, code + HelperMethods.RIGHT_BIT);
+        collectHuffmanCodeStrings(node.left, code + LEFT_BIT);
+        collectHuffmanCodeStrings(node.right, code + RIGHT_BIT);
     }
 
     /**
@@ -547,8 +552,8 @@ public class HuffmanFromReinsertedScript {
         // assemble the bits starting from the LSB of the int variable
         // i.e. from "right to left" instead of "left to right" as with Strings
         // purpose: make the "write bits to script" function easier
-        int leftCode = codeSoFar | (HelperMethods.LEFT_BIT_INT << length);
-        int rightCode = codeSoFar | (HelperMethods.RIGHT_BIT_INT << length);
+        int leftCode = codeSoFar | (LEFT_BIT_INT << length);
+        int rightCode = codeSoFar | (RIGHT_BIT_INT << length);
         collectHuffmanCodeBits(node.left, leftCode, length + 1);
         collectHuffmanCodeBits(node.right, rightCode, length + 1);
     }
@@ -653,11 +658,11 @@ public class HuffmanFromReinsertedScript {
         int combinedSize = length + huffmanBitOffset;
 
         // write as many groups of 8 bits as possible
-        while (combinedSize >= HelperMethods.NUM_BITS_IN_BYTE) {
+        while (combinedSize >= NUM_BITS_IN_BYTE) {
             int dataByte = (int) (combinedBuffer & 0xFF);
             huffmanScript.write(dataByte);
-            combinedSize -= HelperMethods.NUM_BITS_IN_BYTE;
-            combinedBuffer >>= HelperMethods.NUM_BITS_IN_BYTE;
+            combinedSize -= NUM_BITS_IN_BYTE;
+            combinedBuffer >>= NUM_BITS_IN_BYTE;
         }
         huffmanBuffer = (int) (combinedBuffer & 0xFF);
         // huffmanBuffer = combinedBuffer & 0xFF;
@@ -694,7 +699,7 @@ public class HuffmanFromReinsertedScript {
         // for sense of scale, original JP Huffman script is from AE401 - F95A7
         // (4B1A7 bytes = 258D38 bits); size should fit within a Java 32-bit int
 
-        int size = numPointers * HelperMethods.PTR_SIZE_BITS;
+        int size = numPointers * PTR_SIZE_BITS;
         for (Integer hexValue : tableHexValues) {
             size += huffmanCodeLengths.get(hexValue) * charCounts.get(hexValue);
         }
@@ -737,7 +742,7 @@ public class HuffmanFromReinsertedScript {
             int filePos = (int) romFile.getFilePointer();
 
             // check to see if we are at one of the three start points
-            if (numStartPointsFound < HelperMethods.NUM_START_POINTS) {
+            if (numStartPointsFound < NUM_START_POINTS) {
                 int startLoc = ptrLocations.get(startPointToLookFor);
                 int startLocationValue = ptrValues.get(startLoc);
 
@@ -751,7 +756,7 @@ public class HuffmanFromReinsertedScript {
                     // so after finding S0, next find S2, then S1, and done
                     // sequence [0, 2, 1] repeats modulo 3, but (-1 % 3) -> -1
                     numStartPointsFound++;
-                    startPointToLookFor = (startPointToLookFor - 1 + HelperMethods.NUM_START_POINTS) % HelperMethods.NUM_START_POINTS;
+                    startPointToLookFor = (startPointToLookFor - 1 + NUM_START_POINTS) % NUM_START_POINTS;
                 }
             }
 
@@ -780,8 +785,8 @@ public class HuffmanFromReinsertedScript {
             // - for non-pointer arguments, insert their Huffman codes
             // - for pointer arguments, note their locations in the script, and
             //   insert 24 placeholder 0 bits to properly align the data
-            if (HelperMethods.isCtrlCode(charEncoding)) {
-                if (HelperMethods.isChoiceCode(charEncoding)) {
+            if (isCtrlCode(charEncoding)) {
+                if (isChoiceCode(charEncoding)) {
                     // both choice codes use three args and a variable number of
                     // pointers, which is based on the first arg
                     int choiceArgs[] = new int[3];
@@ -805,7 +810,7 @@ public class HuffmanFromReinsertedScript {
                         readPointer();
 
                         padScriptWithZeroesForPointer();
-                        compressedSize += HelperMethods.PTR_SIZE_BITS;
+                        compressedSize += PTR_SIZE_BITS;
                     }
                 }
 
@@ -817,20 +822,20 @@ public class HuffmanFromReinsertedScript {
 
                     for (int i = 0; i < argCount; i++) {
                         switch (argType & 0x1) {
-                            case HelperMethods.CHAR_ARG:
+                            case CHAR_ARG:
                                 int arg = readCharacter();
                                 // writeHuffmanCodeStringToScript(arg);
                                 writeHuffmanCodeToScript(arg);
                                 compressedSize += huffmanCodeLengths.get(arg);
                                 break;
-                            case HelperMethods.PTR_ARG:
+                            case PTR_ARG:
                                 filePos = (int) romFile.getFilePointer();
                                 if (ptrLocations.contains(filePos)) {
                                     huffPtrLocations.put(filePos, compressedSize);
                                 }
                                 readPointer();
                                 padScriptWithZeroesForPointer();
-                                compressedSize += HelperMethods.PTR_SIZE_BITS;
+                                compressedSize += PTR_SIZE_BITS;
                                 break;
                         }
                         argType >>= 1;
@@ -838,7 +843,7 @@ public class HuffmanFromReinsertedScript {
                 }
 
                 // for debugging purposes only, indicate progress
-                if (charEncoding == HelperMethods.NOP_1D) {
+                if (charEncoding == NOP_1D) {
                     String format = "Ending @ offset 0x%05X-%d from script start";
                     System.out.println(String.format(format, compressedSize >> 3, compressedSize & 0x7));
                 }
@@ -859,7 +864,7 @@ public class HuffmanFromReinsertedScript {
      */
     private static void insertStartPoints() throws IOException {
         FileOutputStream startPointData = new FileOutputStream("script/start points' script offsets.bin");
-        for (int i = 0; i < HelperMethods.NUM_START_POINTS; i++) {
+        for (int i = 0; i < NUM_START_POINTS; i++) {
             int ptrLocation = ptrLocations.get(i);
             int huffScriptOffset = huffPtrLocations.get(ptrLocation);
             startPointData.write(huffScriptOffset & 0xFF);
@@ -879,7 +884,7 @@ public class HuffmanFromReinsertedScript {
         System.out.println("Now inserting Huffman pointers into script...");
 
         // ignore the pointers for the three start points
-        for (int i = HelperMethods.NUM_START_POINTS; i < ptrLocations.size(); i++) {
+        for (int i = NUM_START_POINTS; i < ptrLocations.size(); i++) {
             int ptrLocation = ptrLocations.get(i);
             int huffPtrLocation = huffPtrLocations.get(ptrLocation);
             int locationBytes = huffPtrLocation >> 3;
@@ -954,7 +959,7 @@ public class HuffmanFromReinsertedScript {
 
         int uncompressedSize = scriptEnd - scriptStart + 1;
         String format0 = "Uncompressed script: %d bits = 0x%X bytes";
-        compressionFile.write(String.format(format0, uncompressedSize * HelperMethods.NUM_BITS_IN_BYTE, uncompressedSize));
+        compressionFile.write(String.format(format0, uncompressedSize * NUM_BITS_IN_BYTE, uncompressedSize));
         compressionFile.newLine();
 
         int compressedSize = calculateHuffmanScriptSize();
@@ -964,12 +969,12 @@ public class HuffmanFromReinsertedScript {
         compressionFile.write(String.format(format1, compressedSize, compressedSizeBytes, leftoverBits));
         compressionFile.newLine();
 
-        int allScriptPtrSize = numPointers * HelperMethods.PTR_SIZE_BITS;
+        int allScriptPtrSize = numPointers * PTR_SIZE_BITS;
         String format2 = "%d pointers -> %d bits (0x%X bytes)";
         compressionFile.write(String.format(format2, numPointers, allScriptPtrSize, allScriptPtrSize >> 3));
         compressionFile.newLine();
 
-        int uncompSizeNoPtrs = uncompressedSize * HelperMethods.NUM_BITS_IN_BYTE - allScriptPtrSize;
+        int uncompSizeNoPtrs = uncompressedSize * NUM_BITS_IN_BYTE - allScriptPtrSize;
         int compSizeNoPtrs = compressedSize - allScriptPtrSize;
         String format3 = "Not counting pointers,  %d bits vs. %d bits -> %2.2f%% compression.";
         double compRatio3 = 100.0 * ((double) compSizeNoPtrs) / ((double) uncompSizeNoPtrs);
@@ -977,7 +982,7 @@ public class HuffmanFromReinsertedScript {
         compressionFile.newLine();
 
         String format4 = "When counting pointers, %d bits vs. %d bits -> %2.2f%% compression.";
-        int uncompressedSizeBits = uncompressedSize * HelperMethods.NUM_BITS_IN_BYTE;
+        int uncompressedSizeBits = uncompressedSize * NUM_BITS_IN_BYTE;
         double compRatio4 = 100.0 * ((double) compressedSize) / ((double) (uncompressedSizeBits));
         compressionFile.write(String.format(format4, uncompressedSizeBits, compressedSize, compRatio4));
         compressionFile.newLine();
@@ -993,7 +998,7 @@ public class HuffmanFromReinsertedScript {
 
     public static void main(String args[]) {
         if (args.length != 4) {
-            System.out.println("Sample usage: java HuffmanFromReinsertedScript rom_name table_file script_start script_end");
+            System.out.println("Sample usage: java GenerateHuffmanScript rom_name table_file script_start script_end");
             return;
         }
 

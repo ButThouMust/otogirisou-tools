@@ -1,3 +1,6 @@
+
+package dump_graphics;
+
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -5,6 +8,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
+import static header_files.HelperMethods.*;
 
 public class ChunsoftPresentsDumper {
 
@@ -47,7 +52,7 @@ public class ChunsoftPresentsDumper {
             logFile = new BufferedWriter(new FileWriter(logName));
         }
 
-        romStream.seek(HelperMethods.getFileOffset(ramOffset));
+        romStream.seek(getFileOffset(ramOffset));
 
         int uncompressedSize = 0;
         int compressedSize = 1;
@@ -155,7 +160,7 @@ public class ChunsoftPresentsDumper {
             // read a BGR15 color value and convert it to an RGB24 color value
             int bgr15 = romStream.readUnsignedByte() | 
                         (romStream.readUnsignedByte() << 8);
-            int rgb24 = HelperMethods.convertBGR15ToRGB24(bgr15);
+            int rgb24 = convertBGR15ToRGB24(bgr15);
 
             // write the RGB24 value to its own file to be used with binxelview
             // byte order is [red8 green8 blue8] for each color i.e. big endian

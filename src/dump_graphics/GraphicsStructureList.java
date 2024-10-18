@@ -1,3 +1,6 @@
+
+package dump_graphics;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -5,6 +8,8 @@ import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashSet;
+
+import static header_files.HelperMethods.*;
 
 public class GraphicsStructureList {
     private GraphicsStructure[] structureList;
@@ -28,13 +33,13 @@ public class GraphicsStructureList {
     }
 
     private void initializeList() throws IOException {
-        if (!HelperMethods.isValidRomOffset(ptrToStructListSize)) {
+        if (!isValidRomOffset(ptrToStructListSize)) {
             String format = "Invalid RAM address - $%06X does not map to ROM";
             throw new IOException(String.format(format, ptrToStructListSize));
         }
         
         romStream = new RandomAccessFile("rom/Otogirisou (Japan).sfc", "r");
-        romStream.seek(HelperMethods.getFileOffset(ptrToStructListSize));
+        romStream.seek(getFileOffset(ptrToStructListSize));
 
         numStructs = romStream.readUnsignedByte();
         structureList = new GraphicsStructure[numStructs];
@@ -70,12 +75,12 @@ public class GraphicsStructureList {
         }
         else {
             for (int i = 0; i < numStructs; i++) {
-                int structRAMOffset = HelperMethods.getRAMOffset((int) romStream.getFilePointer());
+                int structRAMOffset = getRAMOffset((int) romStream.getFilePointer());
                 GraphicsStructure struct = new GraphicsStructure(structRAMOffset);
                 struct.setOutputFolder(outputFolder);
                 struct.dumpData();
                 structureList[i] = struct;
-                romStream.seek(romStream.getFilePointer() + HelperMethods.NUM_BYTES_IN_PTR + struct.getNumBytesToSkip());
+                romStream.seek(romStream.getFilePointer() + NUM_BYTES_IN_PTR + struct.getNumBytesToSkip());
 
                 logFile.write("\n\n" + struct.toString());
             }
@@ -87,7 +92,7 @@ public class GraphicsStructureList {
     }
 
     private void printAutoSFXList(BufferedWriter logFile) throws IOException {
-        romStream.seek(HelperMethods.getFileOffset(ptrToAutoSfxIdList));
+        romStream.seek(getFileOffset(ptrToAutoSfxIdList));
         int numSFXIDs = romStream.readUnsignedByte();
 
         String bytesList = "";

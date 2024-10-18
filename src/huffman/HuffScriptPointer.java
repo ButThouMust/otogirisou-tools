@@ -1,4 +1,6 @@
 
+package huffman;
+
 public class HuffScriptPointer implements Comparable<HuffScriptPointer> {
     private int ptrValue;
     private int ptrValueBitOffset;

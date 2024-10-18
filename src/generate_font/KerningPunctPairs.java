@@ -1,4 +1,6 @@
 
+package generate_font;
+
 public class KerningPunctPairs {
 
     // yes, the lists here are big enough that I had to put them into their own

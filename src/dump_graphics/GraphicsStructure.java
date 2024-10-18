@@ -1,3 +1,6 @@
+
+package dump_graphics;
+
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -6,6 +9,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
+import static header_files.HelperMethods.*;
 
 public class GraphicsStructure implements Comparable<GraphicsStructure> {
 
@@ -94,7 +99,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
     //       to have a different signature for this constructor
     // consider coming up with a better way to handle this
     public GraphicsStructure(int ptrToData, StructureType type) throws IOException {
-        if (!HelperMethods.isValidRomOffset(ptrToData)) {
+        if (!isValidRomOffset(ptrToData)) {
             String format = "Invalid data location for independent structure - $%06X does not map to ROM";
             throw new IOException(String.format(format, ptrToData));
         }
@@ -108,7 +113,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
     }
 
     private int determinePointerToData() throws IOException {
-        if (!HelperMethods.isValidRomOffset(structureLocation)) {
+        if (!isValidRomOffset(structureLocation)) {
             String format = "Invalid RAM offset for structure - $%06X does not map to ROM";
             throw new IOException(String.format(format, structureLocation));
         }
@@ -116,12 +121,12 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         romStream = new RandomAccessFile("rom/Otogirisou (Japan).sfc", "r");
         // the first three bytes at the location of the structure are a 24-bit
         // pointer to some necessary metadata, and then the data itself
-        int romOffset = HelperMethods.getFileOffset(structureLocation);
+        int romOffset = getFileOffset(structureLocation);
         romStream.seek(romOffset);
         int dataPtr = (romStream.readUnsignedByte()) |
                       (romStream.readUnsignedByte() << 8) |
                       (romStream.readUnsignedByte() << 16);
-        if (!HelperMethods.isValidRomOffset(dataPtr)) {
+        if (!isValidRomOffset(dataPtr)) {
             String format = "Structure has invalid RAM offset to data - $%06X @ 0x%05X does not map to ROM";
             throw new IOException(String.format(format, dataPtr, romOffset));
         }
@@ -130,7 +135,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
     }
 
     private StructureType determineType() throws IOException {
-        romStream.seek(HelperMethods.getFileOffset(ptrToData));
+        romStream.seek(getFileOffset(ptrToData));
 
         romStream.readUnsignedByte();
         romStream.readUnsignedByte();
@@ -158,13 +163,13 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
             default:
                 // undefined, throw some kind of error here
                 String format = "Malformed structure - no valid type @ pointer $%06X";
-                throw new IOException(String.format(format, ptrToData + (HelperMethods.NUM_BYTES_IN_PTR - 1)));
+                throw new IOException(String.format(format, ptrToData + (NUM_BYTES_IN_PTR - 1)));
         }
         return type;
     }
 
     private void readStructureMetadata() throws IOException {
-        romStream.seek(HelperMethods.getFileOffset(structureLocation) + HelperMethods.NUM_BYTES_IN_PTR);
+        romStream.seek(getFileOffset(structureLocation) + NUM_BYTES_IN_PTR);
 
         structureMetadata = new int[type.bytesToSkip];
         for (int i = 0; i < structureMetadata.length; i++) {
@@ -173,7 +178,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
     }
 
     private void readPointerMetadata() throws IOException {
-        romStream.seek(HelperMethods.getFileOffset(ptrToData));
+        romStream.seek(getFileOffset(ptrToData));
 
         pointerMetadata = new int[type.metadataSize];
         for (int i = 0; i < pointerMetadata.length; i++) {
@@ -196,9 +201,9 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
     }
 
     public void dumpData() throws IOException {
-        romStream.seek(HelperMethods.getFileOffset(ptrToData) + type.metadataSize);
+        romStream.seek(getFileOffset(ptrToData) + type.metadataSize);
         int dataStart = (int) romStream.getFilePointer();
-        int dataStartRAM = HelperMethods.getRAMOffset(dataStart);
+        int dataStartRAM = getRAMOffset(dataStart);
 
         dataOutputFile = String.format(filenameFormat, dataStartRAM, type.toString(), ".bin");
         logFilename = String.format(filenameFormat, dataStartRAM, type.toString(), " log.txt");
@@ -279,7 +284,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         }
 
         // got 0x80, so done decompressing
-        endOfData = HelperMethods.getRAMOffset((int) romStream.getFilePointer() - 1);
+        endOfData = getRAMOffset((int) romStream.getFilePointer() - 1);
         uncompDataSize = decompressedSize;
         outputFile.close();
     }
@@ -406,13 +411,13 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
     // -------------------------------------------------------------------------
 
     private void dumpPaletteData() throws IOException {
-        // String outputFilename = String.format(outputFolder + "/$%06X palette.bin", HelperMethods.getRAMOffset(romOffset));
+        // String outputFilename = String.format(outputFolder + "/$%06X palette.bin", getRAMOffset(romOffset));
         // FileOutputStream outputFile = new FileOutputStream(outputFilename);
         FileOutputStream outputFile = new FileOutputStream(dataOutputFile);
         // BufferedWriter logFile = new BufferedWriter(new FileWriter(logFilename));
 
         // int size = pointerMetadata[0] - 3;
-        int position = HelperMethods.getRAMOffset((int) romStream.getFilePointer());
+        int position = getRAMOffset((int) romStream.getFilePointer());
         int totalColors = romStream.readUnsignedByte();
         int colorsUsed = romStream.readUnsignedByte();
 
@@ -433,14 +438,14 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
             int byte1 = romStream.readUnsignedByte() & 0x7F;
 
             int colorValue15 = (byte1 << 8) | byte0;
-            int colorValue24 = HelperMethods.convertBGR15ToRGB24(colorValue15);
+            int colorValue24 = convertBGR15ToRGB24(colorValue15);
 
             outputFile.write(byte0);
             outputFile.write(byte1);
 
             logFile.write(String.format("\n" + loopLineFormat, colorValue15, colorValue24));
         }
-        endOfData = HelperMethods.getRAMOffset((int) (romStream.getFilePointer() - 1));
+        endOfData = getRAMOffset((int) (romStream.getFilePointer() - 1));
         outputFile.close();
 
         // note: need to also output metadata if independent structure, so do
@@ -482,9 +487,9 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         // print the type of structure, the pointer value, and where the data actually starts
         // addition to a RAM offset may overflow the bank like 00FFFF -> 010000
         // so have to first convert to ROM offset before addition, then back to RAM offset
-        int dataPtrROM = HelperMethods.getFileOffset(ptrToData);
+        int dataPtrROM = getFileOffset(ptrToData);
         int dataStartROM = dataPtrROM + type.metadataSize;
-        int dataStartCPUAddr = HelperMethods.getRAMOffset(dataStartROM);
+        int dataStartCPUAddr = getRAMOffset(dataStartROM);
 
         if (!isIndepStruct()) {
             String format1 = "$%06X: points to %-7s data at $%06X ($%06X)\n";
@@ -495,7 +500,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
             output += String.format(format1, type.toString(), ptrToData, dataStartCPUAddr);
         }
 
-        int dataEndROM = HelperMethods.getFileOffset(endOfData);
+        int dataEndROM = getFileOffset(endOfData);
         int dataSize = dataEndROM - dataStartROM + 1;
         String format2 = "Data range in ROM:   0x%05X to 0x%05X (size 0x%X)\n";
         output += String.format(format2, dataStartROM, dataEndROM, dataSize);

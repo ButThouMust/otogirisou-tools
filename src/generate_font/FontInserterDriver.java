@@ -1,4 +1,6 @@
 
+package generate_font;
+
 public class FontInserterDriver {
     public static void main(String args[]) {
         if (args.length != 5) {

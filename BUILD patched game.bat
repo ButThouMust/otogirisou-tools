@@ -3,7 +3,7 @@ prompt $g
 
 @set srcPath=".\src"
 
-@javac .\src\*.java
+@javac .\src\huffman\*.java .\src\generate_font\*.java
 
 :: #############################################################################
 :: #############################################################################
@@ -14,7 +14,7 @@ prompt $g
 :: - table files for the font (both big and little endian) 
 :: - a binary file w/ character encodings that should trigger auto line breaks
 
-java -classpath %srcPath% FontInserterDriver "./font/otogirisou font dimensions left align.tbl" "./font/otogirisou font.png" 000000 16 16
+java -classpath %srcPath% generate_font/FontInserterDriver "./font/otogirisou font dimensions left align.tbl" "./font/otogirisou font.png" 000000 16 16
 
 :: #############################################################################
 :: #############################################################################
@@ -45,7 +45,8 @@ tools\atlas.exe %uncompScriptROM% %scriptTranslationFile% > logs\log_atlas_uncom
 :: The starter pack on RHDN's Abandoned Projects page had an ASM hack to play
 :: the game while using an uncompressed encoding, i.e. just use Atlas and you're
 :: done. However, the space saved from using Huffman encoding is significant
-:: enough (~30%) that I decided to go the extra mile and recompress it.
+:: enough (~31% of uncompressed size) that I decided to go the extra mile and
+:: recompress it.
 ::
 :: tools\xkas.exe "expand_ptrs.asm" %uncompScriptROM% > logs\log_xkas.txt
 
@@ -80,7 +81,7 @@ tools\atlas.exe %uncompScriptROM% %scriptTranslationFile% > logs\log_atlas_uncom
 :: script remain after the end of the new script.
 del ".\script\huffman script.bin"
 
-java -classpath %srcPath% HuffmanFromReinsertedScript %uncompScriptROM% %translationTableFile% aeba0 %uncompScriptEndPos%
+java -classpath %srcPath% huffman/HuffmanFromReinsertedScript %uncompScriptROM% %translationTableFile% aeba0 %uncompScriptEndPos%
 del %uncompScriptROM%
 
 :: #############################################################################
@@ -115,8 +116,9 @@ tools\atlas.exe %huffScriptROM% ".\script\update name entry, file select.txt" > 
 
 :: for playtesting purposes, dump generated Huffman script back into a text file
 
-:: the redumped script will contain what data to set at $02A627 (linear 0x12627)
-:: three times, to let you view a specific screen of text from a new save file
+:: the redumped script will contain useful data for playtesting the translation
+:: write a sequence of 3 bytes three times at $02A627 (linear 0x12627) to view
+:: a specific screen of text from a new save file or picking "Restart"/"はじめ"
 
 
 :: Similarly, the batch file will prompt you again to change the end offset for
@@ -130,7 +132,7 @@ tools\atlas.exe %huffScriptROM% ".\script\update name entry, file select.txt" > 
 :: Same as before, allow for user input if the end user prefers.
 @set /P huffScriptEndPos="Enter the hex offset of the end of the Huffman script: "
 
-java -classpath %srcPath% HuffScriptDumper %huffScriptROM% %translationTableFile% %redumpedScriptTranslation% 4539b %huffScriptEndPos%
+java -classpath %srcPath% huffman/DumpHuffmanScript %huffScriptROM% %translationTableFile% %redumpedScriptTranslation% 4539b %huffScriptEndPos%
 
 :: #############################################################################
 :: #############################################################################
