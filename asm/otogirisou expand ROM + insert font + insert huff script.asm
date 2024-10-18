@@ -88,13 +88,14 @@ CharHeight = $1a85
 ;     jmp.w $86ab             ; undo the PHA/PHX/PHY at start, and RTS
 
 org $00a4e9
-    beq GotSpace
-    jsr.w LoadUncompFontData
+    bne LoadUncompFontData
 GotSpace:
-    jmp.w $86ab
+    lda.w #$0002            ; in JP game, 0000 space reuses the dimensions of
+    sta.w CharWidth         ; the previously printed character, notably width
+    bra DoneGettingFontData ; change so that width is just a constant 2 pixels
+;     jmp.w $86ab            
 
 LoadUncompFontData:
-    php
     rep #$30
                             ; calculate bank offset for character's font data
     lda.w MostRecentChar    ; decrement to account for 0000 space character
@@ -130,8 +131,8 @@ LoadUncompFontData:
         lsr
         cmp.w CharHeight
         bcc GetPixelRow
-    plp
-    rts
+DoneGettingFontData:
+    jmp.w $86ab
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
