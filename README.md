@@ -23,7 +23,7 @@ The custom tools for this project are coded in Java and use batch files. You wil
 - Decompresses and dumps only the graphics that need to be translated for the
   patch.
 
-`VIEW unused knife graphic.bat`
+`generate patch view unused knife graphic.bat`
 - Generate a modified version of the Japanese ROM that allows you to view an
   unused graphic of a knife in the game's data. Simply start a new game and read
   the text.
@@ -33,7 +33,7 @@ The custom tools for this project are coded in Java and use batch files. You wil
 - Asar text files containing assembly code, "include file's binary contents here" directives, etc. for patch.
 - Also included: A [DiztinGUIsh](https://github.com/IsoFrieze/DiztinGUIsh)
   project file that includes a mostly complete disassembly of the game.
-- Not everything is filled in, but I tried to document everything that was
+  - Not everything is filled in, but I tried to document everything that was
   either relevant to the patch or was interesting enough to look into.
 
 `font`
@@ -42,7 +42,7 @@ The custom tools for this project are coded in Java and use batch files. You wil
 `gfx modification`
 - TODO still working on this as of initial commit
 - Feel free to use this folder as a space for modifying tilesets and tilemaps for the graphics.
-- Instructions for creating your own graphics edits are included.
+- Instructions for creating your own graphics edits will be included.
 
 `graphics`: 
 - Binary files for translated graphics (tiles, tilemaps) to be reinserted.
@@ -50,8 +50,8 @@ The custom tools for this project are coded in Java and use batch files. You wil
 
 `patches`
 - Patches for the game will be generated in BPS format in this directory.
-- Also includes a sample BPS patch to get the ROM that you would get from
-  applying `VIEW unused knife graphic.bat`.
+- Included is a sample BPS patch to get the ROM that you would get from running
+  `generate patch view unused knife graphic.bat`.
 
 `rom`
 - Place an unmodified, unheadered Japanese ROM image of Otogirisou into this directory. Please do not ask me where to obtain it.
@@ -76,36 +76,17 @@ SHA-256: d85b6764a35f4dcee3ab5843df1c467ebdfe5f02236043a4e466e6975a3f70ca
 - After running the batch file, this directory will also include a handful of files with more details about the script insertion process.
 
 `src`
-- Java source code files that are specific to this translation project. More
-  details about their purposes below.
+- Java source code files that are specific to this translation project. See the
+  readme in there for more information.
 
 `tables`
 - When you first clone this repo, this will only contain the table files for the original Japanese game, and for the control codes in the translation.
 - After you run `BUILD patched game.bat`, this will have the full table file for the translation.
 
 `tools`
-- Already-existing programs that aid in the translation process. They are Asar, Atlas, Floating IPS, and superfamicheck. xkas is also included but not really required for this particular patch.
-
-# Source code purposes
-- `FontImage`, `FontInfo`, `FontInfoDimensionComparator`, `FontInserter`,
-  `FontInserterDriver`, `KerningPunctPairs`
-  - Given a new font, generate the font data for the game and a table file for
-    the font, with entries for "automatic" kerning and punctuation combinations.
-  - This assumes that the original font compression has been bypassed in favor
-    of the uncompressed format I came up with.
-- `OtogirisouGraphicsDumper`, `GraphicsStructureList`, `GraphicsStructure`,
-  `ChunsoftPresentsDumper`
-  - Decompress and dump the game's graphics.
-- `HuffmanFromReinsertedScript`
-  - Given a ROM file with a script inserted in uncompressed format by Atlas,
-    generate a Huffman coding for it, and generate a compressed script using
-    that Huffman coding.
-- `HuffScriptDumper`, `HuffScriptPointer`
-  - Given an Otogirisou game script compressed in Huffman coding format, dump it
-    out into an Atlas script file.
-  - Can be for either the original Japanese script, or scripts generated with
-    this project.
-- `OtogirisouFontDumper`
-  - Given the original Japanese game, dump out the compressed font data.
-- `HelperMethods`
-  - "Header file" with useful constants and pointers to useful things.
+- Already-existing programs that aid in the translation process. They are
+  [Asar](https://github.com/RPGHacker/asar),
+  [Atlas](https://www.romhacking.net/utilities/224/),
+  [Floating IPS](https://www.romhacking.net/utilities/1040/), and
+  [superfamicheck](https://github.com/Optiroc/SuperFamicheck).
+  [xkas]https://www.romhacking.net/utilities/269/) is also included but not really required for this particular patch.
