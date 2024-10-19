@@ -3,7 +3,7 @@ prompt $g
 
 @set srcPath=".\src"
 
-@javac .\src\huffman\*.java .\src\generate_font\*.java
+@javac .\src\huffman\*.java .\src\generate_font\*.java .\src\header_files\*.java
 
 :: #############################################################################
 :: #############################################################################
@@ -81,7 +81,7 @@ tools\atlas.exe %uncompScriptROM% %scriptTranslationFile% > logs\log_atlas_uncom
 :: script remain after the end of the new script.
 del ".\script\huffman script.bin"
 
-java -classpath %srcPath% huffman/HuffmanFromReinsertedScript %uncompScriptROM% %translationTableFile% aeba0 %uncompScriptEndPos%
+java -classpath %srcPath% huffman/GenerateHuffmanScript %uncompScriptROM% %translationTableFile% aeba0 %uncompScriptEndPos%
 del %uncompScriptROM%
 
 :: #############################################################################
