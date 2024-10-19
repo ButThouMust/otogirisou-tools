@@ -1,727 +1,450 @@
-KEY:
-
-"needs rewrite" = most commonly a tough/wrong translation spot or bad wording
-                  - do not worry about formatting until fixed
-
-"check rewrite" = fixed a mistake with translation - check in game
-
-"check reformatting" = fixed a mistake with in-game formatting - check in game
-
-Useful vimscript regex:
-:%s/.* x$\n//
-
---------------------------------------------------------------------------------
-
-15F0F7-5    x could use a rewrite on laugh
 15F1EB-3    x possibly needs rewrite? check note
-15F3EB-2      needs rewrite
-15F837-6    x but how to translate シート??
-1681AA-0      needs rewrite
-
-1683CD-0      needs rewrite on sentence with "nothing strange happened"
-16860A-5      needs rewrite - how to translate dropping subjects in Japanese
-168796-6      possibly needs rewrite
-1697A6-7      needs rewrite
-169DDB-2      needs rewrite
-
-169EA1-3      potentially needs rewrite on "captain"
-16A3E3-2      needs rewrite
-16A718-1      needs rewrite
-16B2D7-0      needs rewrite for a better word than "resentfully"
 16C5CA-3      needs rewrite
-
-16C70B-1      needs rewrite
-16CAD4-4      needs rewrite
-16CBA9-3      needs rewrite
-16D2B5-1      needs rewrite
-16D585-5      needs rewrite
-
-16D7CE-4      needs rewrite
-16D852-3      needs rewrite
-16E989-4      needs rewrite
-16F018-6    x maybe needs rewrite? slightly redundant
-17818B-2      needs rewrite - currently 11 lines on screen
-
-17827D-3      needs rewrite
-178322-4      needs rewrite
-1789DA-4    x a certain aspect of the writing is lost in translation
-178B12-4      needs rewrite
-178C6F-5    x a certain aspect of the writing is lost in translation
-
-179661-0      needs rewrite
-179836-3      needs rewrite
-1798BB-7      needs rewrite
-
-ENDING 1 ----
-
-17A493-6      needs rewrite?
-17A68C-1      needs rewrites
-17A768-4    x possibly needs rewrite
+16E989-4    x needs rewrite
+1788D4-4    x - start of ending-specific text
+178EE7-3    x but confirm last line with someone else
 17A8C2-6    x - keep "hitodama" or translate to some equivalent in English?
-17A919-0      needs rewrite
-
-17AF3B-4    x - an instance of using metric/imperial
-17B2D5-4      needs rewrite
-17B30C-1      needs rewrite
-17B3F0-1      needs rewrite for Japanese pun
-17BAB6-2      needs rewrite
-
-17BBE4-6      needs rewrite
 17BC34-0      needs rewrite
-17BF1F-0      needs rewrite
-17C05E-2      needs rewrite
-17D4F3-0      needs rewrite?
-
-17D827-7      needs rewrite
-17DC27-2      needs rewrite
-17DD0B-3      needs rewrite
-17DED0-2      needs rewrite
-
-17E017-7      needs rewrite
-17E11E-2      would prefer rewrite on the coughing
+17D596-5      needs rewrite
+17DB66-4    x - start of ending specific text
 17E59C-7      needs rewrite
-17E987-7      needs rewrite
-17EA64-0      needs rewrite
-
 17EC43-4    x - choice in route
-17ECB6-0    x - is the detail about a reverse knife grip important?
-
-ENDING 2 ----
-
-17F624-6      needs rewrite
-17FA59-6      needs rewrite
-17FACE-6      needs rewrite
-17FC87-4      needs rewrite
-
-17FCD9-3      needs rewrite
-17FF1A-1      needs rewrite
-188129-7      NEEDS rewrite
-18849E-0      needs rewrite
-1884D3-5      needs rewrite
-
-18858D-2      needs rewrite
-188743-1      needs rewrite
-1887A3-7      needs rewrite
-188A07-3      needs rewrite
-
+17F0FB-0    x - alternate path for ending
+17F2D0-1    x - last for ending path
+188DAB-3    x - start of ending-specific text
 188E5A-2      needs rewrite
-188F94-2      needs rewrite?
 189183-4      needs rewrite; how to handle honorifics with siblings?
-18961A-4      needs rewrite/confirmation
-189708-4      needs rewrite
-
-189D79-7      needs rewrite
-189E7E-0      needs rewrite for second to last sentence
-18A0B3-1      needs rewrite
-18A881-0      needs rewrite
-
-ENDING 3 ----
-
+189F81-4      needs rewrite?
+18A0B3-1      needs rewrite?
 18AAD7-1    x but check with someone else
 18AC55-3      needs rewrite
-18AE2F-0      need rewrite on how to translate "nata"
-18B021-2      confirm translation with someone else
-18B03B-2      needs rewrite
-
+18B021-2    x but confirm translation with someone else
 18B138-1      needs rewrite
-18B89A-1      needs rewrite
-18B97D-1      needs rewrite
-18B9CB-1      needs rewrite
-18BAA2-2    x but has pun lost in translation?
-
-18C3FD-0      needs rewrite (better word than "shrill")
-18C5C6-6      needs rewrite?
 18CC4B-0      needs rewrite
-18CCA2-1      needs rewrite
-18CDA1-6      needs rewrite
-
-18CEAC-5      needs rewrite?
-18CFA0-2      needs rewrite
-18D013-7      good pending 18D082-7
-18D082-7      needs rewrite; untranslated line
-
-18D3D7-5      needs rewrite; use better verb than "scold"
-18D4C8-7      needs rewrite? how to put naturally into English?
+18D0B0-7      needs rewrite; separate note w/ consistency for alternate paths
 18D7E5-2      needs rewrite
 18D88E-6      needs rewrite
 18D8DF-6      needs rewrite?
-
 18DB97-3      needs rewrite
-18DBBB-4      needs rewrite
-18DEC5-6      needs rewrite
-18DFE5-4      needs rewrite; TRANSLATION INCOMPLETE
+18DBBB-4      needs rewrite?
+18DFE5-4      needs rewrite
 18E185-7      needs rewrite
-
 18E1BE-4      needs rewrite
 18E372-6      needs rewrite
 18E4F7-6      possibly needs rewrite; references Japanese short story
 18E511-7      needs rewrite
 18E79F-1      needs rewrite; awkward
-
 18EBF3-0      needs rewrite
 18F2C8-6      needs rewrite
 18F385-1      needs rewrite
 18F7B2-5    x good, but special screen with calendar
-
-18F8FD-6      needs translation rewrite
+18F8A0-3    x - note: not much leeway here
+18F8FD-6      needs rewrite; 赤口 "red mouth" unlucky day
+18FC31-5    x - approximate start of ending-specific text
 198182-0      needs rewrites
 1981EB-4      needs rewrite
 1983D7-2      needs rewrite
-
 198831-6      needs rewrite
 1989F2-0      needs rewrite
 198A62-3      needs rewrite
 198C93-3      needs rewrite
 198E39-7      needs rewrite? check with someone else
-
 1995EC-5      needs rewrite
 199663-1      needs rewrite
 19A0BD-0      needs rewrite
 19A11D-2      needs rewrite
 19A2A7-2      needs rewrite
-
 19A6B0-1      possibly rewrite, figure out who's saying what
 19AC8D-2      needs rewrite
-
-ENDING 4 ----
-
 19AF00-2      needs rewrite on "unimaginable"
 19AF44-2      needs rewrite
-19B20C-5      depends on 18B9CB-1
-19B354-0      good pending on 1a9f36-4
-
+19B33B-4      needs rewrite
+19B8F3-6      needs rewrite
+19B92D-0    x - start here for choice
 19B944-1      needs rewrite
 19B981-6      needs rewrite
-19BDD1-0      needs rewrite
 19BEAF-7      needs rewrite
-
-19BF2C-7      check rewrite - double check with someone else
-19BF7F-4      needs rewrite; most likely candidate for solving overflow
-19C0A8-7      needs rewrite on possibly untranslatable pun
+19BF2C-7      needs rewrite - double check with someone else
+19BF7F-4      needs rewrite; try to keep to 1 line
+19C0A8-7    x but see note about possibly untranslatable pun
 19C2D7-2      needs rewrite
 19C300-6      needs rewrite
-
 19C329-2      needs rewrite
 19C39A-3      needs rewrite
 19C43A-1      needs rewrite
 19C668-1      needs rewrite
 19C675-2      needs rewrite
-
 19C6A8-1      needs rewrite
 19C6F8-4      needs rewrite
 19C731-0      needs rewrite
 19CBEC-2      needs rewrite
 19CC6E-3      needs rewrite on "battle cry" of sorts
-
 19D0FB-2      needs rewrite
 19D129-3      needs rewrite
 19D14F-6      needs rewrite
 19D2E8-5      needs rewrite?
 19D5BD-1      needs rewrite
-
 19DA37-1      needs rewrite
+19DCC2-4    x - start of ending-specific text
 19DF59-3      needs rewrite
 19E2FC-6      needs rewrite - one of the words translates to "autism"
 19E735-0      needs rewrite
-
 19E80E-1      needs rewrite
 19E9FB-3      needs rewrite? - choice A
-19EF4C-6      needs rewrite
+19EB20-4      needs rewrite
+19ECC0-0    x - choice B
 19EFB4-6      needs rewrite
-
+19F0E7-2    x - converging point
 19F1C6-0      needs rewrite
 19F30D-3      needs rewrite
 19F3D3-7      needs rewrite
-19F448-3    x but would like a better word than "stuck"
-
 19F8E8-6    x but check with someone else
-1A820C-2      needs rewrite
-
-ENDING 5 ----
-
 1A8ECE-2      needs rewrite, untranslatable pun
 1A8F25-3      needs rewrite
 1A8F94-4      needs rewrite
 1A941C-2      needs rewrite
-1A94E1-2      needs (?) rewrite
-
-1A952C-0      same issue as with above
+1A94E1-2      needs (?) rewrite for grilled chicken
+1A952C-0    x same issue as with above
 1A982C-2      needs rewrite? - check ptr 855 if screen overflows
+1A9AA8-0      needs rewrite?
 1A9AC9-1      needs rewrite?
 1A9CF4-2      needs rewrite
 1A9EFB-4      needs rewrite
-
 1A9F8E-7      needs rewrite
 1AA0EA-0      needs rewrite
 1AA1A2-0      needs rewrite for last line
 1AA525-6      needs rewrite but otherwise good
 1AA633-3      needs rewrite
-
 1AA674-2      depends on next four sections
 1AA685-3      needs rewrite
-1AA69A-7      needs/check rewrite; possible line overflow
+1AA69A-7      needs rewrite
 1AA6AE-5      needs rewrite
 1AA6CC-0      needs rewrite
-
 1AA828-7      needs rewrite for last line
 1AA912-7      again, depends on next four sections
 1AA929-5      needs rewrite
 1AA95C-7      needs rewrite
-1AA975-6      needs rewrite, INSERT TRANSLATION
-
+1AA975-6      needs rewrite
 1AA98D-7      needs rewrite
 1AAD7C-7      needs rewrite
 1AAF32-6      needs rewrite
 1AAF4E-1      needs rewrite but otherwise good
 1AB2F2-7      needs rewrite
-
-1AB4C6-1      needs rewrite
 1AB544-2      needs rewrite?
 1AB7FB-1      needs rewrite
 1ABC91-4      needs rewrite or at least checkup
 1ABCDB-1      same, see above
-
 1ABDFB-0      needs rewrite
 1ABF26-1      needs rewrite
 1AC02F-3    x - make sure all pointers to here have under 4 lines
+1AC10E-0      try to get choice list to 10 lines
 1AC2B6-6      needs rewrite
 1AC398-1      needs rewrite
-
 1AC46F-1      needs rewrite
 1AC67D-4      needs rewrite
 1AC6E0-7      needs rewrite; Japanese pun
 1AC84C-7      needs rewrite, Japanese pun
 1AC89B-6      needs rewrite, Japanese pun
-
 1AC974-2      needs rewrite
-1AC9B8-6      needs rewrite
+1AC9B8-6    x needs rewrite
 1ACA8B-2      needs rewrite
 1ACA9D-0      needs rewrite
 1ACC99-2    x - specify "Socrates's bad wife" is Xanthippe?
-
 1AD12A-6      needs rewrite
 1AD156-7      needs rewrite
 1AD16E-7      needs rewrite
 1AD21A-3      needs rewrite
-1AD25E-1      needs rewrite
-
-1AD421-3      needs rewrite?
-1AD452-2      needs rewrite
-1AD4A5-7      needs rewrite on laugh?
-1AD5C6-7      needs rewrite on "grown-up"?
-1AD651-3      needs rewrite?
-
+1AD5C6-7    x needs rewrite on "grown-up"?
+1AD651-3    x needs rewrite?
 1AD66B-0      needs rewrite on subjects
 1AD82A-1      needs rewrite
 1ADAA2-3      needs rewrite? check with someone else
-1ADC5C-5    x but center text for names?
 1ADCBF-2      needs rewrite?
-
 1ADD6C-5      needs rewrite
-1ADF7E-5      needs rewrite
 1AE170-7      needs consistent decision on how a certain thing howls
 1AE246-7      needs rewrite; Japanese cultural reference
 1AE2E8-3      possibly needs rewrite
-
 1AE3B9-7      needs rewrite
 1AE3CD-2      needs rewrite
 1AE64B-2      needs rewrite
 1AE678-4      needs rewrite
 1AE68B-2      needs rewrite
-
 1AE849-0      needs rewrite?
 1AE869-6      needs rewrite
 1AE9AE-2      needs rewrite
 1AEAB5-0      needs rewrite?
-1AEF46-5      needs rewrite?
-
 1AEFA8-1      needs rewrite?
 1AEFBB-6      needs rewrite?
 1AEFD1-4      needs rewrite?
 1AF018-1      needs rewrite
 1AF2A6-1      needs rewrite
-
 1AF32A-0      needs rewrite
-1AF373-7      needs rewrite
+1AF7C1-3    x - mutually exclusive split choice
+1AFA05-3    x - choice A
 1AFBA3-1      needs rewrite
-
 1AFE28-7    x - removes a line that feels out of place in English
 1B815E-4      needs rewrite
 1B8294-5      needs rewrite
 1B82EF-4      needs rewrite
 1B85F8-1      needs rewrite
-
-1B8922-2      needs rewrite
 1B899B-3      needs rewrite; INSERT TRANSLATION HERE
 1B8A11-5      needs rewrite
-1B8D34-5      needs rewrite
-
-ENDING 6 ----
-
 1B9069-7      needs rewrite
-1B91EE-5      needs rewrite
-
-ENDING 6-1 ----
-
-
-ENDING 6-2 ----
-
 1B9442-0      needs rewrite
-
-ENDING 6-3 ----
-
 1B9749-4      needs rewrite
 1B97AA-4      needs rewrite
-1B97F3-7      needs rewrite, check for screen overflow
+1B97F3-7      needs rewrite
 1B989B-3      needs rewrite
 1B98E4-0      needs rewrite
-
 1B990B-7      needs rewrite
 1B9A6A-4      needs rewrite
 1B9AC9-1      needs rewrite
 1B9B42-7      needs rewrite
 1B9C42-0      needs rewrite
-
 1B9C82-4      needs rewrite
 1B9C9E-6      needs rewrite
 1B9D43-3      needs rewrite
-1B9DD4-5      needs rewrite
 1B9EE3-0      needs rewrite
-
 1BA269-6      needs rewrite?
 1BA411-5      needs rewrite
 1BA442-1      needs rewrite
-1BA839-1      needs rewrite, depends on 1DA752-3
+1BA839-1      needs rewrite
 1BA873-3      needs rewrite
-
 1BAAC9-5      needs rewrite
 1BABA4-2      needs rewrite
 1BAC95-7      needs rewrite
 1BAD0D-0      needs rewrite
 1BAD42-2      needs rewrite?
-
 1BADA0-6      needs rewrite
 1BADDD-1      needs rewrite
 1BAE03-7      needs rewrite
 1BAE16-4      needs rewrite
 1BAE2A-5      needs rewrite
-
+1BAE95-5      needs rewrite
 1BAF4D-4      needs rewrite
 1BAFDA-1      needs rewrite
-1BB047-2      needs rewrite; check last sentence
+1BB047-2      needs rewrite;
 1BB0C7-5      needs rewrite?
 1BB319-1      needs rewrite
-
 1BB4D2-7    x I suppose this has an untranslatable pun, but this works fine
 1BB6A4-2      needs rewrite in pair with 1BB6E4-1
 1BB6E4-1      needs rewrite in pair with 1BB6A4-2
 1BB7A9-7      needs rewrite
 1BB9B7-2      needs rewrite?
-
 1BBA61-5      needs rewrite
-1BBB29-5      needs rewrite?
 1BBB3A-7      needs rewrite
 1BBBD3-6      needs rewrite?
 1BBE57-5      needs rewrite
-
-1BBEF9-4      needs rewrite
 1BC05B-4      needs rewrite
 1BC0F6-3      needs rewrite
 1BC11F-2      needs rewrite?
 1BC18A-2      needs rewrite?
-
 1BC467-3      needs rewrite
 1BC4CE-4      needs rewrite
 1BC57C-4      needs rewrite
 1BC7C6-6      needs rewrite on laugh
+1BC897-3      needs rewrite
 1BC8DE-2      needs rewrite
-
-1BC995-7      needs rewrite?
 1BCBA8-3      needs rewrite
 1BCFBD-1      needs rewrite
 1BCFF4-1      needs rewrite?
 1BD1E0-2      needs rewrite
-
 1BD485-0    x but possible to express exasperation better?
 1BD58E-1      needs rewrite
 1BD62E-3      needs rewrite
 1BD6F2-5      needs rewrite
-1BD73F-4      needs rewrite?
-
-1BD7FA-1      needs rewrite?
 1BD93B-6      needs rewrite
 1BDB31-3      needs rewrite? possibly untranslatable dialogue
 1BDC62-7      needs rewrite
 1BDDB9-3      needs rwrite
-
 1BDE24-3      needs rewrite
-1BDE69-5      needs rewrite
-1BDEAE-7      needs rewrite
-1BDFD9-3      needs rewrite
 1BE15C-7      needs rewrite
-
 1BE17C-3      needs rewrite
 1BE1AA-7      needs rewrite
 1BE1FA-3      needs rewrite
 1BE397-5      needs rewrite
+1BE3DA-1      needs rewrite
 1BE411-5      needs rewrite
-
 1BE4F6-5      needs rewrite
 1BE58B-5      needs rewrite
 1BE71B-6      needs rewrite
-1BE916-6      needs rewrite
 1BEC08-2      needs rewrite for associated choices?
-
 1BECA2-1      needs rewrite
 1BEEE5-0      needs rewrite
 1BF001-2    x - but found this strange audio bug once on clear code from 1298
-1BF431-1      needs rewrite on gasp?
 1BF493-3      needs rewrite
-
 1BF556-5      needs rewrite
 1BF905-1      needs rewrite
 1BFA07-3      needs rewrite
 1BFA67-6      needs rewrite
 1BFB55-2      needs rewrite
-
 1BFC6E-7      needs rewrite
 1BFCB8-7      needs rewrite
 1BFE35-2      needs rewrite
 1C8215-3      needs rewrite
-
-1C87D1-1      needs rewrite?
 1C8819-1      needs rewrite?
 1C8FC0-0      needs rewrite?
 1C96D7-0      needs rewrite?
-
-ENDING 7 ----
-
-
-ENDING 7-1 ----
-
-
-ENDING 7-2 ----
-
-1CA15E-5      needs rewrite?
 1CA31E-2      needs rewrite?
 1CA9E1-6      needs rewrite
-1CB78C-2      needs rewrite
 1CB9BB-2      needs rewrite
-
-1CBA59-3      needs rewrite
 1CBAB7-4      needs rewrite
 1CBCD2-1      needs rewrite
 1CBF25-4      needs rewrite
 1CBF4A-7      needs rewrite
-
-1CC013-7      needs rewrite; good until last line
+1CC013-7      needs rewrite for last line
 1CC2C8-1      confirm rewrite with another person
 1CC402-4      needs rewrite
 1CCA4E-0      needs rewrite
 1CCAD0-3      needs rewrite
-
 1CCC08-6      needs rewrite
 1CCD0B-0      needs rewrite
 1CCF5C-3      needs rewrite
 1CCFCC-7      needs rewrite
 1CD5E2-1      needs rewrite
-
 1CD6F2-0      needs rewrite
 1CD71C-0      needs rewrite
-1CD75A-2      needs rewrite
 1CE7D4-0      needs rewrite
 1CEB40-3      needs rewrite
-
 1CEF07-1      needs rewrite?
 1CF163-0      needs rewrite
 1CF7F2-1      needs rewrite
 1CF96E-3      needs rewrite
 1CFAF6-4      needs rewrite?
-
 1CFDB5-7      needs rewrite
-1D8FE6-6      needs rewrite
+1D83F4-3    x - choice branch to A, B
+1D84EA-4    x - choice branch B
+1D85BE-1    x - choice branch A
+1D8921-2    x - eventual converging point
 1D91DC-1      needs rewrite
-1D924D-4      needs rewrite
 1D9340-1      needs rewrite
-
-1D96B2-3      needs rewrite on onomatopoeia
-
-ENDING 8 ----
-
-
 1D9EB5-3      needs rewrite
-1DA36E-4      needs rewrite
 1DA9F2-0      needs rewrite
 1DABF9-3      needs rewrite?
 1DACC6-0      needs rewrite
-
 1DADBA-2      needs rewrite?
 1DB2A7-7    x possibly untranslatable pun?
-1DB32D-1      needs rewrite?
 1DB4D2-0      needs rewrite
 1DB87E-6      needs rewrite?
-
 1DB8BC-3      needs rewrite?
 1DB9C4-0      possibly needs rewrite
 1DBAC2-0      needs rewrite?
 1DBB27-2      needs rewrite
 1DBC8E-0    x but tight fit for first line
 1DC340-1      needs rewrite?
-1DC52E-7      needs rewrite
 1DC806-0      needs rewrite?
 1DCDFE-1      needs rewrite
-
+1DD0F0-3    x - approximate start of ending exclusive text
 1DD327-5      needs rewrite
 1DD36B-1      needs rewrite
+1DD559-0      needs better translation
 1DD616-3      needs rewrite, 「わたしだって」
 1DD6E3-1      needs rewrite, 「わたしだって」
 1DDDCF-1      needs rewrite, 「わたしだって」
-
+1DE162-7      needs rewrite
 1DE1DF-0      needs rewrite
 1DE267-3      needs rewrite, 「わたしだって」
 1DE315-4      needs rewrite, 「わたしだって」
 1DE4D6-0      needs rewrite
 1DE586-0      needs rewrite, 「わたしだって」
-
-1DE793-5      needs rewrite
+1DE98E-3      needs rewrite
 1DEC7B-6      needs rewrite, 「わたしだって」
 1DED58-4      needs rewrite, 「わたしだって」
 1DF157-7      needs rewrite
 1DF7A1-3      needs rewrite
-
-ENDING 9 ----
-
-
 1DFDF3-6      needs rewrite
 1DFE2A-4      needs rewrite
 1E82D2-3      needs confirmation on who's saying what
 1E8360-6      needs rewrite; untranslatable joke about using the Kansai dialect?
 1E83A8-1      needs rewrite; has reference to Ultraman's battle cry
-
-1E8528-3      needs rewrite
 1E88B5-1    x - but confirm correct translation for 黒子
-1E8A1B-5      needs rewrite on the laugh
 1E8A91-6      needs rewrite
-1E8C6C-2      depends on next three lines
-
 1E8CAC-1      needs rewrite
 1E8E4C-5      needs rewrite?
 1E8F55-2      needs rewrite
 1E8FB1-3      needs rewrite
 1E916F-6      needs rewrite
-
 1E9304-3      needs rewrite
 1E94FD-1      needs rewrite?
 1E9621-0    - depends on next three options
 1E9630-2      needs rewrite
+1E9749-4      check rewrite
 1E998F-1      needs rewrite
-
 1E9AA1-3      needs rewrite
 1E9C93-1      needs rewrite
 1E9EE9-3      needs rewrite
 1E9F6C-1      needs rewrite
 1EA13F-4      needs/check rewrite
-
 1EA17A-4      needs rewrite
 1EA1B4-7      needs rewrite?
 1EA1E2-1      needs rewrite
-1EA60F-0    - depends on next three lines
 1EA709-5      needs rewrite
-
 1EA7B6-6    - depends on next three lines
 1EA7D2-6      needs rewrite/retranslation of verb forms
 1EA999-1      needs rewrite
-1EAA48-0      confirm translation choice with someone else
+1EAA48-0      possibly needs rewrite
 1EAB38-3      needs rewrite
-
 1EAC4B-7      needs rewrite?
 1EACA6-1      possibly needs rewrite
 1EACF9-0      needs rewrite
 1EAF8E-5      needs rewrite
 1EB01E-1      needs rewrite
-
 1EB2B2-2      NEEDS rewrite
 1EB2E0-5      needs rewrite
 1EB404-7      needs rewrite
 1EB44F-2      needs rewrite
 1EB4E3-3      needs rewrite
-
 1EB61A-1      needs rewrite
 1EB643-2      needs rewrite?
 1EB8AE-0      needs rewrite on laugh
 1EBB38-2      possibly needs rewrite
 1EBDA3-2      needs rewrite
-
 1EBEA0-7      confirm translation choice
 1EBEE4-3      needs rewrite
 1EBF82-1      needs rewrite
 1EC486-4      possibly needs rewrite
 1EC7CD-5      needs rewrite
-
 1ECB93-6      needs rewrite
 1ECC01-4      NEEDS rewrite
 1ECD97-6      needs rewrite
 1ECE9B-7      needs rewrite
-1ECEF9-6      needs rewrite?
-
 1ED025-2      needs rewrite?
 1ED446-3      needs rewrite
 1ED644-0      needs rewrite
 1EDAFB-1      needs rewrite
 1EDB68-2      needs rewrite?
-
 1EDDE8-2      needs rewrite
 1EDF33-7      needs rewrite?
 1EE03D-5      needs rewrite
 1EE1CB-7      needs rewrite
 1EE23D-0      needs rewrite
-
 1EE2F4-6      needs rewrite?
 1EE46D-3      needs rewrite
 1EE491-0      needs rewrite
 1EE4FA-3      needs rewrite
 1EE550-7      needs rewrite
-
 1EE7C9-0      needs rewrite
 1EE804-4      needs rewrite
 1EEB14-1      needs rewrite
-
-1EF070-5      needs rewrite
 1EF27E-5      needs rewrite
 1EF442-1      needs rewrite
-
 1EF619-4      needs rewrite
 1EF67B-1      confirm translation choice with someone else
+1EFBB0-0    x - note: unused text
 1EFD52-0      needs rewrite
 1EFE39-7      needs rewrite
-
 1EFEC7-0      needs rewrite - confirm who's the subject in the sentence
 1EFF71-1      needs rewrite
 1F8023-1      needs rewrite?
 1F811E-1      needs rewrite - confirm if found correct vocab for けんせい, 牽制
 1F8490-3      needs rewrite
-
 1F864B-7    x - sound didn't play when coming from 1C8C68-6
+1F8711-2    x - start here for any rewrites because of fire vfx
 1F885F-0      needs rewrite
 1F88AD-7      needs rewrite
 1F89FB-4      needs rewrite?
 1F8B31-2      possibly needs rewrite
-
-ENDING 10 ----
-
-
-ENDING 10-1 ----
-
-
-ENDING 10-2 ----
-
 1F9111-6      potentially needs rewrite, feels stiff
 1F925B-5      needs rewrite
-1F92B3-2      needs rewrite?
+1F92B3-2      needs rewrite
 1F931A-7      needs rewrite
-
-ENDING 10-3 ----
-
-
-ENDING 10-4 ----
-
