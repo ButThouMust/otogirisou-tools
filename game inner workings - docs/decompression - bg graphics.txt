@@ -24,9 +24,9 @@ General case:
 - A structure can either be for TILE data, TILEMAP data, or PALETTE data.
   * All three types have, as the first three bytes of a structure, a 24-bit
     pointer to some metadata (see below) for the data.
-  * A structure for TILE data is 6 bytes.
+  * A structure for TILE    data is  6 bytes.
   * A structure for TILEMAP data is 10 bytes.
-  * A structure for PALETTE data is 7 bytes.
+  * A structure for PALETTE data is  7 bytes.
 
 - Note: The purpose for lists is to group these different data types together,
   and data gets reused between different lists. For example, three lists reuse
@@ -48,8 +48,11 @@ General case:
   * TILEMAP metadata is 6 bytes.
   * PALETTE metadata is 4 bytes.
 
-TILE    data is stored compressed with run-length encoding (RLE).
-TILEMAP data is also stored compressed with RLE. However, the raw data you get 
+TILE    data is stored compressed with run-length encoding (RLE). However, the
+  raw data you get from decompression is not quite in the standard format for
+  SNES 2bpp, 4bpp, or (rarely) 8bpp graphics, and requires some more processing.
+  More details about this in a section below.
+TILEMAP data is also stored compressed with RLE. Similarly, the raw data you get 
   after decompression needs more processing to use as SNES tilemap entry data.
   More details about this in a section below.
 PALETTE data is stored in the uncompressed SNES 15-bit color format.
@@ -64,21 +67,21 @@ RLE format for Otogirisou TILEs and TILEMAPs
 Assembly code is at $00B29D; this is a pseudocode representation.
 Apparently, this is similar to the RLE format used in many Konami NES/FC games.
 
-Read a byte B0 of data.
-While B0 is NOT 0x80 {
-    If 0x00 <= B0 < 0x80 {
+Read a byte N of data.
+While N is NOT 0x80 {
+    If 0x00 <= N < 0x80 {
         // MSB clear = run length compression case
         Read a byte B1 of data
-        Repeat the byte B1 a total of (B0 + 1) times
+        Repeat the byte B1 a total of (N + 1) times
 
         // example: [04 DA] decompresses to [DA DA DA DA DA]
     }
-    Else if 0x81 <= B0 <= 0xFF {
+    Else if 0x81 <= N <= 0xFF {
         // MSB set = literal uncompressed data case
-        The number of bytes to copy from the ROM is (B0 & 0x7F)
+        The number of bytes to copy from the ROM is (N & 0x7F)
         Read this many bytes from the ROM
     }
-    B0 <- next byte
+    N <- next byte
 }
 // 0x80 is "end of data" case
 
@@ -91,6 +94,56 @@ Value | Meaning
 00-7F | Read a byte, and write it to output (N + 1) times
 80    | End of data
 81-FF | Read (N & 0x7F) bytes from ROM into output
+
+################################################################################
+################################################################################
+
+TILE storage optimizations:
+
+I recommend reading this article, particularly the Formats section, about how
+SNES graphics are stored: https://sneslab.net/wiki/Graphics_Format
+
+The main difference with raw decompressed graphics data here, is that their
+graphics bitplanes are NOT intertwined like the standard SNES graphics formats.
+Instead, all the rows for a particular bitplane are in one contiguous block.
+I found that doing this does make the data compress better under RLE.
+
+For a concrete example, the standard SNES 2bpp format is as below:
+(Copied from link above, and modified for brevity: [row, bitplane])
+[0, 1] [0, 2] [1, 1] [1, 2] [2, 1] [2, 2] [3, 1] [3, 2]
+[4, 1] [4, 2] [5, 1] [5, 2] [6, 1] [6, 2] [7, 1] [7, 2]
+
+The bitplane arrangement for decompressed data here is:
+[0, 1] [1, 1] [2, 1] [3, 1] [4, 1] [5, 1] [6, 1] [7, 1]
+[0, 2] [1, 2] [2, 2] [3, 2] [4, 2] [5, 2] [6, 2] [7, 2]
+
+Another example with bitplanes 3 and 4 of 4bpp:
+[0, 3] [0, 4] [1, 3] [1, 4] [2, 3] [2, 4] [3, 3] [3, 4]
+[4, 3] [4, 4] [5, 3] [5, 4] [6, 3] [6, 4] [7, 3] [7, 4]
+-------------------------------------------------------
+[0, 3] [1, 3] [2, 3] [3, 3] [4, 3] [5, 3] [6, 3] [7, 3]
+[0, 4] [1, 4] [2, 4] [3, 4] [4, 4] [5, 4] [6, 4] [7, 4]
+
+In the game, the intertwining of bitplanes, as well as padding the graphics data
+to a target bit depth, is performed in software after decompression.
+
+---
+
+These two things are not optimizations per se, but they are worth pointing out.
+
+When the game intertwines the rows, it must know the source bit depth of the
+decompressed data, and the target bit depth to pad to. For example, the credits
+graphics are 1bpp and get padded to 2bpp. More commonly, 3bpp graphics are all
+padded to 4bpp. For these, any empty bitplanes are padded with all [00] bytes.
+
+Some tilesets get padded to 8bpp, because they are used for Mode 7.
+Two of these, of which one is a graphic that I feel is necessary to translate,
+are unique in that the "container" you get from the raw decompression is a
+larger bit depth than the actual graphics data.
+Tileset for gfx ID  0x7A:       4bpp in a 5bpp container, padded to 8bpp
+Tileset for gfx IDs 0x7B, 0x7C: 2bpp in a 5bpp container, padded to 8bpp
+If you open the raw files in a hex editor, you can see that they have extra,
+empty bitplanes (groups of 8 [00] bytes).
 
 ################################################################################
 ################################################################################
@@ -111,9 +164,9 @@ Otogirisou uses two optimizations for storing tilemaps:
   It works well with compressing large blocks of empty tiles (usually 0000) and
   with compressing blocks of the same two MSBs for the tile ID numbers.
 
-- If ALL of the high bytes are 00, only store and RLE compress the low bytes.
+- If ALL of the high bytes are [00], only store and RLE compress the low bytes.
   Purpose: avoid possibly several copies of RLE data like [7F 00] at the end.
-  In this case, the game will run code to fill in all the high bytes with 00.
+  In this case, the game will run code to fill in all the high bytes with [00].
 
 Consequence: The decompressed tilemap will be either W*H bytes or W*H*2 bytes.
 If only W*H, you may assume the tilemap will use at most 256 (0x100) tiles, use
@@ -172,7 +225,7 @@ Metadata explanations (fill in important info as needed):
 
 TILE metadata:
 
-Bytes 0 and 1 indicate the number of tiles (00 ID for empty not counted).
+Bytes 0 and 1 indicate the number of tiles (000 ID for empty not counted).
 Above example: metadata at 0x3DD83 [42 00 00 30] -> 0x0042 tiles
 
 If you know the size of the decompressed graphics, you can estimate the bit
@@ -205,9 +258,9 @@ empty tile as tile 00 in VRAM. Specifically:
 TILEMAP metadata explanations:
 
 - Bytes 0, 1, 2: ??
-- Byte 3 is a flag with 3 distinct values:
+- Byte 3 is a flag with 3 possible values:
   * 00 = high bytes not included, assumed to be all 00
-  * 01 = high bytes included with low bytes (each is in its own W*H byte block)
+  * 01 = high bytes with low bytes (each set is in its own W*H byte block)
   * 80 = like 00 case, but indicates the tilemap is for Mode 7 graphics
 - Bytes 4 and 5 indicate the tilemap dimensions [WW HH].
   Above example: metadata at 0x3E2ED [00 08 02 01 20 1C] -> W = 0x20, H = 0x1C
@@ -230,14 +283,14 @@ TILEMAP structure data:
   X = (byte9 & 0xF) | ((byte8 << 2) & 0x30)        88888888 99999999
   Y = ((byte9 >> 4) & 0xF) | (byte8 & 0x30)          yyxx   YYYYXXXX
  
-  For example, if you have the bytes [10 1E], the position would be:
+  For example, if you have the bytes [10 1E], the position would be (0xE, 0x11):
   X = (1E & F) | ((10 << 2) & 30) = E | (40 & 30) = E   00010000 00011110
   Y = ((1E >> 4) & F) | (10 & 30) = (1 & F) | 10 = 11     yyxx   YYYYXXXX
 
 ------------------------------
 
 Thing(s) to possibly figure out some day (not important to a patch):
-- How does the game know where (OAM, VRAM, CGRAM, etc.) to send the data?
+- How does the game know where (VRAM, CGRAM, OAM, etc.) to send the data?
 
 ################################################################################
 ################################################################################
@@ -265,7 +318,7 @@ $03B910 - $03B991: Don't know what this is. An animation of some kind, perhaps?
 
 --------------------
 
-$079653 - $079A05: Graphics data for a knife that seems to be unused.
+$079653 - $079A05: Graphics data for a seemingly unused picture of a knife.
     Pointers are unknown.
     Tile    metadata [2C 00 00 20]       at $079653
     Tile    data from $079657 - $07997D (0x39657 - 0x3997D)
@@ -283,28 +336,32 @@ $079653 - $079A05: Graphics data for a knife that seems to be unused.
 
 --------
 
-You can get this graphic to show up in the original Japanese game:
-- Have the script start on a screen that uses graphics ID 0x4E.
-  It turns out there is exactly one: $1CC93D-5, [ED 49 E6] in the Japanese game.
-  For incorporating into a translation patch, leave the start points alone.
+You can get this unused knife graphic to show up in the game.
+In the Japanese game, both graphics IDs 0x4E and 0x52 use the same tileset of a
+knife. However, 0x52 is animated, and 0x4E is static. You can repurpose ID 0x4E.
 
-- Change the data for the structure list for graphics ID 0x4E, at $00BFB9.
+Change the data for the structure list for graphics ID 0x4E, at $00BFB9.
 - Alter the tile    data pointer at $00BFBA from [65 91 07] to [53 96 07].
 - Alter the tilemap data pointer at $00BFC0 from [BE 95 07] to [7E 99 07].
 
-- Alter the top left YX position of the tilemap on screen.
-  Original [10 1E] -> (X, Y) = (0x0E, 0x11). Center on a (0x20, 0x1E) screen.
-  (0x20-0x0A)/2 = 0x0B, (0x1E-0x12)/2 = 0x06    X = 00 1011, Y = 00 0110
-  Assemble into the correct format: __00 00__ 0110 1011 -> 00 6B
-  Put [00 6B] into the position $00BFC8.
+Alter the top left YX position of the tilemap on screen.
+The original data is [10 1E] -> (X, Y) = (0x0E, 0x11).
+To center the 0xA*0x12 tilemap on a 0x20*0x1E screen:
+- X = (0x20-0x A)/2 = 0x0B (00 1011) | Assemble into the correct format:
+- Y = (0x1E-0x12)/2 = 0x06 (00 0110) | __00 00__ 0110 1011 -> 00 6B
+- Put [00 6B] into the position $00BFC8.
+
+Optional: Have the script start on a screen that uses graphics ID 0x4E.
+- It turns out there is exactly one: $1CC93D-5, [ED 49 E6] in the Japanese game.
+- For incorporating into a translation patch, leave the start points alone.
 
 --------------------
 
 $07C6B9 - $07C856: Two separate things here.
 
 $07C6B9 - $07C7FD: Block of 4bpp graphics for the digits 0 to 9. Unused?
-    This data is uncompressed and can be viewed in a tile editor.
-    As such, it is not processed by my graphics dumper.
+    This data is uncompressed and is, as far as I can tell, the only thing you
+    can directly see if you open the game in a tile editor.
 
     Metadata block [42 01 00 0A 0C 00]   at $07C6B9
     Graphics data:    $07C6BF - $07C7FD (0x3C6BF - 0x3C7FD)
@@ -346,7 +403,7 @@ $07F38B - $07F57C: Three groups of palette data related to the bookmarks on the
 
     Pink bookmark:   $07F431 - see $02BE4E, LDA.L $07F437,X
     Palette metadata [A5 00 04 00]      at $07F431
-    Palette data from $07F431 - $07F4D6 (0x3F431 - 0x3F4D6)
+    Palette data from $07F435 - $07F4D6 (0x3F435 - 0x3F4D6)
 
     Bookmark ribbon: $07F4D7 - see $02BE55, LDA.L $07F4DD,X
     Palette metadata [A5 00 04 00]      at $07F4D7
