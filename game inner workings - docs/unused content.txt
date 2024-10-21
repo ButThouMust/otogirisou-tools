@@ -1,0 +1,85 @@
+
+While translating and reverse engineering Otogirisou, I found several pieces of
+unused graphics and text in the game's data.
+
+--------------------------------------------------------------------------------
+
+Four points in the Japanese script are unreachable in normal gameplay.
+
+$15F0F7-5
+「いいじゃない。間違ってても、二人だけなんだから・・・」<END CHOICE 1C>
+「二人だけだから不安なんでしょ!」<LINE 00>
+「ウフフ・・・」<LINE 00>
+ぼくは意味ありげに笑った。<CLEAR 25>
+<JMP 03>
+[pointer to $1E841F-1]
+
+---------------
+$1694A0-0
+ミイラを確かめようと階段に向かった。<LINE 00>
+
+---------------
+$1E83AC-1
+「だまれ、シュワッチ!」<LINE 00>
+おれのラブラブ作戦に迷いはない。<END CHOICE 1C>
+「そろそろブレーキ調べといた方がいいんじゃない?」<LINE 00>
+「え」<LINE 00>
+ぼくはドキリとなった。<LINE 00>
+「ど・・・どうして?」<LINE 00>
+「だってもうじき対向車が来るでしょ?」<LINE 00>
+「は・・・ははは」<LINE 00>
+ぼくはかわいた笑い声をたてた。<CLEAR 25>
+
+---------------
+$1EFBB0-0
+<STOP SFX 3B><$00><$44>
+ぼくは思いきり鎧を蹴った<SFX 39><$00><$59>。<LINE 00>
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+In terms of unused graphics, I will copy over data from my background graphics
+decompression writeup:
+
+--------------------
+
+$03B910 - $03B991: Don't know what this is. An animation of some kind, perhaps?
+    Tile    metadata [06 00 00 20]       at $03B910
+    Tile    data from $03B914 - $03B981 (0x1B914 - 0x1B981)
+
+    Palette metadata [0F 00 04 00]       at $03B982
+    Palette data from $03B986 - $03B991 (0x1B986 - 0x1B991)
+
+--------------------
+
+$079653 - $079A05: Graphics data for an unused picture of a knife.
+    Pointers are unknown.
+    Tile    metadata [2C 00 00 20]       at $079653
+    Tile    data from $079657 - $07997D (0x39657 - 0x3997D)
+
+    Tilemap metadata [00 08 02 01 0A 12] at $07997E
+    Tilemap data from $079984 - $079A05 (0x39984 - 0x39A05)
+
+--------------------
+
+$07C6B9 - $07C7FD: Block of 4bpp graphics for the digits 0 to 9. Unused?
+    This data is uncompressed and can be viewed in a tile editor.
+
+    Metadata block [42 01 00 0A 0C 00]   at $07C6B9
+    Graphics data:    $07C6BF - $07C7FD (0x3C6BF - 0x3C7FD)
+    Incidentally, 0x142 is the difference between $07C7FD and $07C6BB, after the
+        two bytes [42 01]. Size marker? I don't know, this is unique.
+
+--------------------
+
+$07DCF3 - $07DD1E: Palette data, unknown purpose.
+    Palette metadata [2B 00 04 00]      at $07DCF3
+    Palette data from $07DCF7 - $07DD1E (0x3DCF7 - 0x3DD1E)
+    Pointer unknown.
+
+--------------------
+
+$0889E5 - $0889F9: Contains a tilemap for something, don't know what.
+    Tilemap metadata [00 08 02 01 20 07] at $0889E5
+    Tilemap data from $0889EB - $0889F9 (0x409EB - 0x409F9).
+    Perhaps note that all of the high bytes are [04], i.e. all palette 01.
