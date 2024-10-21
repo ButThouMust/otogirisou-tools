@@ -1,19 +1,24 @@
-# Title logo
+# Name entry screen
 [insert Tilemap Studio screenshot]
 
 | GFX ID(s) | Tileset(s) | Tilemap(s) | Description |
 | --------- | ---------- | ---------- | ----------- |
-| 0x5A | $07CC6B | $07D4B5 | title logo |
+| 0x5C | $07DD87 | $07E2F3 | name entry screen |
 
-Again, you can translate the title logo however you like. I personally decided
-to keep the three kanji 弟切草 and replace the furigana おとぎりそう on the
-right with "Otogirisou".
+You will need to translate the buttons in the bottom right of the screen.
+The two in the middle each read セレクト "select" and スペース "space".
 
-Lazermutt4 had provided a mockup of the English text (the font is "Cienfuegos"),
-with two options for spacing. One spaced the letters uniformly across the whole
-height, and the other crunched their spacing to each kanji.
+Because they all use unique tiles, I was able to just edit the tiles for the
+buttons "in-place", directly in a tile editor. Because of the limited space,
+however, I decided to abbreviate them as `SEL` and `SPC`. I also decided to
+change the backspace arrow into the text `DEL`.
 
-For some context, the original JP graphic uses 0x8B tiles, of which 0x1F are
-dedicated to the furigana (31 of 139). I found that by crunching the spacing
-slightly more than what Lazermutt4 did, I could reuse two tiles and fit the new
-text into 31 tiles.
+In my case, I was actually able to get away with just modifying the tileset
+(use the raw decompression output, not the SNES format tiles) and leaving the
+tilemap alone.
+
+If you want to translate the game into another language besides English, you may
+also want to translate the `NAME` at the top left. Anticipated difficulties:
+- Keeping the correct dithering below the `N`
+- Using the correct "shadowing" effects and colors on the letters
+- Extending the space right if the translated word is longer, like `NOMBRE` for Spanish
