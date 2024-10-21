@@ -13,15 +13,24 @@ math pri on
 incbin "graphics/recompressed TL'd title logo TILES.bin" -> $07CC6B
 incbin "graphics/recompressed TL'd title logo TILEMAP.bin" -> $07D4B5
 
+; update the number of tiles that get copied in, if you need to
+; org $07CC67
+;     db $8b
+
+; --------------------
+
 ; replace file select prompts like "begin" or "delete"
 ; tileset must be <= 536 bytes; tilemap must be <= 389 bytes
 ; incbin "graphics/recompressed TL'd file select TILES.bin" -> $07E637
 incbin "graphics/recompressed file select prompts - new EN tileset squish 'D' no file.bin" -> $07E637
+
 ; update the number of tiles that get copied in
 org $07E633
     db $2d
+
 ; incbin "graphics/recompressed TL'd file select TILEMAP.bin" -> $07E855
 incbin "graphics/recompressed file select prompts - new EN tilemap squish 'D' no file.bin" -> $07E855
+
 ; circularly shift the palette values back one position
 ;   purpose: versus the stock palette, the palette that superfamiconv generated
 ;   for the tileset ended up saving a lot of space when compressing the tileset
@@ -29,24 +38,36 @@ incbin "graphics/recompressed file select prompts - new EN tilemap squish 'D' no
 org $07E9E0
     dw $0842, $3610, $D2F7
 
-; use new dimensions for the rectangles that surround file select prompts
-; update which sprite IDs are used, and update a pointer to one of them
-incbin "graphics/new file select highlight rectangles.bin" -> $02B7BD
-org $02BC8D
-    dw $B7F7
+; --------------------
 
 ; replace the 4 buttons in the bottom right of the name entry screen
-; notice that the tilemap is unchanged
-; tileset must be <= 1346 bytes
+; notice: tilemap is unchanged, but including instruction if need to change
+; tileset must be <= 1346 bytes; tilemap must be <= 832 bytes
 incbin "graphics/recompressed TL'd name entry TILES.bin" -> $07DD87
+; incbin "graphics/PLACEHOLDER name entry tilemap.bin" -> $07E2F3
+
+; update the number of tiles that get copied in
+; org $07DD83
+;     db $42
+
+; --------------------
 
 ; replace the graphic that reads "奈美" with one that reads "Nami"
 ; tileset must be <= 1336 bytes; tilemap must be <= 163 bytes
 incbin "graphics/recompressed TL'd nami TILES.bin" -> $07A4EA
 incbin "graphics/recompressed TL'd nami TILEMAP.bin" -> $07AA34
+
 ; update the number of tiles that are copied in
 org $07A4E6
     db $42
+
+; --------------------
+
+; use new dimensions for the rectangles that surround file select prompts
+; update which sprite IDs are used, and update a pointer to one of them
+incbin "graphics/new file select highlight rectangles.bin" -> $02B7BD
+org $02BC8D
+    dw $B7F7
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Restoring an unused graphic into the game
