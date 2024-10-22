@@ -13,7 +13,7 @@ math pri on
 incbin "graphics/recompressed TL'd title logo TILES.bin" -> $07CC6B
 incbin "graphics/recompressed TL'd title logo TILEMAP.bin" -> $07D4B5
 
-; update the number of tiles that get copied in, if you need to
+; update the number of tiles that get copied in, if needed
 ; org $07CC67
 ;     db $8b
 
@@ -46,7 +46,7 @@ org $07E9E0
 incbin "graphics/recompressed TL'd name entry TILES.bin" -> $07DD87
 ; incbin "graphics/PLACEHOLDER name entry tilemap.bin" -> $07E2F3
 
-; update the number of tiles that get copied in
+; update the number of tiles that get copied in, if needed
 ; org $07DD83
 ;     db $42
 
@@ -54,12 +54,19 @@ incbin "graphics/recompressed TL'd name entry TILES.bin" -> $07DD87
 
 ; replace the graphic that reads "奈美" with one that reads "Nami"
 ; tileset must be <= 1336 bytes; tilemap must be <= 163 bytes
-incbin "graphics/recompressed TL'd nami TILES.bin" -> $07A4EA
+; incbin "graphics/recompressed TL'd nami TILES 5bpp.bin" -> $07A4EA
+incbin "graphics/recompressed TL'd nami TILES 2bpp.bin" -> $07A4EA
 incbin "graphics/recompressed TL'd nami TILEMAP.bin" -> $07AA34
 
-; update the number of tiles that are copied in
+; update the number of tiles that are copied in, if needed
 org $07A4E6
     db $42
+
+; to make reinsertion/recompression easier, make it so the 2bpp graphics are in
+; a 2bpp container instead of a 5bpp container when decompressed
+org $07A4E9
+    ; db $40
+    db $10
 
 ; --------------------
 
