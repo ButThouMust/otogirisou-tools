@@ -113,17 +113,16 @@ Open the binary format tileset in a hex editor and delete the first 8 bytes
 have to remove it because the game will generate one on its own when
 decompressing the graphics.
 
-After this, you will then have to copy the RLE format tilemaps into whatever
-folder contains the `RecompressGraphics.java` RLE compressor. You can simply
-copy all the .bin files into it and run the batch file `COMPRESS binary gfx
-files.bat` to compress all of them in one fell swoop.
+After this, you will then have to copy the binary tileset and the RLE format
+tilemaps into whatever folder contains the `RecompressGraphics.java` RLE
+compressor. You can simply copy all the .bin files into it and run the batch
+file `COMPRESS binary gfx files.bat` to compress all of them in one fell swoop.
 
 # Reinserting the credits graphics
 The graphics data for the credits all exist in a contiguous block from $08AA0A
 to $08D39A, so I created a spreadsheet in order to determine what could fit. To
 have it work with your graphics changes, all you have to do is enter in the
-sizes of the recompressed files.
-See [`offsets to insert credits data to.xlsx`](offsets to insert credits data to.xlsx).
+sizes of the recompressed files. See `offsets to insert credits data to.xlsx`.
 
 For the tileset and tilemaps I generated, most of the credits' tilemaps would
 not fit on a file by file basis (e.g. EN 301 vs JP 223). This was simply because
