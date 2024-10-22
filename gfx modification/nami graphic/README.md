@@ -76,5 +76,10 @@ for 2bpp and `--color-zero 00000000` for setting the black background as color 0
 Open the resulting binary file in YY-CHR and use the `Change Color` tool to
 confirm that the colors are correct according to the original palette.
 
+Additionally, you must open this possibly modified binary tileset in a hex
+editor, and remove the first 0x10 bytes (should be all [00]). This removes the
+empty tile that Tilemap Studio generated for us, because the game's decompressor
+will generate one for us.
+
 Next, convert both the binary tilemap and tileset to their respective formats
 expected by the compressor. Then compress, and insert into the game.
