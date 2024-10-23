@@ -502,22 +502,35 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
 
         int dataEndROM = getFileOffset(endOfData);
         int dataSize = dataEndROM - dataStartROM + 1;
-        String format2 = "Data range in ROM:   0x%05X to 0x%05X (size 0x%X)\n";
-        output += String.format(format2, dataStartROM, dataEndROM, dataSize);
+        String rangeFormat = "Data range in ROM:   0x%05X to 0x%05X (size 0x%X)\n";
+        output += String.format(rangeFormat, dataStartROM, dataEndROM, dataSize);
 
         if (!isIndepStruct()) {
-            String format3 = String.format("Structure @ $%06X: %06X", structureLocation, ptrToData);
-            for (int i = 0; i < type.bytesToSkip; i++) {
-                format3 += String.format(" %02X", structureMetadata[i]);
+            String structDataFormat = String.format("Structure @ $%06X: %06X", structureLocation, ptrToData);
+
+            // for tile and tilemap structures, print the VRAM address like $xxxx.w
+            int startingIndex = 0;
+            if (type != StructureType.PALETTE) {
+                int vramAddress = structureMetadata[0] | (structureMetadata[1] << 8);
+                structDataFormat += String.format(" $%04X.w", vramAddress);
+                startingIndex = 2;
             }
-            output += format3 + "\n";
+
+            for (int i = startingIndex; i < type.bytesToSkip; i++) {
+                structDataFormat += String.format(" %02X", structureMetadata[i]);
+            }
+            output += structDataFormat + "\n";
         }
 
-        String format4 = String.format("Metadata  @ $%06X:", ptrToData);
+        String printMetadata = String.format("Metadata  @ $%06X:", ptrToData);
         for (int i = 0; i < type.metadataSize; i++) {
-            format4 += String.format(" %02X", pointerMetadata[i]);
+            // for tilemaps, put a bar before the bytes indicating tilemap size
+            if (type == StructureType.TILEMAP && i == type.metadataSize - 2) {
+                printMetadata += " |";
+            }
+            printMetadata += String.format(" %02X", pointerMetadata[i]);
         }
-        output += format4;
+        output += printMetadata;
 
         // add special text that better describes data for each structure type
         // - add more to this as you find out more stuff about data format
@@ -530,8 +543,8 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
                 int bitDepthEstimate = (uncompDataSize / numTiles) / 8;
 
                 output += "\n";
-                String format5 = "# tiles = 0x%X; uncomp data is 0x%X bytes (%dbpp";
-                output += (String.format(format5, numTiles, uncompDataSize, bitDepthEstimate));
+                String tilesetSizePrint = "# tiles = 0x%X; uncomp data is 0x%X bytes (%dbpp";
+                output += (String.format(tilesetSizePrint, numTiles, uncompDataSize, bitDepthEstimate));
 
                 if (!isIndepStruct()) {
                     // note: this calculation requires structure metadata
@@ -546,6 +559,10 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
                 }
 
                 if (!isIndepStruct()) {
+                    int vramAddress = structureMetadata[0] | (structureMetadata[1] << 8);
+                    String vramAddrFormat = "\nTiles are written to VRAM $%04X.w.";
+                    output += String.format(vramAddrFormat, vramAddress);
+
                     boolean createEmptyTile = (structureMetadata[2] & 0x1) == 0;
                     if (!createEmptyTile) {
                         // this case applies to tile data for IDs: 5B 5C 81 82 91 92 93 96 98 99 9A 9B 9C
@@ -563,17 +580,21 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
                 boolean highBytesIncluded = tilemapSizeFlag == 0x01;
 
                 output += "\n";
-                String format5 = "High bytes of entries are %s\n";
-                output += (String.format(format5, highBytesIncluded ? "included" : "ALL [00]"));
+                String highBytesPrint = "High bytes of entries are %s\n";
+                output += (String.format(highBytesPrint, highBytesIncluded ? "included" : "ALL [00]"));
 
-                String format6 = "Tilemap W*H is 0x%02X*0x%02X%s -> 0x%X bytes\n";
-                output += (String.format(format6, tilemapWidth, tilemapHeight, (highBytesIncluded ? "*2" : ""), uncompDataSize));
+                String tilemapSizePrint = "Tilemap W*H is 0x%02X*0x%02X%s -> 0x%X bytes\n";
+                output += String.format(tilemapSizePrint, tilemapWidth, tilemapHeight, (highBytesIncluded ? "*2" : ""), uncompDataSize);
 
                 if (!isIndepStruct()) {
-                    String format7 = "Starts on screen @ (X, Y) = (0x%02X, 0x%02X)";
+                    String tilemapScreenPos = "Starts on screen @ (X, Y) = (0x%02X, 0x%02X)";
                     int tilemapX = (structureMetadata[6] & 0xF) | ((structureMetadata[5] << 2) & 0x30);
                     int tilemapY = ((structureMetadata[6] >> 4) & 0xF) | (structureMetadata[5] & 0x30);
-                    output += (String.format(format7, tilemapX, tilemapY));
+                    output += String.format(tilemapScreenPos, tilemapX, tilemapY);
+
+                    int vramAddress = structureMetadata[0] | (structureMetadata[1] << 8);
+                    String vramAddressFormat = "\nTilemap data written to VRAM $%04X.w";
+                    output += String.format(vramAddressFormat, vramAddress);
                 }
 
                 // check a value to see if for Mode 7 graphics
@@ -589,6 +610,11 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
                 break;
             }
             case PALETTE: {
+                if (!isIndepStruct()) {
+                    int cgramIndex = structureMetadata[0];
+                    String indexFormat = "\nColors written to CGRAM starting at index 0x%02X";
+                    output += String.format(indexFormat, cgramIndex);
+                }
                 break;
             }
         }
