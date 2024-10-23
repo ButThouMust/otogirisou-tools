@@ -27,4 +27,5 @@ slightly more than what Lazermutt4 did, I could reuse two tiles and fit the new
 text into 31 tiles.
 
 Below is the mockup that would eventually be used in the patch.
+
 ![patched title screen mockup](translated%20title%20logo%20mockup.png)
