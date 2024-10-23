@@ -56,8 +56,6 @@ TILEMAP data is also stored compressed with RLE. Similarly, the raw data you get
   after decompression needs more processing to use as SNES tilemap entry data.
   More details about this in a section below.
 PALETTE data is stored in the uncompressed SNES 15-bit color format.
-  - Metadata byte 0 = data block size including the other 3 metadata bytes.
-    So # colors here = (byte0 - 3) >> 1. The last color value has its MSB set.
 
 ################################################################################
 ################################################################################
@@ -191,7 +189,7 @@ Read 3 bytes at 0x04282 for metadata pointer: [83 DD 07] -> $07DD83 (0x3DD83).
     - Structure size is 6 bytes at 0x04282: [83 DD 07 00 40 10].
     RLE TILE data ranges from    0x3DD87 to 0x3E2C8 (0x542 bytes).
 
-Skip 6 bytes from start of last TILE structure.
+Skip 6 bytes from start of last tile structure.
 Read 3 bytes at 0x04288 for metadata pointer: [57 C8 07] -> $07C857 (0x3C857).
     The guaranteed metadata at 0x3C857 is [06 00 00].
     Byte 02 is [00], which ends in binary 000 -> TILE data.
@@ -200,7 +198,7 @@ Read 3 bytes at 0x04288 for metadata pointer: [57 C8 07] -> $07C857 (0x3C857).
     - Structure size is 6 bytes at 0x04288: [57 C8 07 00 20 11].
     RLE TILE data ranges from    0x3C85B to 0x3C86D (0x13 bytes).
 
-Skip 6 bytes from start of last TILE structure.
+Skip 6 bytes from start of last tile structure.
 Read 3 bytes at 0x0428E for metadata pointer: [ED E2 07] -> $07E2ED (0x3E2ED).
     The guaranteed metadata at 0x3E2ED is [00 08 02].
     Byte 02 is [02], which ends in binary 010 -> TILEMAP data.
@@ -209,7 +207,7 @@ Read 3 bytes at 0x0428E for metadata pointer: [ED E2 07] -> $07E2ED (0x3E2ED).
     - Structure size is 10 bytes at 0x0428E: [ED E2 07 00 10 00 08 00 00 00]
     RLE TILEMAP data ranges from  0x3E2F3 - 0x3E632 (0x340 bytes).
 
-Skip 10 bytes from start of last TILEMAP structure.
+Skip 10 bytes from start of last tilemap structure.
 Read 3 bytes at 0x04298 for metadata pointer: [C9 E2 07] -> $07E2C9 (0x3E2C9).
     The guaranteed metadata at 0x3E2C9 is [23 00 04].
     Byte 02 is [04], which ends in binary 100 -> PALETTE data.
@@ -223,58 +221,49 @@ Read 3 bytes at 0x04298 for metadata pointer: [C9 E2 07] -> $07E2C9 (0x3E2C9).
 
 Metadata explanations (fill in important info as needed):
 
-TILE metadata:
+TILE structure data:
+(Bytes 0, 1, 2: Pointer to metadata)
 
+Bytes 3 and 4: VRAM word address for where to write the tileset's graphics data.
+
+Byte 5: Packs data about target bit depth, generating an empty tile as tile 00,
+        and marking graphics as being for Mode 7. Specifically:
+- LSB 0 -> create empty tile; LSB 1 -> do not create one (usually sprite data)
+- Bits 5 and 4 specify a target bit depth of either 2, 4, or 8 bpp.
+  * 0b00 -> 2bpp, 0b01 -> 4bpp, 0b10 -> 8bpp, 0b11 undefined behavior
+- MSB is set for tilesets that get converted to Mode 7 format
+
+---
+
+TILE metadata:
 Bytes 0 and 1 indicate the number of tiles (000 ID for empty not counted).
 Above example: metadata at 0x3DD83 [42 00 00 30] -> 0x0042 tiles
 
-If you know the size of the decompressed graphics, you can estimate the bit
-depth. In this case, the graphics decompress to 0x840 bytes.
+Byte 2: Structure type indicator byte (type 00 or 01). Any other purpose?
+
+Byte 3: Bits 4-6 (binary: -XXX----) are used to indicate the bit depth of the
+        container you get from the raw decompression. Specifically, the bit depth
+        is ((byte3 >> 4) & 0x7) + 1. Values I found for this were:
+        [00] 1bpp, [10] 2bpp, [20] 3bpp, [30] 4bpp, [40] 5bpp*, [70] 8bpp
+
+If you know the size of the decompressed graphics, you can estimate/confirm the
+bit depth against byte 3. In this case, the graphics decompress to 0x840 bytes.
+
 0x840 bytes / 0x42 tiles = 0x20 bytes per 8x8 tile. Do some unit conversions:
 32 bytes/tile * 8 bits/byte * (1 tile/64 pixels) = 4 bits/pixel = 4bpp
 So the formula is: bit_depth = decomp_size_bytes / num_tiles / 8
 
-However, note that this is only an estimate based on the uncompressed size. For
-the exact bit depth that the game pads (may pad) the tile data to, see below.
-
-Bytes 2 and 3: ?? Might have something to do with VRAM addresses? Don't know.
-
----
-
-TILE structure data:
-
-(Bytes 0, 1, 2: Pointer to metadata)
-
-Bytes 3 and 4: ??
-
-Byte 5: Packs data about target bit depth and whether or not to generate an
-empty tile as tile 00 in VRAM. Specifically:
-- LSB 0 -> create empty tile; LSB 1 -> do not create empty tile
-- Bits 5 and 4 specify a target bit depth of either 2, 4, or 8 bpp.
-  * 0b00 -> 2bpp, 0b01 -> 4bpp, 0b10 -> 8bpp, 0b11 undefined behavior
-
 ------------------------------
 
-TILEMAP metadata explanations:
-
-- Bytes 0, 1, 2: ??
-- Byte 3 is a flag with 3 possible values:
-  * 00 = high bytes not included, assumed to be all 00
-  * 01 = high bytes with low bytes (each set is in its own W*H byte block)
-  * 80 = like 00 case, but indicates the tilemap is for Mode 7 graphics
-- Bytes 4 and 5 indicate the tilemap dimensions [WW HH].
-  Above example: metadata at 0x3E2ED [00 08 02 01 20 1C] -> W = 0x20, H = 0x1C
-
-As a consequence, formula for target size of uncompressed tilemap data:
-uncomp_tilemap_size = [(byte3 & 0x1) + 1] * byte4 * byte5
-
----
-
 TILEMAP structure data:
-
 - (Bytes 0, 1, 2: Pointer to metadata)
 
-- Bytes 3, 4, 5, 6, 7: ??
+- Bytes 3, 4: VRAM word address to write the tilemap data into.
+
+- Bytes 5, 6, 7: ?? Might have something to do with a WRAM offset? Usually [00 08 00]
+  Exceptions: 0x3DFE in $B5C5; 0x0000 in Mode 7 ($C06D, $C085, $C0A7, $C0BF, $C161);
+              0x1170 in $C125; 0x2000 for credits tilemaps; 0x3880 in $C29F;
+              0x2334, 0x2398 for "the end" gfx; 0x19F7 in $C358
 
 - Bytes 8, 9: Encodes the position of where to draw the the top left tile of the
   tilemap "on screen," or perhaps more precisely where in a background layer.
@@ -287,10 +276,52 @@ TILEMAP structure data:
   X = (1E & F) | ((10 << 2) & 30) = E | (40 & 30) = E   00010000 00011110
   Y = ((1E >> 4) & F) | (10 & 30) = (1 & F) | 10 = 11     yyxx   YYYYXXXX
 
+---
+
+TILEMAP metadata:
+- Bytes 0, 1: Not sure, usually [00 08].
+
+- Byte 2: Type indicator byte for normal or Mode 7 tilemap. Anything else?
+
+- Byte 3 is a flag with 3 possible values:
+  * 00 = high bytes not included, assumed to be all 00
+  * 01 = high bytes with low bytes (each set is in its own W*H byte block)
+  * 80 = like 00 case, but indicates the tilemap is for Mode 7 graphics
+
+- Bytes 4 and 5 indicate the tilemap dimensions [WW HH].
+  Above example: metadata at 0x3E2ED [00 08 02 01 20 1C] -> W = 0x20, H = 0x1C
+
+As a consequence, formula for target size of uncompressed tilemap data:
+uncomp_tilemap_size = [(byte3 & 0x1) + 1] * byte4 * byte5
+
 ------------------------------
 
-Thing(s) to possibly figure out some day (not important to a patch):
-- How does the game know where (VRAM, CGRAM, OAM, etc.) to send the data?
+PALETTE structure data:
+- (Bytes 0, 1, 2: Pointer to metadata)
+
+- Byte 3: Starting index in CGRAM to write color data into.
+
+- Bytes 4, 5, 6: ?? Typically the sequence is [80 00 00]
+  Exceptions:
+  * [80 00 80] for $00C0A7, $00C33C, $00C34A
+  * [80 03 00] for $00B5EB
+  * [80 04 3B] for $00B601
+
+---
+
+PALETTE metadata explanations:
+- Byte 0 = data block size including the other 3 metadata bytes.
+  So # colors here = (byte0 - 3) >> 1. The last color value has its MSB set.
+
+- Byte 2 = Structure type indicator: [04].
+
+- Byte 1, 3 = ?? Typically, both are [00].
+
+--- 
+
+Unknown: The game typically does not write palette values into CGRAM as a single
+contiguous block. How does the game know how/when to "go down a row", and/or
+how many should go into one row of colors?
 
 ################################################################################
 ################################################################################
@@ -298,9 +329,11 @@ Thing(s) to possibly figure out some day (not important to a patch):
 If you were to keep track of the data blocks for all the structures, you would
 find some blocks in the ROM that are not accounted for.
 
-Consequences of not having structures associated with them:
-- Tilemaps: cannot determine where they are to be drawn to, as in (X, Y)
-- Tiles:    cannot determine what bit depth to pad to, or if to make empty tile
+Not having associated structures means you cannot, in isolation, know:
+- Tilemaps: where (X,Y) they are to be drawn to on screen
+- Tiles:    what bit depth to pad to, or if to make empty tile
+- Both:     where in VRAM to send the data
+- Palettes: where in CGRAM to start writing color data
 
 For context, the graphics are all from $02DA00 - $08D39A (0x13A00 - 0x4539A),
 except for one at $00E00C. Six blocks are not covered with structures.
