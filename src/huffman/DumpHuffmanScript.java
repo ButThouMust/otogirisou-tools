@@ -608,6 +608,11 @@ public class DumpHuffmanScript {
             // bunch of non-text control codes
             int charEncoding = readCharacter();
             boolean isText = isCharEncodingText(charEncoding);
+
+            // printing <KERN LEFT> ctrl code can greatly hinder readability
+            // in the script; put in code to not print it or its argument
+            boolean isKernLeft = getEncoding(charEncoding).equals("<KERN LEFT>");
+                
             if (isText && onNewLine && !printedFirstCharForLine) {
                 if (!justWrotePointerComment && !isCharEncodingText(prevCharEncoding)) {
                     scriptOutput.newLine();
@@ -615,7 +620,9 @@ public class DumpHuffmanScript {
                 printedFirstCharForLine = true;
                 onNewLine = false;
             }
-            printChar(charEncoding);
+            if (!isKernLeft) {
+                printChar(charEncoding);
+            }
             prevCharEncoding = charEncoding;
 
             // set script status flags when a text character
@@ -670,7 +677,9 @@ public class DumpHuffmanScript {
                         switch (argType & 0x1) {
                             case CHAR_ARG:
                                 int arg = readCharacter();
-                                printArg(arg);
+                                if (!isKernLeft) {
+                                    printArg(arg);
+                                }
                                 // if SET FLAG 22 or JMP.cc 04, note which flag
                                 // is being changed or being checked
                                 if ((charEncoding == SET_FLAG_22 ||
