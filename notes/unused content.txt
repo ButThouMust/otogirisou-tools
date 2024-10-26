@@ -4,10 +4,16 @@ unused graphics and text in the game's data.
 
 --------------------------------------------------------------------------------
 
-There is a developer credit hidden amongst the text data for the name entry
-screen. 0x12FEA through 0x12FF5 contains the hiragana text せいいちろう
-"Seiichirou". This likely refers to 長畑 成一郎 (Seiichirou Nagahata), who is
-listed in the game's credits as 協力 (Support).
+There are two hidden developer credits.
+
+0x12447 - 0x12452 contains the ASCII string "manabuyamana". The string is copied
+into the game's SRAM twice. It refers to 山名 学, credited as 開発監督 (director
+of programming). He is also known for founding the game developers HeartBeat and
+Genius Sonority.
+
+0x12FEA - 0x12FF5 contains (in the game's encoding for the script) the hiragana
+text せいいちろう "Seiichirou". This likely refers to 長畑 成一郎 (Seiichirou
+Nagahata), who is credited under 協力 (Support).
 
 --------------------------------------------------------------------------------
 
@@ -26,9 +32,11 @@ $1694A0-0
 ミイラを確かめようと階段に向かった。<LINE 00>
 
 ---------------
+(Note: the first two lines are accessible, but the next eight are not)
 $1E83AC-1
 「だまれ、シュワッチ!」<LINE 00>
 おれのラブラブ作戦に迷いはない。<END CHOICE 1C>
+
 「そろそろブレーキ調べといた方がいいんじゃない?」<LINE 00>
 「え」<LINE 00>
 ぼくはドキリとなった。<LINE 00>
