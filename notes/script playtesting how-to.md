@@ -70,7 +70,9 @@ as options in the list, and when you actually pick them.
 
 Below are examples of the "right edge overflow" and "word can fit" (`before I
 went / on`) issues described above:
+
 ![right edge text overflow](/images/right%20screen%20overflow%20example.png)
+
 ![word could have fit](/images/unnecessary%20line%20break%20for%20short%20word.png)
 
 # Control codes with variable text (name, honorific)
