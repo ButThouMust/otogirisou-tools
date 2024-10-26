@@ -4,6 +4,13 @@ unused graphics and text in the game's data.
 
 --------------------------------------------------------------------------------
 
+There is a developer credit hidden amongst the text data for the name entry
+screen. 0x12FEA through 0x12FF5 contains the hiragana text せいいちろう
+"Seiichirou". This likely refers to 長畑 成一郎 (Seiichirou Nagahata), who is
+listed in the game's credits as 協力 (Support).
+
+--------------------------------------------------------------------------------
+
 Four points in the Japanese script are unreachable in normal gameplay.
 
 $15F0F7-5
