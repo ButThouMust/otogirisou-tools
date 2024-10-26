@@ -14,7 +14,7 @@ If you use the Mesen emulator, its Memory Viewer allows you to temporarily edit
 the game's start points, without needing to keep a backup copy of the ROM with
 the proper start points.
 
-#How to spot check a screen of text
+# How to spot check a screen of text
 Open both your, so to speak, "original" translated script and redumped
 translated script. For a particular page of text, pick a decently unique or
 uncommon word in the original script, and search for it in the redumped script.
@@ -35,7 +35,7 @@ I recommend creating a save state as the cursor is on the "Restart" option, so
 you don't have to sit through the Chunsoft splash screen and mash buttons to get
 to the file select screen.
 
-#Keeping track of what text is good/bad
+# Keeping track of what text is good/bad
 To not go totally crazy checking the script, I needed a systematic way to track
 if pages were good, had rewrites/reformats that needed to be checked in-game, or
 needed rewrites/retranslations. What I came up with, was to take a clean JP
@@ -46,7 +46,7 @@ The game's choices reach all around the script, so it's unfortunately infeasible
 to test a script translation until it's fully filled in. So make sure that the
 raw dump is in a format you like before you start editing it.
 
-#Linebreaking abnormalities
+# Linebreaking abnormalities
 Once your script is ready for playtesting, I recommend just going through the
 story one "route" at a time. See if text is formatted nicely in game, and mark
 the page in your checklist as good or as needing reformatting.
@@ -68,7 +68,12 @@ formatting had I reused the original Japanese linebreaking logic.
 Also note that for choice codes, you will need to check their linebreaking both
 as options in the list, and when you actually pick them.
 
-#Control codes with variable text (name, honorific)
+Below are examples of the "right edge overflow" and "word can fit" (`before I
+went / on`) issues described above:
+![right edge text overflow](/images/right%20screen%20overflow%20example.png)
+![word could have fit](/images/unnecessary%20line%20break%20for%20short%20word.png)
+
+# Control codes with variable text (name, honorific)
 In terms of printing the player's name, I would suggest you write translations
 with the `<NAME-SAN 20>` or `<NAME 21>` control code at the end of a line in the
 script. Of course, this assumes that the sentence still flows correctly if you

@@ -76,7 +76,7 @@ Open that copy of the ROM in a hex editor, go to offset 0x4539B, and scroll down
 until the start of a big wall of `[00]` bytes before offset 0x100000. Enter the
 hex address of the last non-zero byte in this range.
 
-![huffman script hex editor screenshot](/images/example%20for%20end%20of%20huffman script.png)
+![huffman script hex editor screenshot](/images/example%20for%20end%20of%20huffman%20script.png)
 
 This serves two purposes:
 - Ensure that the Huffman script was generated correctly.
