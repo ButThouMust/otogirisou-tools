@@ -39,7 +39,7 @@ converted ROM offsets to each control code's description.
 --------------------------------------------------------------------------------
 
 ################################################################################
-------SCRIPT JUMPS------
+------SCRIPT JUMPS + PROGRESS FLAGS ------
 ################################################################################
 
 1003=<JMP> (0x028A1 = 00A8A1)
@@ -57,7 +57,7 @@ converted ROM offsets to each control code's description.
   * these are typically set with CODE 22 = "SET FLAG 22"
 - second value (all are 0001 except for one that is 0002) is what the progress
   flag value should match for the jump to be taken
-- If I have to guess what the "cc" means, it could be like "check condition".
+- If I have to guess what the "cc" meant, it could be like "check condition".
 
 1005=<JMP.cc 05> (0x028AE = 00A8AE)
 - input has 2 values, plus a script pointer as with regular JMP
@@ -65,36 +65,54 @@ converted ROM offsets to each control code's description.
   for determining whether or not to take the jump. Specifically, the progress
   flag value must NOT match the code's second value, for the jump to be taken.
 
-################################################################################
------CREDITS CODES------
-################################################################################
+----------
 
-1009=<CODE 09> (0x028D1 = $00A8D1)
-- 0 values; this pops up after ending scenarios with JMP.cc 04 codes in them
-- they all have the format EMBWRITE(NUMBER) / CODE 09 / WAIT / CLEAR 25
-- seven instances like this; there is also one instance at 18A6A0-4 where it's
-  sandwiched between <NAME> and a <WAIT>
-- since CODE 0C slows down the text scroll speed, I think CODE 09 returns the
-  speed back to normal (could be used to increase speed? probably not)
-- suggested new name: REG TEXT SPEED 09
+1022=<CODE 22> (0x02889 = $00A889)
+- 2 values; alters certain game progress flags for three purposes:
+  * deciding whether or not to take JMP.cc codes
+  * marking start points as being viewed, which influences the order they are
+    viewed in for the first three playthroughs (flags 000, 100, 040)
+  * marking ending paths as being viewed, which in turn tells the game how to
+    determine which and how many options to show for choices (see below)
 
-100C=<CODE 0C> (0x028D1 = $00A8D1)
-- 0 values; this pops up in situations where the credits are going to roll soon
-- the rate at which text appears on screen seems to slow down when this code
-  appears, probably for dramatic effect when the text scrolls automatically
-- 16 instances in the script
-- suggested new name: SLOW TEXT 0C
+Value 1 is which flag to alter (0000 to 0192).
+Value 2 is what value to assign to the (low 3 bits of the) flag.
 
-A note:
-- Control codes with a value in the range 1009 - 1012 reuse the same ASM code.
-  It uses (ctrl_code_value - 1009) to modify a memory address related to the
-  text printing rate, i.e. # frames to wait between printing each character.
-  Typically 1 char per 2 frames, but 100C sets it to about 1 char per 3 frames.
-- Importantly, the other unused control codes (0A, 0B, 0D, 0E, 0F, 10, 11, 12)
-  should be free for the taking to implement your own custom code.
+Specifically, value 1 indicates a byte offset from $1BEF in memory.
+So flag 0xFE is for $1BEF + 0xFE = $1CED
 
-101D=<NOP 1D> (0x0299E = $00A99E)
-- 0 values; this is the last code executed before every single ending
+- sets values for these flags: 0000 x4, 0001, 0009, (0011 x4), (0024 x3),
+  (0026 x2), 002C, 003B, 003F, 0040, 006C, 0087, (00C4), (00C6), (00FC), (00FE),
+  0100, 0135, 0152, (018D), (018F), (0190), (0192)
+
+suggested new name: SET FLAG 22
+
+--
+
+According to the ASM at $01F79A, the game has three different lists of flags to
+check for determining overall game progress in terms of endings.
+The important value for progress is $1BBD (00, 04, 06, 07).
+00: no endings viewed
+04: any one of the flags [0135, 0152, 003B, 002C, 003F] is set to 1
+06: flag [006C] is set to 1 (takes priority over check for value 04)
+07: flags [0135, 0152, 003B, 002C, 003F, 006C, 0087, 00C4, 00FC] all set to 1
+
+So theoretically, it is possible in normal play to get the pink bookmark on your
+file with the playthrough counter still in the single digits.
+
+--
+
+Or, if you want to skip all that work, you have two options to artificially give
+yourself the pink bookmark by editing RAM.
+
+- The temporary solution would be to set $1BBD to [07] for each playthrough.
+  I recommend this because you can play the game like you normally would but
+  can still view all the choices in a particular route.
+
+- A more permanent solution would be to:
+  * Set these RAM addresses to [01] as you're playing the game:
+    $1C1B, $1C2A, $1C2E, $1C5B, $1C76, $1CB3, $1CEB, $1D24, $1D41
+  * Finish a playthrough and view the credits.
 
 ################################################################################
 ------TEXT EFFECTS------
@@ -103,6 +121,26 @@ A note:
 1000=<LINE> (0x027A2 = $00A7A2)
 - 0 values; advances text down a line, usually after punctuation like 。？！」』
 - changed name to LINE 00 in dump
+
+100C=<CODE 0C> (0x028D1 = $00A8D1)
+- 0 values; this pops up in situations where the credits are going to roll soon
+- the rate at which text appears on screen slows down when this code appears,
+  probably for dramatic effect when the text scrolls automatically
+- suggested new name: SLOW TEXT 0C
+
+1009=<CODE 09> (0x028D1 = $00A8D1)
+- 0 values; returns the text speed back to normal after a CODE 0C
+- suggested new name: NORMAL TEXT SPEED 09
+
+----------
+A note:
+- Control codes with a value in the range 1009 - 1012 reuse the same ASM code.
+  It uses (ctrl_code_value - 1009) to modify a memory address related to the
+  text printing rate, i.e. # frames to wait between printing each character.
+  Typically 1 char per 2 frames, but 100C sets it to about 1 char per 3 frames.
+- Importantly, the other unused control codes (0A, 0B, 0D, 0E, 0F, 10, 11, 12)
+  should be free for the taking to implement your own custom control codes.
+----------
 
 1013=<CODE 13> (0x028E8 = $00A8E8)
 - 0 values; normally, the game auto WAITs with the punctuation 。？！」』
@@ -125,9 +163,11 @@ A note:
 - suggested new name: DELAY 17
 
 1018=<CODE 18> (0x0280C = $00A80C)
-- 1 value; like DELAY 17, but uses different unit for measuring the delay length
-- the value indicates the duration in individual frames (i.e. no multiply by 6)
+- 1 value; same as DELAY 17, but delay length in individual frames (no x6)
 - not used in the script, but I will suggest a new name of ALT DELAY 18
+
+101D=<NOP 1D> (0x0299E = $00A99E)
+- 0 values; this is the last code executed before every single ending
 
 101E=<CODE 1E> (0x02813 = $00A813)
 - 1 value; sets the X position for text to the value of the argument
@@ -138,7 +178,7 @@ A note:
 
 101F=<CODE 1F> (0x0281C = $00A81C)
 - 1 value; sets the Y position for text to the value of the argument
-- Similar, not used in the script, but could be helpful for special text.
+- Similar, not used in the script. Could be helpful for special text.
 - suggested new name: SET Y POS 1F
 
 1020=<NAME> (0x0283A = $00A83A)
@@ -147,35 +187,13 @@ A note:
 - Based on the assembly code here, the game loads a value (an array offset) from
   the SRAM at $7005A8 to determine what honorific to use here. There is a table
   of offsets for bank 02 at 0x0286F after the RTS for this control code.
-- Honorifics I got in my playthroughs when translating:
-  1st - 2nd: san
-  3rd - 4th: N/A
-  5th:       kun (katakana)
-  6th:       N/A
-  7th:       kun (hiragana)
-  8th:       don
-  9th:       N/A
-  10th:      dono
-  11th:      sama
-  12th:      N/A
-  13th:      chan
-  14th:      san
-  15th:      chief
-  16th:      senpai
-  17th:      kun (katakana)
-  18th:      san
-  19th:      kun (katakana) - didn't complete this playthrough
 - suggested new name: NAME-SAN 20
-
-Note: I suppose the dynamic honorifics qualify as a sort of game mechanic, but
-      I realize not everyone likes having honorifics written out in English.
-      Look into solutions for options to either keep them in or leave them out
-      altogether. Potentially release two versions of the patch?
 
 1021=<CODE 21> (0x02825 = $00A825)
 - 0 values; prints player's name, but always without an honorific of any kind
-- CODE 21 is much less common than NAME 20, but it does pop up occasionally.
-- The script sometimes has "forced" honorifics with text like "<CODE 21>さん".
+- This is much less common than NAME 20, but it does pop up occasionally.
+  The script sometimes has "forced" honorifics with text like "<CODE 21>さん".
+  (Note: this was the motivation for coding up "conditionally print honorific")
 - suggested new name: NAME 21
 
 1025=<CLEAR 25> (0x027BB = $00A7BB)
@@ -248,56 +266,6 @@ into the game, but appropriately lock it down until the pink bookmark is gotten.
 - suggested new name: EC HELPER 1B
 
 ################################################################################
------UNCATEGORIZED------
-################################################################################
-
-1022=<CODE 22> (0x02889 = $00A889)
-- 2 values; alters certain game progress flags for two purposes:
-  * deciding whether or not to take JMP.cc codes
-  * marking ending paths as being viewed, which in turn tells the game how to
-    determine which and how many options to show for choices
-
-Value 1 is which flag to alter (0000 to 0192).
-Value 2 is what value to assign to the (low 3 bits of the) flag.
-
-Specifically, value 1 indicates a byte offset from $1BEF in memory.
-So flag 0xFE is for $1BEF + 0xFE = $1CED
-
-- sets values for these flags: 0000 x4, 0001, 0009, (0011 x4), (0024 x3),
-  (0026 x2), 002C, 003B, 003F, 0040, 006C, 0087, (00C4), (00C6), (00FC), (00FE),
-  0100, 0135, 0152, (018D), (018F), (0190), (0192)
-
-According to the ASM at $01F79A, the game has three different lists of flags to
-check for determining overall game progress in terms of endings.
-The important value for progress is $1BBD (00, 04, 06, 07).
-00: no endings viewed
-04: any one of the flags [0135, 0152, 003B, 002C, 003F] is set to 1
-06: flag [006C] is set to 1 (takes priority over check for value 04)
-07: ALL flags [0135, 0152, 003B, 002C, 003F, 006C, 0087, 00C4, 00FC] set to 1
-
-So theoretically, it is possible to get the pink bookmark on your file with the
-loop counter still in the single digits. You would have to take the route for
-either 002C or 003B as your last ending of the nine listed, and reset the game
-at the point where those two paths converge.
-
-suggested new name: SET FLAG 22
-
-------
-
-1045=<CODE 45> (0x02969 = $00A969)
-- 1 value; see below
-1046=<CODE 46> (0x0296A = $00A96A)
-- 1 value; see below
-
-CODE 45 and CODE 46 always seem to come in pairs with the same input
-- they also often seem to come before choices
-  - however, they can also surround text and/or other control codes
-- you can stack them like at 16C9F3-5, with 45<A>45<B>46<B>46<A>; 
-
-I don't know what they do, but I just left the instances alone without any
-repercussions on the patch.
-
-################################################################################
 -----VISUAL EFFECTS-----
 ################################################################################
 
@@ -313,7 +281,7 @@ Check: do some of the different visual codes only affect certain graphic layers?
 - 0 values; cuts out text graphics layer until script finds instance of CODE 2A
 - suggested new name: TEXT CUT OUT
 102A=<CODE 2A> (0x02AEB = $00AAEB)
-- 0 values; cuts back in text graphics layer; four appearances in the script
+- 0 values; cuts text graphics layer back in
 - suggested new name: TEXT CUT IN
 
 102C=<CODE 2C> (0x02AC9 = $00AAC9)
@@ -436,6 +404,21 @@ For all these codes, the last input value indicates which sound to play.
 1043=<CODE 43> (0x0295A = $00A95A)
 - 0 values; all music and sound abruptly cut out
 - suggested new name: FULL MUTE 43
+
+----------
+
+1045=<CODE 45> (0x02969 = $00A969)
+- 1 value; see below
+1046=<CODE 46> (0x0296A = $00A96A)
+- 1 value; see below
+
+CODE 45 and CODE 46 always seem to come in pairs with the same input
+- they also often seem to come before choices
+  - however, they can also surround text and/or other control codes
+- you can stack them like at 16C9F3-5, with 45<A>45<B>46<B>46<A>; 
+
+I don't know what they do, but I just left the instances alone without any
+repercussions on the patch. I think they're somehow related to the sfx codes.
 
 ################################################################################
 CODES NOT IN THE DUMP
