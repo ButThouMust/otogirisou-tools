@@ -27,11 +27,14 @@ focuses on the "main" credits.
 To view the other credits graphics, follow these steps:
 - Take the raw graphics file (`$08AA0E TILE.bin`) and change the file extension
   to `.1bpp`.
-- Load this as a tileset in Tilemap Studio, and use the option `Tools -> Shift
-  Tileset` by +1.
+- Open it in a hex editor and add eight `[00]` bytes at the beginning of the
+  file to simulate an empty tile.
+- Load this as a tileset in Tilemap Studio.
 - Load any of the SNES format tilemaps from graphics structures 0x5D and
   0x66-0x72.
 - Adjust the width accordingly, and you will see the constructed credit.
+
+Here is an example with the screen for Writer credits:
 
 ![Tilemap Studio screenshot](writer%20credits%20-%20tilemap%20studio.png)
 
@@ -60,7 +63,7 @@ font sizes (yeah), manual text kerning, and having a layer for individually
 editing pixels (clean up letters) helped make the text look better.
 
 The original credits use a total of 0x331 tiles. Some tips for trying to
-optimize your tileset to stay smaller than this:
+optimize your tileset:
 - Start new words on the left of tile boundaries. You can reuse tiles for the
   capital letters this way.
 - The top of lowercase letters like `a` or `r` (but not like `i` or `t`) should
