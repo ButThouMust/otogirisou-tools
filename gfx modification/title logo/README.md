@@ -1,9 +1,9 @@
 # Title logo
 ![Tilemap Studio screenshot](JP%20title%20logo%20-%20Tilemap%20Studio.png)
 
-| GFX ID(s) | Tileset(s) | Tilemap(s) | Description |
-| --------- | ---------- | ---------- | ----------- |
-| 0x5A | $07CC6B | $07D4B5 | title logo |
+| GFX ID | Tileset | Tilemap | Palette | Description |
+| ------ | ------- | ------- | ------- | ----------- |
+| 0x5A   | $07CC6B | $07D4B5 | $07D553 | title logo |
 
 You can translate the title logo however you like. I personally decided
 to keep the three kanji 弟切草 and replace the furigana おとぎりそう on the

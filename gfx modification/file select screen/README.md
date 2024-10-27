@@ -23,9 +23,9 @@
 +------------+------------------+--------------+
 ```
 
-| GFX ID(s) | Tileset(s) | Tilemap(s) | Description |
-| --------- | ---------- | ---------- | ----------- |
-| 0x5B | $07E637 | $07E855 | file select prompts|
+| GFX ID | Tileset | Tilemap | Palette | Description |
+| ------ | ------- | ------- | ------- | ----------- |
+| 0x5B   | $07E637 | $07E855 | $07E9DE | file select prompts|
 
 This concerns the prompts on the file select screen, which are listed above.
 Note that the text directly on the bookmarks like the player's name, the page

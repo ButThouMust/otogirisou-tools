@@ -1,6 +1,10 @@
 # Nami graphic
 ![Tilemap Studio screenshot](trimmed%20nami%20graphic%20tiles%20-%20tilemap%20studio.png)
 
+| GFX ID | Tileset | Tilemap | Palette | Description |
+| ------ | --------| --------| ------- | ----------- |
+| 0x7B   | $07A4EA | $07AA34 | $07AA26 | Nami graphic |
+
 This is a mild spoiler about one certain moment in the game. If you take an
 original Japanese ROM and change nine bytes at 0x12627 from `[08 20 ... C5]`
 to three copies of `[69 BA B5]`, you can (from a new save file) view a certain

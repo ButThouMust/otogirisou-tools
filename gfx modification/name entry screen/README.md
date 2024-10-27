@@ -1,17 +1,17 @@
 # Name entry screen
 ![Tilemap Studio screenshot](name%20entry%20screen%20-%20Tilemap%20Studio.png)
 
-| GFX ID(s) | Tileset(s) | Tilemap(s) | Description |
-| --------- | ---------- | ---------- | ----------- |
-| 0x5C | $07DD87 | $07E2F3 | name entry screen |
+| GFX ID | Tileset | Tilemap | Palette | Description |
+| ------ | ------- | ------- | ------- | ----------- |
+| 0x5C   | $07DD87 | $07E2F3 | $07E2CD | name entry screen |
 
 You will need to translate the buttons in the bottom right of the screen.
 The two in the middle each read セレクト "select" and スペース "space".
 
 Because they all use unique tiles, I was able to just edit the tiles for the
-buttons "in-place", directly in a tile editor. Because of the limited space,
-however, I decided to abbreviate them as `SEL` and `SPC`. I also decided to
-change the backspace arrow into the text `DEL`.
+buttons "in-place", directly in a tile editor. Because of the limited screen
+space, I decided to abbreviate them as `SEL` and `SPC`. I also decided to change
+the backspace arrow into the text `DEL`.
 
 In my case, I was actually able to get away with just modifying the tileset in
 YY-CHR (use the raw decompression output, not the SNES format tiles) and leaving
