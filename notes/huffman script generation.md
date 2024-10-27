@@ -1,17 +1,18 @@
 # Overview of translation patch generation
 At a high level, the process for generating a translation patch involves:
 - Generate the script font, formatted for the game, and its encoding order
-- Insert the script into the game with this new encoding
+- Use this new encoding to generate the uncompressed binary format script
 - Analyze the script with the Huffman coding text compression algorithm
 - Generate the script, encoded in Huffman format
-- Insert the Huffman-encoded script, and move around data to make room
+- Move around data in the ROM to make room for the Huffman-encoded script, and
+  insert it
 - Dump the Huffman-encoded script back into a text file (helps with playtesting)
 
 See [BUILD patched game.bat](/BUILD%20patched%20game.bat). For the purposes of
 this writeup, I will focus on script reinsertion and editing only. Graphics
 translation is its own separate topic.
 
-##Script font generation
+## Script font generation
 You need:
 - An image consisting of a new font to be inserted into the game.
 - An accompanying table file of encoding values with their heights and widths.
@@ -25,17 +26,19 @@ This will generate both the font in the format that the game will expect with my
   - No regexing instances of `AV` in the script itself to `A<KERN LEFT>(2)V`.
   - `?!"` will only trigger an automatic "wait for player input" after the `"`.
 
-##Uncompressed script generation
+## Uncompressed script generation
 You need:
 - An original ROM image of Otogirisou
 - A text file containing a translated script
 
 Using Atlas, the script will be inserted in the uncompressed two-byte encoding
-that was generated with the script font. Additionally, the game's three start
-points will be updated. This creates a new ROM (exists only temporarily - will
-not work in an SNES emulator!), `Otogirisou - EN uncompress.sfc`.
+that was generated with the script font. Additionally, it will calculate the
+locations and values for all the script pointers and the three start points.
 
-##Huffman compression analysis, and Huffman script generation
+This creates a new ROM (exists only temporarily - **will not work in an SNES
+emulator!**), `Otogirisou - EN uncompress.sfc`.
+
+## Huffman compression analysis, and Huffman script generation
 You need to know:
 - The hex address of the end of the uncompressed script
 
@@ -64,7 +67,7 @@ hex editor. Depending on its size, either input:
 
 This step covers both script analysis and Huffman script generation.
 
-##Re-dumping the Huffman compressed script
+## Re-dumping the Huffman compressed script
 You need to know:
 - The hex address of the end of the Huffman compressed script
 
