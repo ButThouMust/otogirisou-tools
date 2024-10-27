@@ -14,6 +14,17 @@ If you use the Mesen emulator, its Memory Viewer allows you to temporarily edit
 the game's start points, without needing to keep a backup copy of the ROM with
 the proper start points.
 
+# A useful pre-requisite
+The game keeps track of what endings the player has viewed. The main purpose is
+to determine how many choice options to show to the player for each branching
+path. In particular, if the player views a total of 9 specific endings, the
+bookmark for their file will turn pink instead of yellow, and set all the choice
+options in the game as viewable.
+
+It is possible to artificially give yourself the pink bookmark by editing the
+game's RAM in a specific way. See the control codes writeup, particularly the
+section about `SET FLAG 22`.
+
 # How to spot check a screen of text
 Open both your, so to speak, "original" translated script and redumped
 translated script. For a particular page of text, pick a decently unique or
