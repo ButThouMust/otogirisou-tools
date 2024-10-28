@@ -1,0 +1,176 @@
+Otogirisou has a sort of "game mechanic" where each time you reach the credits,
+the protagonist's girlfriend will use a different honorific for him.
+For example, on a new file, she will typically use "san" or somewhat uncommonly
+"kun". Other options include chan, sama, sensei, and senpai. There is also the
+chance that no honorific will be printed for a playthrough.
+
+The game accomplishes this with two lists: one for the honorifics themselves,
+and one for the pointers to each one. A value in SRAM picks a pointer whenever
+the control code with value 0x1020 is found in the script.
+
+This is the list of honorifics along with their IDs:
+00  01  02  03   04  05   06   07  08     09     0A    0B
+san kun --- chan don sama dono kun senpai sensei chief papa
+Notice that a value of 02 means no honorific.
+01 is for kun in hiragana. 07 is for kun in katakana.
+
+There is also a control code (value 0x1021) where it simply prints the name with
+the guarantee that it will not have an honorific.
+
+--------------------------------------------------------------------------------
+
+While I do consider this to be an interesting mechanic, I realize that not
+everyone likes having Japanese honorifics left in for an English translation.
+
+Since at least some people will invariably complain if I leave them in and
+others will complain if I leave them out, I've been looking into ways to have
+honorifics as an option to the end user.
+
+Requirements for this switch:
+- It should be easy to switch back and forth between using them or not.
+- If the player wants to switch in the middle of a playthrough, they should not
+  have to restart their playthrough from the beginning.
+- Switching should not require editing RAM or opening saves in a hex editor.
+
+What complicates matters for this is that there are instances in the story with
+"hard-coded" honorifics for the player. These instances appear in the script as
+"<NAME 21>-san", for example, as well as some with "Nami-___".
+
+Outright deleting the hard-coded honorifics from the script would essentially
+create two different versions of the script, where a given position in one
+script will not necessarily match up with the same text in the other script.
+To me, this violates two of my feature proposals, specifically "easy to switch"
+and "not have to restart."
+
+--------------------------------------------------------------------------------
+
+An ideal solution here would be to have some memory address that serves as a
+flag for "honorifics on/off." Are there any unused addresses in the memory map
+that we can repurpose? It turns out there are!
+
+The game has a subroutine at $008570 for reading joypad data for four players,
+despite how the game itself is single player (reads JOY1L - JOY4L registers):
+$0A25 <- P1, $0A27 <- P2, $0A29 <- P3, $0A2B <- P4
+
+We obviously want to keep P1's support, but I found that NOP'ing out the 18
+bytes ($00857E - $00858F) for reading data from P2-P4 doesn't affect gameplay.
+
+I did notice, though, that $0A28 (high byte for P2: B, Y, d-pad, Select, Start)
+still gets written to $00CE in instructions at $008BCE. TODO: Why is this?
+While $0A27 doesn't get read under the 18 NOP change, consider keeping P2 reads
+intact. May lead to debugging screens or such, I don't know.
+Checked occurrences of byte [CE], nothing useful.
+
+Anyway, we can overwrite the joypad read for P3 or P4 with writing whatever we
+want to one of the addresses. Let's say the value in ADDR means:
+- 00 = "honorifics off"
+- anything else = "honorifics on"
+
+This makes the ASM simple:
+; LDA ADDR
+; BEQ do_stuff_if_honorifics_off
+; BNE do_stuff_if_honorifics_on
+
+--------------------------------------------------------------------------------
+
+Assuming the above will work, brainstorm some ideas:
+
+"Conditionally print honorific" control code
+- Based on ADDR, do nothing if off, otherwise reuse ASM in <NAME-SAN 20>.
+- It would be wasteful to create a control code for each honorific like <SAN XX>
+  or <KUN YY>, etc. Let it take one argument that addresses the honorifics list.
+  Example, <CODE ??><$00><$00> prints "-san", <$00><$01> prints "-kun".
+
+Intercepting the <NAME-SAN 20> control code
+- To avoid having to replace every occurrence of <NAME-SAN 20> with <NAME 21>
+  (alternate idea: have a patch version that sets all the honorifics' pointers
+  to go to an FFFF terminator), change the target address for <NAME-SAN 20> in
+  the control code list. Point to some custom code: JMP to <NAME 21> or original
+  <NAME-SAN 20> based on the value in ADDR.
+
+--------------------------------------------------------------------------------
+
+One way to implement this switch would be to release two versions of the patch:
+one with honorifics, another without.
+
+Again, we can simply overwrite the assembly code for reading from P3 to assign a
+value to the honorifics flag.
+
+--------------------------------------------------------------------------------
+
+Another way to implement the switch would be to use the R button as a toggle,
+because the game doesn't use it for anything in terms of control flow.
+
+This would be more convenient for the player, but I need to make sure the flag
+gets properly set at specific moments and persists between play sessions (i.e.
+when the player turns the game off and comes back later).
+
+As for where in code this should happen:
+New playthrough:
+- Change the "pick a start point" routine ($02A569) to check the R button, and
+  set the flag based on whether or not it is pressed. Alternatively, can make a
+  separate subroutine that you JSL into like this (pseudocode):
+    JSL $02A569
+    Check the R button
+    Set the flag
+    RTL
+
+Start playthrough after viewing credits:
+- Current idea: Alter the "read pointer for most recent page" routine, wherever
+  it is, to check how many pages have been read. If the R button
+
+Rules I came up with for when the player should hold down the R button:
+1. Blank SRAM.
+   Hold R when pressing A to advance past the title screen.
+   $02A569 gets run here? Yes, see $02A53F.
+
+2. Start a new file from the file select.
+   Hold R when pressing A to go to the name entry screen.
+   $02A569 gets run here? Yes, even has the same stack trace as for blank SRAM.
+
+3. Restart a playthrough from page 1.
+   Hold R when pressing A on "Restart" prompt.
+   $02A569 gets run here? Yes, see $02BB5D.
+
+4. Begin a new playthrough after having seen the credits.
+   Hold R when pressing A on "Resume" prompt.
+   $02A569 gets run here? *NO*, separate case.
+   Note: It gets run during the credits (specifically, at $01F809). The player
+   should not be expected to have to remember to press R in an ending, when they
+   are (hopefully) focused on the story.
+
+Related, what should happen in the "turn off, come back later" scenario I
+mentioned above? Consider checking the number of pages read in the playthrough.
+If it is 0, set flag based on the R button. Otherwise, read value from SRAM.
+
+Important ASM for beginning a new playthrough after the credits:
+Try to intercept the subroutine at $02B861, in particular checking that $28
+has the value [05].
+Important pseudocode here:
+  Check if all the files have an empty name or not.
+  If at least one is not empty {
+    Run subroutine @ $02BCF9 (exact details not of concern to us)
+    Draw the text for the file select
+    Check which bookmarks should be pink
+    Run the loop for the file select screen logic until player chooses a file
+    - If player chose to restart an ongoing playthrough from page 1, the code at
+      $02BB54 reads a new start point, specifically at $02BB78.
+  }
+  Read the file's save data block into scratchpad (on blank SRAM, assume file 1)
+  If the file's name is empty {
+    Initialize the save file (in particular, pick and set a start point)
+    - This is at $02B88E
+    Read the reinitialized save file into the scratchpad
+    Load the name entry screen's graphics, and let player choose a name
+  }
+
+Going back to our cases from earlier:
+1. Blank SRAM -- File name for file 1 is empty, so 
+2. New file -- File name should be empty, so 
+3. Restart -- Special case covered under the note above
+In these three cases, a dedicated JSL to a subroutine like this is enough:
+  JSL pick_and_read_start_point
+  [do R button check]
+
+4. New playthrough (pick Resume) after viewing the credits.
+After reading the correct save file into the scratchpad, 
