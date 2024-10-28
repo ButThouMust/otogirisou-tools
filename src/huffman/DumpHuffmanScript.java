@@ -17,8 +17,8 @@ public class DumpHuffmanScript {
 
     private static RandomAccessFile romFile;
     private static BufferedWriter scriptOutput;
-    private static BufferedWriter goryDetails;
-    private static boolean shouldWriteDetails;
+
+    private static boolean autoComment;
 
     // -------------------------------------------------------------------------
     // Lists for how many and what types of arguments are there for control codes
@@ -147,10 +147,6 @@ public class DumpHuffmanScript {
     private static int readCharacter() throws IOException {
         // start going left/right from the root of the Huffman tree
         int huffTreeValue = HUFF_TABLE_ENTRIES - 1;
-        int startOffset = getCPUOffsetVar();
-        int oldBitOffset = bitOffset;
-        String huffCode = "";
-        int length = 0;
 
         // Huffman leaf node (character) indicated by a SET MSB in tree value
         while ((huffTreeValue & 0x8000) == 0) {
@@ -179,22 +175,10 @@ public class DumpHuffmanScript {
 
             if (useLeftTree) {
                 huffTreeValue = huffLeftTrees[huffTreeValue];
-                huffCode += LEFT_BIT;
             }
             else {
                 huffTreeValue = huffRightTrees[huffTreeValue];
-                huffCode += RIGHT_BIT;
             }
-
-            // put spaces between every 8 bits in a Huffman code
-            if ((++length & 0x7) == 0) {
-                huffCode += " ";
-            }
-        }
-
-        if (shouldWriteDetails) {
-            String format = "%06X-%d: %4X = 0b%s\n";
-            goryDetails.write(String.format(format, startOffset, oldBitOffset, huffTreeValue & 0x1FFF, huffCode));
         }
         return huffTreeValue & 0x1FFF;
     }
@@ -213,8 +197,6 @@ public class DumpHuffmanScript {
         // byte 0's part of the pointer is already in huffmanBuffer
         // the rest of it was already consumed from a previous Huffman code (character)
         // upon exiting, value of huffmanBuffer must be byte 3, shifted right "bitOffset" times
-
-        int cpuOffset = getCPUOffsetVar();
 
         // advance past byte 0, get 3 bytes, stop file pointer at the third byte
         romFile.readUnsignedByte();
@@ -235,11 +217,6 @@ public class DumpHuffmanScript {
         rawData |= byte3 << (3*8 - shiftAmount);
         rawData = rawData & 0xFFFFFF;
 
-        if (shouldWriteDetails) {
-            String format = "[%02X %02X %02X %02X] -> (%02X%02X%02X << %d) | %02X = %06X\n";
-            goryDetails.write(String.format(format, huffmanBuffer, byte1, byte2, byte3, byte3, byte2, byte1, 8 - shiftAmount, huffmanBuffer, rawData));
-        }
-
         // calculate the pointer info encoded in the three bytes of raw data
         // [76] [5432] [1076543 21076543] [210]; top two MSBs unused
         int ptrBitOffset = rawData & 0x7;
@@ -252,13 +229,9 @@ public class DumpHuffmanScript {
         int pointer = (ptrBank << 16) + ptrBankOffset;
         pointer = (pointer << 3) | ptrBitOffset;
 
-        // write the script pointer's location, its data, and its decoded target
+        // set Huffman buffer to correct state
         huffmanBuffer = byte3 >> shiftAmount;
-        if (shouldWriteDetails) {
-            String format2 = "%06X-%d: %06X -> %06X-%d\n";
-            goryDetails.write(String.format(format2, cpuOffset, bitOffset & 0x7, rawData, pointer >> 3, ptrBitOffset));
-            goryDetails.write(String.format("Huffman buffer state: %02X\n", huffmanBuffer));
-        }
+
         return pointer;
     }
 
@@ -303,6 +276,8 @@ public class DumpHuffmanScript {
         scriptOutput.write(String.format(format2, currPtrNum++));
     }
 
+    // TODO sometimes this will be off by 1 byte if bitOffset is 0
+    // i.e. if file position is byte-aligned
     private static void printROMFilePos() throws IOException {
         int cpuOffset = getCPUOffsetVar();
 
@@ -564,23 +539,18 @@ public class DumpHuffmanScript {
         boolean justWrotePointerComment = false;
 
         boolean printedFirstCharForLine = false;
+        boolean printedProgFlag = false;
         boolean onNewLine = true;
 
         // go to start of script and start reading characters
         while (romFile.getFilePointer() < scriptEnd && currPosInScriptPtrList < scriptPointers.size()) {
             // check if at a target for an embedded pointer, i.e. an EMBWRITE
             HuffScriptPointer currHuffPtr = scriptPointers.get(currPosInScriptPtrList);
-            // if (shouldWriteDetails) {
-                // goryDetails.write("\nChecking: " + currHuffPtr.toString() + "\n");
-            // }
 
             while (currPointerMatches(currPosInScriptPtrList, currHuffPtr)) {
                 // write current position in ROM, but only do it as many times as
                 // necessary, which is to say not like:
                 // [text] [ptr] EMBWRITE(n) [ptr] EMBWRITE(x) [text]
-                if (shouldWriteDetails) {
-                    goryDetails.write("Match! " + currHuffPtr.toString() + "\n");
-                }
                 if (!justWrotePointerComment) {
                     scriptOutput.newLine();
                     // avoid double line breaks with ptrs after this control code
@@ -597,9 +567,6 @@ public class DumpHuffmanScript {
                 currPosInScriptPtrList++;
                 if (currPosInScriptPtrList < scriptPointers.size()) {
                     currHuffPtr = scriptPointers.get(currPosInScriptPtrList);
-                    if (shouldWriteDetails) {
-                        goryDetails.write("\nChecking: " + currHuffPtr.toString() + "\n");
-                    }
                 }
             }
 
@@ -610,17 +577,35 @@ public class DumpHuffmanScript {
             boolean isText = isCharEncodingText(charEncoding);
 
             // printing <KERN LEFT> ctrl code can greatly hinder readability
-            // in the script; put in code to not print it or its argument
+            // in the script; do not print it or its argument
             boolean isKernLeft = getEncoding(charEncoding).equals("<KERN LEFT>");
-                
+
             if (isText && onNewLine && !printedFirstCharForLine) {
-                if (!justWrotePointerComment && !isCharEncodingText(prevCharEncoding)) {
+                if (!justWrotePointerComment && !printedProgFlag && !isCharEncodingText(prevCharEncoding)) {
                     scriptOutput.newLine();
                 }
+                if (autoComment) {
+                    scriptOutput.write("//");
+                }
+                
                 printedFirstCharForLine = true;
                 onNewLine = false;
             }
+
+            // print the character encoding if not <KERN LEFT>
             if (!isKernLeft) {
+                if (autoComment) {
+                    switch (charEncoding) {
+                        case LINE_00:
+                        case END_CHOICE_1C:
+                        case CLEAR_25:
+                        case CLEAR_27:
+                            if (isCharEncodingText(prevCharEncoding)) {
+                                scriptOutput.newLine();
+                            }
+                            break;
+                    }
+                }
                 printChar(charEncoding);
             }
             prevCharEncoding = charEncoding;
@@ -630,6 +615,7 @@ public class DumpHuffmanScript {
             if (!isCtrlCode(charEncoding)) {
                 justWrotePointerComment = false;
                 onNewLine = false;
+                printedProgFlag = false;
                 printedFirstCharForLine = true;
             }
             // if got a control code, have to print its arguments as raw bytes
@@ -658,9 +644,6 @@ public class DumpHuffmanScript {
                     }
 
                     if ((bitOffset & 0x7) == 0) {
-                        if (shouldWriteDetails) {
-                            goryDetails.write("Bit aligned ptr(s) special case!" + "\n");
-                        }
                         romFile.readUnsignedByte();
                         huffmanBuffer = peekByte();
                         bitOffset = 8;
@@ -691,9 +674,6 @@ public class DumpHuffmanScript {
                                 int ptr = readPointer();
                                 printPtr(ptr);
                                 if ((bitOffset & 0x7) == 0) {
-                                    if (shouldWriteDetails) {
-                                        goryDetails.write("Bit aligned ptr(s) special case!" + "\n");
-                                    }
                                     romFile.readUnsignedByte();
                                     huffmanBuffer = peekByte();
                                     bitOffset = 8;
@@ -713,6 +693,7 @@ public class DumpHuffmanScript {
 
                         justWrotePointerComment = false;
                         onNewLine = true;
+                        printedProgFlag = false;
                         printedFirstCharForLine = false;
                         break;
 
@@ -727,7 +708,8 @@ public class DumpHuffmanScript {
                         // note: while this does start on a new line, setting
                         // onNewLine flag to false is intentional to avoid making
                         // one of these flags just for this one control code
-                        onNewLine = false;
+                        onNewLine = true;
+                        printedProgFlag = true;
                         printedFirstCharForLine = false;
                         break;
 
@@ -747,6 +729,7 @@ public class DumpHuffmanScript {
                                 case END_CHOICE_1C:
                                     justWrotePointerComment = false;
                                     onNewLine = true;
+                                    printedProgFlag = false;
                                     printedFirstCharForLine = false;
 
                                     break;
@@ -757,9 +740,16 @@ public class DumpHuffmanScript {
 
                                     justWrotePointerComment = true;
                                     onNewLine = true;
+                                    printedProgFlag = false;
                                     printedFirstCharForLine = false;
                                     break;
                             }
+                        }
+                        else {
+                            justWrotePointerComment = false;
+                            onNewLine = true;
+                            printedProgFlag = false;
+                            printedFirstCharForLine = false;
                         }
                         break;
 
@@ -774,6 +764,7 @@ public class DumpHuffmanScript {
 
                         justWrotePointerComment = true;
                         onNewLine = true;
+                        printedProgFlag = false;
                         printedFirstCharForLine = false;
                         break;
 
@@ -794,11 +785,11 @@ public class DumpHuffmanScript {
 
                         justWrotePointerComment = false;
                         onNewLine = true;
+                        printedProgFlag = false;
                         printedFirstCharForLine = false;
 
                         // indicate progress in command line output
                         System.out.println(String.format("Got to ending at " + format, cpuOffset, bitOffset));
-                        goryDetails.write(String.format("Got to ending at " + format + "\n", cpuOffset, bitOffset));
                         break;
 
                     // setting this typically doesn't matter, but it is possible
@@ -806,11 +797,13 @@ public class DumpHuffmanScript {
                     // [CLEAR_FADE_OUT][SOME_CTRL_CODE][EMBEDDED_PTR]
                     default:
                         justWrotePointerComment = false;
+                        printedProgFlag = false;
                         break;
                 }
             }
         }
 
+        scriptOutput.newLine();
         scriptOutput.write("// END OF SCRIPT");
         romFile.close();
     }
@@ -819,10 +812,12 @@ public class DumpHuffmanScript {
     // -------------------------------------------------------------------------
 
     public static void main(String args[]) throws IOException {
-        if (args.length != 5) {
-            System.out.println("Sample usage: java HuffScriptDumper rom_name table_file output_file script_start script_end");
+        if (args.length != 5 && args.length != 6) {
+            System.out.println("Sample usage: java HuffScriptDumper rom_name table_file output_file script_start script_end [--auto-comment]");
             return;
         }
+
+        autoComment = args.length == 6 && args[5].equals("--auto-comment");
 
         // for an unmodified JP ROM, script goes from AE401 to F95A7
         int scriptStart = Integer.parseInt(args[3], 16);
@@ -836,14 +831,12 @@ public class DumpHuffmanScript {
         String romFilename = args[0];
         romFile = new RandomAccessFile(romFilename, "r");
         scriptOutput = new BufferedWriter(new FileWriter(args[2]));
-        goryDetails = new BufferedWriter(new FileWriter("script/analysis/detailed output.txt"));
 
         String tableFilename = args[1];
         readTableFile(tableFilename);
         readCtrlCodeArgTable();
         readHuffmanTreeData();
 
-        shouldWriteDetails = false;
         getScriptStartPoints();
         getScriptPointers(scriptStart, scriptEnd);
         // sort script pointers by their values i.e. where they point to (EMBWRITEs)
@@ -852,13 +845,10 @@ public class DumpHuffmanScript {
         outputScriptPointers();
 
         addAtlasHeader(tableFilename);
-        // shouldWriteDetails = true;
         dumpScript(scriptStart, scriptEnd);
 
         romFile.close();
         scriptOutput.flush();
         scriptOutput.close();
-        goryDetails.flush();
-        goryDetails.close();
     }
 }
