@@ -22,9 +22,13 @@ Examples:
 - [02 09] -> [09 09 09], [83 09 09 09] -> [09 09 09]
 - [83 00 01 02] -> [00 01 02]
 
+Note that for the case of length being one byte, it is treated as a sequence for
+the purposes of this writeup.
+
 --------------------------------------------------------------------------------
 
 Some notes:
+
 1.  Better compression formats exist, but I would much rather work around the
     existing format than: use a new format, implement a decompressor in ASM,
     and recompress/reinsert/*repoint* all the game's graphics.
@@ -37,42 +41,54 @@ Some notes:
 3.  The max length of a run is 0x80 bytes, but the max length of a literal
     sequence is 0x7F bytes.
 
-4.  In the vast majority of cases, yes, using the compression case will save
-    space over encoding the repeated value byte by byte. However, there is one
-    specific case of a run of length 2 being better encoded byte by byte:
+--------------------------------------------------------------------------------
 
-    - Better to encode as a run [01 xx] when surrounded by two other runs.
-      [02 00    01 01 02 02] -> [00 00 00 01 01 02 02 02]
-      [02 00 82 01 01 02 02] -> [00 00 00 01 01 02 02 02]
+In most cases, yes, using the compression case will save space over encoding the
+repeated value byte by byte. However, there is one specific case where a run of
+length 2 is better encoded byte by byte, if it is surrounded by two sequences:
 
-    - One byte worse as a run if surrounded by two sequences of literals.
-      (The byte comes from the extra "sequence length" byte)
-      [82 03 04 01 05 82 06 07] -> [03 04 05 05 06 07]
-      [86 03 04 05 05    06 07] -> [03 04 05 05 06 07]
+- Encoding as run is one byte worse if surrounded by two sequences of literals.
+There is an extra byte due to the second "sequence length" byte, [82] below.
+  [82 03 04 01 05 82 06 07] -> [03 04 05 05 06 07]
+  [86 03 04 05 05    06 07] -> [03 04 05 05 06 07]
 
-    - Take your pick if surrounded by a run and a sequence of literals.
-      * run, run2, sequence
-      [02 08 01 09 83 0A 0B 0C] -> [08 08 08 09 09 0A 0B 0C]
-      [02 08 85 09 09 0A 0B 0C] -> [08 08 08 09 09 0A 0B 0C]
+To know when we should use this optimization when compressing a run of length 2,
+let's examine the other three cases for what surrounds a run of length 2:
 
-      * sequence, run2, run
-      [85 0D 0E 0F 10 10 02 11] -> [0D 0E 0F 10 10 11 11 11]
-      [83 0D 0E 0F 01 10 02 11] -> [0D 0E 0F 10 10 11 11 11]
+- Better to encode as a run [01 xx] when surrounded by two other runs.
+  [02 00    01 FF 02 02] -> [00 00 00 FF FF 02 02 02]
+  [02 00 82 FF FF 02 02] -> [00 00 00 FF FF 02 02 02]
 
-    - Summarize in a "truth table" below:
-           type     | encode as     So we have an easy decision to make:
-      --------------+-----------    - Previous type is run? Encode as run of 2
-       run run2 run |    run        - Previous type is sequence? Encode as seq.
-       run run2 seq |   either
-       seq run2 run |   either
-       seq run2 seq |  sequence
+- Take your pick if surrounded by a run and a sequence of literals.
+  * run, run2, sequence
+  [02 08 01 09 83 0A 0B 0C] -> [08 08 08 09 09 0A 0B 0C]
+  [02 08 85 09 09 0A 0B 0C] -> [08 08 08 09 09 0A 0B 0C]
 
-    - To be thorough, this is the case for a run of 2 and a sequence at the
-      beginning of the file. It doesn't matter either way.
-      [01 12 83 13 14 15] <- [12 12 13 14 15]
-      [85 12 12 13 14 15] <- [12 12 13 14 15]
+  * sequence, run2, run
+  [85 0D 0E 0F 10 10 02 11] -> [0D 0E 0F 10 10 11 11 11]
+  [83 0D 0E 0F 01 10 02 11] -> [0D 0E 0F 10 10 11 11 11]
+
+Summarize in a "truth table" below:
+     type     | encode as     So we have an easy decision to make:
+--------------+-----------    - Previous type is run? Encode as a run of 2
+ run run2 run |    run        - Previous type is sequence? Encode as a sequence
+ run run2 seq |   either
+ seq run2 run |   either      This logic only depends on the last run/sequence.
+ seq run2 seq |  sequence
+
+To be thorough, this is the case for a run of 2 and a sequence at the beginning
+of the file. It doesn't matter either way.
+  [01 12 83 13 14 15] <- [12 12 13 14 15]
+  [85 12 12 13 14 15] <- [12 12 13 14 15]
 
 --------------------------------------------------------------------------------
+
+One final note: you will eventually have to enforce the "max run length 0x80"
+and "max sequence length 0x7F" rules. My compressor does this as it goes along
+with analyzing the data, but it may be easier to delay enforcing the rules until
+taking the analysis results and encoding the compressed data.
+
+---
 
 Compression algorithm
 
@@ -81,8 +97,8 @@ Keep track of info about the data groups here.
 - Type (run or literal sequence), start index, length. (Note: not data itself)
 - The first group starts at index 0, and say it starts as a group of 1 literal.
 
+Start with "naive" compression analysis, without doing the run 2 special case.
 Get a list of the groups' info: run/sequence, length, and starting position.
-(For now, don't worry about run 2 special case; always encode runs of 2 as such)
 LOOP: Read the current byte.
 - If in a run
       If curr byte == previous byte, and run size < max size of a run
