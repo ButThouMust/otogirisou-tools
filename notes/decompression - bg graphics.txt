@@ -412,17 +412,19 @@ $07C7FE - $07C856: Tile/palette data for "advance text" and "next page" icons.
 
 --------------------
 
-$07DCF3 - $07DD4C: Two groups of palette data.
+$07DCF3 - $07DD4C: Two groups of palette data. The second is for the animation
+    where a tree is struck by lightning and splits in half. The first one is an
+    unused variation using a grayscale palette instead of a red/yellow palette.
 
     Palette metadata [2B 00 04 00]      at $07DCF3
     Palette data from $07DCF7 - $07DD1E (0x3DCF7 - 0x3DD1E)
-    Pointer and purpose unknown.
 
     Palette metadata [2D 00 04 00]      at $07DD1F
     Palette data from $07DD23 - $07DD4C (0x3DD23 - 0x3DD4C)
-    Pointer hidden in data in $00D7BF [1F DD 87 21]. Gets used during the
-        animation for the tree lightning strike, when the tree is about to turn
-        red and split in half after the lightning.
+
+    Pointer for the latter is hidden in the data in $00D7BF: [1F DD 87].
+    Code @ $00D6D2 accesses it: LDX #$D7BF ; JSR $DF53.         ^
+    You can see the gray colors if you change the pointer [1F DD] to [F3 DC].
 
 --------------------
 
@@ -444,9 +446,15 @@ $07F38B - $07F57C: Three groups of palette data related to the bookmarks on the
 
 --------------------
 
-$0889E5 - $0889F9: Contains a tilemap for something, don't know what.
+$0889E5 - $0889F9: Don't know for sure what this tilemap is for. Based on nearby
+    data blocks in the ROM, it may be related to ID 0x96: tile data in $07FE3E,
+    and palette data in $088850. When I tried combining the three in YY-CHR and
+    Tilemap Studio, the resulting picture was a color gradient that increased in
+    brightness from top (darker) to bottom (brighter).
+
     Tilemap metadata [00 08 02 01 20 07] at $0889E5
     Tilemap data from $0889EB - $0889F9 (0x409EB - 0x409F9).
+    The tilemap dimensions are 0x20 * 0x07, with high bytes included.
     Perhaps note that all of the high bytes are [04], i.e. all palette 01.
 
 ################################################################################

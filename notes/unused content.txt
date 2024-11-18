@@ -18,6 +18,9 @@ Nagahata), who is credited under 協力 (Support).
 --------------------------------------------------------------------------------
 
 Four points in the Japanese script are unreachable in normal gameplay.
+There are also a handful of places where there are inaccessible <LINE 00> codes
+after the pointers for choice codes, but I wouldn't consider them interesting
+enough to include here.
 
 $15F0F7-5
 「いいじゃない。間違ってても、二人だけなんだから・・・」<END CHOICE 1C>
@@ -32,7 +35,7 @@ $1694A0-0
 ミイラを確かめようと階段に向かった。<LINE 00>
 
 ---------------
-(Note: the first two lines are accessible, but the next eight are not)
+(Note: first two lines are accessible [included for context]; the rest is not)
 $1E83AC-1
 「だまれ、シュワッチ!」<LINE 00>
 おれのラブラブ作戦に迷いはない。<END CHOICE 1C>
@@ -68,7 +71,6 @@ $03B910 - $03B991: Don't know what this is. An animation of some kind, perhaps?
 --------------------
 
 $079653 - $079A05: Graphics data for an unused picture of a knife.
-    Pointers are unknown.
     Tile    metadata [2C 00 00 20]       at $079653
     Tile    data from $079657 - $07997D (0x39657 - 0x3997D)
 
@@ -81,20 +83,30 @@ $07C6B9 - $07C7FD: Block of 4bpp graphics for the digits 0 to 9. Unused?
     This data is uncompressed and can be viewed in a tile editor.
 
     Metadata block [42 01 00 0A 0C 00]   at $07C6B9
-    Graphics data:    $07C6BF - $07C7FD (0x3C6BF - 0x3C7FD)
+    Gfx data range: $07C6BF - $07C7FD (0x3C6BF - 0x3C7FD)
     Incidentally, 0x142 is the difference between $07C7FD and $07C6BB, after the
-        two bytes [42 01]. Size marker? I don't know, this is unique.
+        two bytes [42 01]. Size marker? I don't know, this is unique and unused.
 
 --------------------
 
-$07DCF3 - $07DD1E: Palette data, unknown purpose.
+$07DCF3 - $07DD1E: An unused grayscale palette variant for the animation where
+    lightning strikes a tree and splits it in half. Gray instead of red/yellow.
+
     Palette metadata [2B 00 04 00]      at $07DCF3
     Palette data from $07DCF7 - $07DD1E (0x3DCF7 - 0x3DD1E)
-    Pointer unknown.
+
+    It is possible to view these colors in game by changing the bytes at $00D7BF
+    from [1F DD] to [F3 DC].
 
 --------------------
 
-$0889E5 - $0889F9: Contains a tilemap for something, don't know what.
+$0889E5 - $0889F9: Don't know for sure what this tilemap is for. Based on nearby
+    data blocks in the ROM, it may be related to ID 0x96: tile data in $07FE3E,
+    and palette data in $088850. When I tried combining the three in YY-CHR and
+    Tilemap Studio, the resulting picture was a color gradient that increased in
+    brightness from top (darker) to bottom (brighter).
+
     Tilemap metadata [00 08 02 01 20 07] at $0889E5
     Tilemap data from $0889EB - $0889F9 (0x409EB - 0x409F9).
+    The tilemap dimensions are 0x20 * 0x07, with high bytes included.
     Perhaps note that all of the high bytes are [04], i.e. all palette 01.
