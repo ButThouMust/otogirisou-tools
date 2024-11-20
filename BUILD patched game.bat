@@ -50,7 +50,7 @@ tools\atlas.exe %uncompScriptROM% %scriptTranslationFile% > logs\log_atlas_uncom
 ::
 :: tools\xkas.exe "expand_ptrs.asm" %uncompScriptROM% > logs\log_xkas.txt
 
-@echo
+@echo(
 @echo Script has been inserted in uncompressed format by Atlas
 
 :: #############################################################################
@@ -73,7 +73,8 @@ tools\atlas.exe %uncompScriptROM% %scriptTranslationFile% > logs\log_atlas_uncom
 :: I prefer manually updating the script offset like above (don't need to change
 :: if testing a change to something other than the script), but you can enter
 :: it in as user input if you prefer.
-@set /P uncompScriptEndPos="Enter the hex offset of the end of the uncompressed script: "
+:askforinput1
+@set /P uncompScriptEndPos="Enter the hex offset of the end of the uncompressed script in 'rom/Otogirisou - EN compress.sfc': "
 
 :: Be sure to delete the previous Huffman script so that the new script gets
 :: written into a completely fresh, blank file. Avoids instances where the
@@ -82,6 +83,10 @@ tools\atlas.exe %uncompScriptROM% %scriptTranslationFile% > logs\log_atlas_uncom
 del ".\script\huffman script.bin"
 
 java -classpath %srcPath% huffman/GenerateHuffmanScript %uncompScriptROM% %translationTableFile% aeba0 %uncompScriptEndPos%
+
+:: if %errorlevel% neq 0 pause exit /b %errorlevel%
+@if %errorlevel% neq 0 @echo( & goto :askforinput1
+
 del %uncompScriptROM%
 
 :: #############################################################################
@@ -130,9 +135,12 @@ tools\atlas.exe %huffScriptROM% ".\script\update name entry, file select.txt" > 
 :: @set huffScriptEndPos=b45a7
 
 :: Same as before, allow for user input if the end user prefers.
-@set /P huffScriptEndPos="Enter the hex offset of the end of the Huffman script: "
+:askforinput2
+@set /P huffScriptEndPos="Enter the hex offset of the end of the Huffman script in 'rom/Otogirisou - huff script test.sfc': "
 
 java -classpath %srcPath% huffman/DumpHuffmanScript %huffScriptROM% %translationTableFile% %redumpedScriptTranslation% 4539b %huffScriptEndPos%
+
+@if %errorlevel% neq 0 @echo( & goto :askforinput2
 
 :: #############################################################################
 :: #############################################################################
@@ -153,3 +161,5 @@ copy /y %huffScriptROM% %honorificsOffROM%
 tools\asar.exe "asm\disable honorifics.asm" %honorificsOffROM%
 tools\superfamicheck.exe %honorificsOffROM% --fix --silent
 tools\flips.exe --create --bps-delta %jpROM% %honorificsOffROM% "patches\otogirisou_en_beta_latest_honorifics_off.bps"
+
+pause

@@ -1008,7 +1008,8 @@ public class GenerateHuffmanScript {
         scriptEnd = Integer.parseInt(args[3], 16);
 
         if (scriptStart >= scriptEnd) {
-            System.out.println("Error - script start point must be before script end point");
+            System.out.println("Error - script end point must be after script start point");
+            System.exit(1);
             return;
         }
 

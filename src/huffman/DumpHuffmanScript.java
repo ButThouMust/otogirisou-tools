@@ -825,6 +825,7 @@ public class DumpHuffmanScript {
 
         if (scriptStart >= scriptEnd) {
             System.out.println("Error - script start point must be before script end point");
+            System.exit(1);
             return;
         }
 
