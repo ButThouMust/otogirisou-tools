@@ -9,6 +9,12 @@ will need to install Java on your machine.
 `BUILD patched game.bat`
 - Generates an English patch for the game.
 
+`TEST SCRIPT with Atlas.bat`
+- Test if the script translation has any characters that are not in the table
+  file. If yes, Atlas will fail to properly insert the script.
+- Couldn't figure out a way to make the build script terminate if Atlas failed
+  (doesn't emit non-zero exit code), so made this instead.
+
 You have two options for dumping the original Japanese script:
 - `DUMP jp script.bat`
   - Decompresses the original Japanese script into an Atlas script file.
