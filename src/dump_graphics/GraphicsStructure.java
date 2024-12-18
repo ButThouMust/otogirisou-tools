@@ -24,7 +24,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
     private int endOfData;
     private int uncompDataSize;
     private int[] structureMetadata;
-    private int[] pointerMetadata;
+    private int[] gfxDataHeader;
 
     private String filenameFormat;
     private String dataOutputFile;
@@ -39,16 +39,16 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         TILE    (4, 3),
         TILEMAP (6, 7),
         PALETTE (4, 4);
-        private final int metadataSize;
+        private final int headerSize;
         private final int bytesToSkip;
 
-        StructureType(int metadataSize, int bytesToSkip) {
-            this.metadataSize = metadataSize;
+        StructureType(int headerSize, int bytesToSkip) {
+            this.headerSize = headerSize;
             this.bytesToSkip = bytesToSkip;
         }
 
-        public int getMetadataSize() {
-            return metadataSize;
+        public int getHeaderSize() {
+            return headerSize;
         }
 
         public int getBytesToSkip() {
@@ -91,7 +91,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         ptrToData = determinePointerToData();
         type = determineType();
         readStructureMetadata();
-        readPointerMetadata();
+        readGfxDataHeader();
     }
 
     // handle gfx data that no structure explicitly points to
@@ -109,7 +109,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         this.ptrToData = ptrToData;
         this.type = type;
         structureMetadata = new int[0];
-        readPointerMetadata();
+        readGfxDataHeader();
     }
 
     private int determinePointerToData() throws IOException {
@@ -120,7 +120,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
 
         romStream = new RandomAccessFile("rom/Otogirisou (Japan).sfc", "r");
         // the first three bytes at the location of the structure are a 24-bit
-        // pointer to some necessary metadata, and then the data itself
+        // pointer to some header bytes before the data itself
         int romOffset = getFileOffset(structureLocation);
         romStream.seek(romOffset);
         int dataPtr = (romStream.readUnsignedByte()) |
@@ -177,12 +177,12 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         }
     }
 
-    private void readPointerMetadata() throws IOException {
+    private void readGfxDataHeader() throws IOException {
         romStream.seek(getFileOffset(ptrToData));
 
-        pointerMetadata = new int[type.metadataSize];
-        for (int i = 0; i < pointerMetadata.length; i++) {
-            pointerMetadata[i] = romStream.readUnsignedByte();
+        gfxDataHeader = new int[type.headerSize];
+        for (int i = 0; i < gfxDataHeader.length; i++) {
+            gfxDataHeader[i] = romStream.readUnsignedByte();
         }
     }
 
@@ -201,7 +201,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
     }
 
     public void dumpData() throws IOException {
-        romStream.seek(getFileOffset(ptrToData) + type.metadataSize);
+        romStream.seek(getFileOffset(ptrToData) + type.headerSize);
         int dataStart = (int) romStream.getFilePointer();
         int dataStartRAM = getRAMOffset(dataStart);
 
@@ -228,7 +228,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         }
 
         if (isIndepStruct()) {
-            // for independent tile and tilemap data, just need to log metadata
+            // for independent tile and tilemap data, just need to log the header
             if (type != StructureType.PALETTE) {
                 logFile = new BufferedWriter(new FileWriter(logFilename));
             }
@@ -255,7 +255,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         FileOutputStream outputFile = new FileOutputStream(dataOutputFile);
 
         while (ctrlByte != 0x80) {
-            // "run length encoding" case: 0 <= ctrlByte < 0x80
+            // "run length encoding" case: 0x00 <= ctrlByte <= 0x7F
             if (ctrlByte < 0x80) {
                 int dataByte = romStream.readUnsignedByte();
                 int repeatCount = ctrlByte + 1;
@@ -267,7 +267,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
                 decompressedSize += repeatCount;
             }
 
-            // "uncompressed data" case: 0x80 < ctrlByte <= 0xFF
+            // "uncompressed data" case: 0x81 <= ctrlByte <= 0xFF
             else {
                 int repeatCount = ctrlByte & 0x7F;
                 for (int i = 0; i < repeatCount; i++) {
@@ -320,7 +320,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         final int GROUP_SIZE = 8;
         final int BUFFER_SIZE = GROUP_SIZE * 2;
 
-        int numNonzeroGroups = ((pointerMetadata[3] >> 4) & 0x7) + 1;
+        int numNonzeroGroups = ((gfxDataHeader[3] >> 4) & 0x7) + 1;
         int structByte5 = structureMetadata[2];
         int addr26 = (structByte5 & 0x8F) | (getTileBitDepthMinus1());
         int tileBitDepth = ((addr26 >> 4) & 0x7) + 1;
@@ -338,7 +338,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
             }
         }
 
-        int numTiles = pointerMetadata[0] | (pointerMetadata[1] << 8);
+        int numTiles = gfxDataHeader[0] | (gfxDataHeader[1] << 8);
         for (int tile = 0; tile < numTiles; tile++) {
             byte[] buffer = new byte[BUFFER_SIZE];
             int byteNumber = 0;
@@ -387,11 +387,11 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
 
         // determine if the high bytes are all 00 or are included
         // the check for this is whether metadata byte 3 is [01] or not (can be 00, 01, 80)
-        int tilemapWidth = pointerMetadata[4];
-        int tilemapHeight = pointerMetadata[5];
+        int tilemapWidth = gfxDataHeader[4];
+        int tilemapHeight = gfxDataHeader[5];
         int numTilemapEntries = tilemapWidth * tilemapHeight;
         // boolean highBytesIncluded = numTilemapEntries != uncompDataSize;
-        boolean highBytesIncluded = pointerMetadata[3] == 0x01;
+        boolean highBytesIncluded = gfxDataHeader[3] == 0x01;
 
         for (int i = 0; i < numTilemapEntries; i++) {
             byte entryLowByte = rawDecompTilemap[i];
@@ -411,12 +411,9 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
     // -------------------------------------------------------------------------
 
     private void dumpPaletteData() throws IOException {
-        // String outputFilename = String.format(outputFolder + "/$%06X palette.bin", getRAMOffset(romOffset));
-        // FileOutputStream outputFile = new FileOutputStream(outputFilename);
         FileOutputStream outputFile = new FileOutputStream(dataOutputFile);
-        // BufferedWriter logFile = new BufferedWriter(new FileWriter(logFilename));
 
-        // int size = pointerMetadata[0] - 3;
+        // int size = gfxDataHeader[0] - 3;
         int position = getRAMOffset((int) romStream.getFilePointer());
         int totalColors = romStream.readUnsignedByte();
         int colorsUsed = romStream.readUnsignedByte();
@@ -488,7 +485,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         // addition to a RAM offset may overflow the bank like 00FFFF -> 010000
         // so have to first convert to ROM offset before addition, then back to RAM offset
         int dataPtrROM = getFileOffset(ptrToData);
-        int dataStartROM = dataPtrROM + type.metadataSize;
+        int dataStartROM = dataPtrROM + type.headerSize;
         int dataStartCPUAddr = getRAMOffset(dataStartROM);
 
         if (!isIndepStruct()) {
@@ -522,22 +519,22 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
             output += structDataFormat + "\n";
         }
 
-        String printMetadata = String.format("Metadata  @ $%06X:", ptrToData);
-        for (int i = 0; i < type.metadataSize; i++) {
+        String printHeader = String.format("Header    @ $%06X:", ptrToData);
+        for (int i = 0; i < type.headerSize; i++) {
             // for tilemaps, put a bar before the bytes indicating tilemap size
-            if (type == StructureType.TILEMAP && i == type.metadataSize - 2) {
-                printMetadata += " |";
+            if (type == StructureType.TILEMAP && i == type.headerSize - 2) {
+                printHeader += " |";
             }
-            printMetadata += String.format(" %02X", pointerMetadata[i]);
+            printHeader += String.format(" %02X", gfxDataHeader[i]);
         }
-        output += printMetadata;
+        output += printHeader;
 
         // add special text that better describes data for each structure type
         // - add more to this as you find out more stuff about data format
         switch (type) {
             case TILE: {
                 // metadata bytes 00 and 01 contain # of tiles
-                int numTiles = pointerMetadata[0] | (pointerMetadata[1] << 8);
+                int numTiles = gfxDataHeader[0] | (gfxDataHeader[1] << 8);
                 // to convert bytes/tile to bits/pixel, divide by 8 because
                 // 8 bits/byte and 64 pixels/tile
                 int bitDepthEstimate = (uncompDataSize / numTiles) / 8;
@@ -554,7 +551,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
                 output += ")";
 
                 // check if tile data is for "type 01" instead of "type 00"
-                if ((pointerMetadata[2] & 0x7) == 0x1) {
+                if ((gfxDataHeader[2] & 0x7) == 0x1) {
                     output += ("\nNOTE: This is for \"type 01\" of tile data.");
                 }
 
@@ -573,10 +570,10 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
                 break;
             }
             case TILEMAP: {
-                int tilemapWidth = pointerMetadata[4];
-                int tilemapHeight = pointerMetadata[5];
+                int tilemapWidth = gfxDataHeader[4];
+                int tilemapHeight = gfxDataHeader[5];
                 // boolean highBytesIncluded = tilemapWidth * tilemapHeight != uncompDataSize;
-                int tilemapSizeFlag = pointerMetadata[3];
+                int tilemapSizeFlag = gfxDataHeader[3];
                 boolean highBytesIncluded = tilemapSizeFlag == 0x01;
 
                 output += "\n";
@@ -603,7 +600,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
                 }
 
                 // check if tilemap data is for "type 03" instead of "type 02"
-                if ((pointerMetadata[2] & 0x7) == 0x3) {
+                if ((gfxDataHeader[2] & 0x7) == 0x3) {
                     output += ("\nNOTE: This is for \"type 03\" of tilemap data.");
                 }
 
