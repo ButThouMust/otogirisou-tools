@@ -375,14 +375,17 @@ NameSanLikeNormal:
 PrintHonorific:
     rep #$30
     lda.w UseHonorificFlag
-    bne HonorificCheckOkay
+    bne HonorificFlagOn
 DoNotUseHonorific:
     jsr.w GetScriptValue    ; if should not use honorifics, just read the value
     rts                     ; and RTS
+HonorificFlagOn:
+    jsr.w GetScriptValue    ; get index for honorific list from script
+    cmp.w !NoHonorific      ; - only write honorific if not 2 ("no honorific")
+    beq   HonorificRTS
+    cmp.w #$000C            ;   also check if index is within bounds for list
+    bcs   HonorificRTS
 HonorificCheckOkay:
-    jsr.w GetScriptValue    ; get index for list
-    cmp.w !NoHonorific      ; - honorific ID 2 is for "no honorific"
-    beq   HonorificRTS      ; - only set to write honorific if not 2
     ldx.w #$0000            ; set to write text to start of buffer at $5F
     jsr.w $a843             ; reuse code in <NAME 20> for printing an honorific
     jsr.w $adf5             ; signal that text to be printed will be in $5F
