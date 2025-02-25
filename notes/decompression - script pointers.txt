@@ -132,6 +132,38 @@ bytes (~430 KB), which is huge considering the original ROM is 1 MB.
 
 --------------------------------------------------------------------------------
 
+Optimizing out unnecessary jumps
+
+There are over a hundred points in the Japanese script that qualify as either:
+- The pointer for a jump points to text right after the jump.
+  See, for example, $19F0E3-2 and $1AF580-4. <JMP>EMBSET(N) EMBWRITE(N)
+- You can save space by simply deleting or commenting them out.
+
+- Most choices have an option that flows directly into text that comes after
+  the list of choices. Several choices lay out the options so that such an
+  option must reach the following text with a jump code.
+- Save space by moving the option in question to right before the text it flows
+  into. You can be as elaborate with this as you like.
+
+The second one is a bit hard to explain in text, so here is an example:
+
+    OPTIMAL (15EF5D-1)        |     NON-OPTIMAL (18E9FF-0)
+                              |   
+<Choice><args>                |   <Choice><args>
+ptr1, ptr2, ptr3              |   ptr1, ptr2, ptr3
+                              |   
+ptr1: text1 jmp(continue1)    |   ptr1: text1 jmp(continue1)
+ptr2: text2 jmp(continue2)    |   ptr3: text3 jmp(continue)
+ptr3: text3                   |   ptr2: text2 jmp(continue2)
+                              |   
+// immediately follows text3  |   // layout forces unnecessary jump
+continue                      |   continue
+
+You can save 300+ bytes of pointers, plus however many bits from jump control
+codes' Huffman codes, in the script by optimizing them out like this.
+
+--------------------------------------------------------------------------------
+
 How I deciphered these formats
 
 I originally determined the formats through Guest's source file "scan.cpp",
