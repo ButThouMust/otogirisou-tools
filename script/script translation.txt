@@ -15446,7 +15446,6 @@ I tightly grabbed Nami's hand back.<END CHOICE 1C>
 I grabbed her hand and protected the most important part of her\ body.<END CHOICE 1C>
 <CLEAR 25>
 
-
 //[$18C3E6-5] -> [35 1F C6]
 <DELAY 17><$00><$0A><JMP 03>
 #EMBSET(412)
@@ -17572,11 +17571,7 @@ I shouted:<WAIT 16><LINE 00>
 
 
 //[$18EA17-0] -> [B8 50 C7]
-#EMBWRITE(561)
-//「俺はここにいる!　返事してくれ!」<END CHOICE 1C>
-“I'm over here! Say something!”<END CHOICE 1C>
-<JMP 03>
-#EMBSET(565)
+// move down to optimize out jump code and pointer
 
 
 //[$18EA2C-4] -> [64 51 C7]
@@ -17608,9 +17603,16 @@ Feeling like I heard noises from upstairs, I started to run.<CLEAR 25>
 #EMBSET(568)
 
 
+//[$18EA17-0] -> [B8 50 C7] - moved down
+#EMBWRITE(561)
+//「俺はここにいる!　返事してくれ!」<END CHOICE 1C>
+“I'm over here! Say something!”<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(565)
+
 //[$18EA87-5] -> [3D 54 C7]
 #EMBWRITE(569)
-#EMBWRITE(565)
+//#EMBWRITE(565)
 <SFX 39><$00><$1D><IMAGE FADE IN BLOCK 36><$00><$01><$00><$43>
 // ticking clock; go to the foyer
 //結局またホールに戻った。<LINE 00>
@@ -19827,7 +19829,7 @@ Something wasn't letting me out.<CLEAR 25>
 //[$199BCD-0] -> [68 DE CC]
 #EMBWRITE(635)
 //ぼくは窓から脱出しようと思った。<END CHOICE 1C>
-I decided to leave by escaping through a window.<END CHOICE 1C>
+I decided to escape through a window.<END CHOICE 1C>
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$15>
 // fade in a window with yellow curtain
 //壁際のサイドテーブルを振り上げると、思いきり窓へ投げつけた。<LINE 00>
@@ -21970,11 +21972,7 @@ It was very large, but plain. I didn't feel the warmth of a human touch.<LINE 00
 
 
 //[$19C618-2] -> [C2 30 CE]
-#EMBWRITE(720)
-//ぼくは奈美に先をゆずった。<END CHOICE 1C>
-I let Nami go first.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(724)
+// move down to optimize out jump code and pointer
 
 
 //[$19C628-5] -> [45 31 CE]
@@ -22002,10 +22000,17 @@ Alright, let's go!<END CHOICE 1C>
 #EMBSET(726)
 
 
+//[$19C618-2] -> [C2 30 CE] - moved down
+#EMBWRITE(720)
+//ぼくは奈美に先をゆずった。<END CHOICE 1C>
+I let Nami go first.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(724)
+
 //[$19C675-2] -> [AA 33 CE]
 #EMBWRITE(727)
 #EMBWRITE(530)
-#EMBWRITE(724)
+//#EMBWRITE(724)
 //「奈美がまず入りなよ」<LINE 00>
 “Nami, how about you go in first?”<LINE 00>
 //「いいの?」<LINE 00>
@@ -23632,13 +23637,8 @@ I shouted, “I get it now<AUTO ADV 13>. Your mother was turned into the mansion
 
 
 //[$19E9D5-7] -> [AF 4E CF]
-//#EMBWRITE(781)
-// move this down to optimize out two pointers
-//ぼくはいった<AUTO ADV 13>。<LINE 00>
-//「気をつけろ<AUTO ADV 13>。屋敷にシャドウがのりうつってるんだ!<AUTO ADV 13>」<END CHOICE 1C>
-//I said, “Be careful<AUTO ADV 13>. The shadow\ is<LINE 00>possessing the mansion<AUTO ADV 13>!”<END CHOICE 1C>
-//<JMP 03>
-//#EMBSET(783)
+// move down to optimize out two sets of jump codes and pointers (above, here)
+
 
 //[$19E9FB-3] -> [DB 4F CF]
 //#EMBWRITE(782)
@@ -23747,8 +23747,13 @@ We involuntarily shuddered.<CLEAR 25>
 #EMBSET(784)
 
 
+//[$19E9D5-7] -> [AF 4E CF] - moved down
 #EMBWRITE(781)
+//ぼくはいった<AUTO ADV 13>。<LINE 00>
+//「気をつけろ<AUTO ADV 13>。屋敷にシャドウがのりうつってるんだ!<AUTO ADV 13>」<END CHOICE 1C>
 I said, “Be careful<AUTO ADV 13>. The shadow\ is<LINE 00>possessing the mansion<AUTO ADV 13>!”<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(783)
 
 
 //[$19ECC0-0] -> [08 66 CF]
@@ -23972,14 +23977,7 @@ I grabbed the armor's right arm, which was holding the sword<SFX 39><$00><$59>.<
 
 
 //[$19F1A8-3] -> [43 8D CF]
-//#EMBWRITE(786)
-// optimize out two pointers by moving this down
-//「奈美、いまだ!<AUTO ADV 13>」<LINE 00>
-//“Nami, now<AUTO ADV 13>!”<LINE 00>
-//ぼくは奈美の手をとって階段へと走った。<END CHOICE 1C>
-//I took her hand and ran to the foyer.<END CHOICE 1C>
-//<JMP 03>
-//#EMBSET(789)
+// move down to optimize out two sets of jump codes and pointers (above, here)
 
 
 //[$19F1C6-0] -> [38 8E CF]
@@ -24021,9 +24019,14 @@ The armor collapsed like it had lost its supports. As I was sent flying and hit 
 #EMBSET(790)
 
 
+//[$19F1A8-3] -> [43 8D CF] - moved down
 #EMBWRITE(786)
+//「奈美、いまだ!<AUTO ADV 13>」<LINE 00>
 “Nami, now<AUTO ADV 13>!”<LINE 00>
+//ぼくは奈美の手をとって階段へと走った。<END CHOICE 1C>
 I took her hand and ran to the foyer.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(789)
 
 
 //[$19F2B7-6] -> [BE 95 CF]
@@ -24202,7 +24205,9 @@ This time, the mummy definitely muttered that.<CLEAR 25>
 #EMBSET(792)
 
 
+//[$19F66F-1] -> [79 B3 CF] - moved UP
 #EMBWRITE(792)
+//考えるのはあとにして、ぼくはミイラを突き飛ばして逃げた。<END CHOICE 1C>
 I'll think about it later, so I thrust the mummy away and escaped.<END CHOICE 1C>
 <JMP 03>
 #EMBSET(794)
@@ -24218,13 +24223,8 @@ In spite of myself, I shouted, “What do you mean by that?!”<END CHOICE 1C>
 
 
 //[$19F66F-1] -> [79 B3 CF]
-// moved this up to optimize out a pointer; can only optimize out one pointer
+// moved UP to optimize out a jump code and pointer; can only do with one set
 // instead of two because the jump goes to a convergence point
-//#EMBWRITE(792)
-//考えるのはあとにして、ぼくはミイラを突き飛ばして逃げた。<END CHOICE 1C>
-//I'll think about it later, so I thrust the mummy away and escaped.<END CHOICE 1C>
-//<JMP 03>
-//#EMBSET(794)
 
 
 //[$19F68D-3] -> [6B B4 CF]
@@ -24317,12 +24317,7 @@ What the heck was I doing?<CLEAR 25>
 
 
 //[$19F832-2] -> [92 C1 CF]
-//#EMBWRITE(796)
-//ぼくは大声でそう叫んだ。<END CHOICE 1C>
-// move this down to save a pointer
-//I called out loudly.<END CHOICE 1C>
-//<JMP 03>
-//#EMBSET(797)
+// move down to optimize out jump code and pointer
 
 
 //[$19F842-2] -> [12 C2 CF]
@@ -24376,8 +24371,12 @@ Nami smiled.<LINE 00>
 #EMBSET(798)
 
 
+//[$19F832-2] -> [92 C1 CF] - moved down
 #EMBWRITE(796)
+//ぼくは大声でそう叫んだ。<END CHOICE 1C>
 I called out loudly.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(797)
 
 //[$19F918-3] -> [C3 C8 CF]
 //#EMBWRITE(797)
@@ -24675,8 +24674,12 @@ With a stiff expression, Nami said, “Before we leave, come with me.”<CLEAR 2
 #EMBSET(803)
 
 
+//[$19FFB7-5] -> [BD FD CF] - moved down
 #EMBWRITE(799)
+//ぼくはつらい話だが、奈美のために、思いきって話そうと決めた。<END CHOICE 1C>
 The story was painful, but for Nami's sake, I decided to tell it to her.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(802)
 
 //[$1A8054-3] -> [A3 02 D4]
 //#EMBWRITE(802)
@@ -24780,7 +24783,7 @@ She made me take the sword.<LINE 00>
 “Go ahead!”<CLEAR 25>
 
 //[$1A8335-2] -> [AA 19 D4]
-// save some pointers by moving around text and jumps
+// optimize out some pointers by moving around text and jumps
 <CODE 45><$00><$55><CODE 46><$00><$55><CHOICE 19><$00><$03><$00><$03><$00><$85>
 #EMBSET(804)
 #EMBSET(805)
@@ -24793,8 +24796,10 @@ She made me take the sword.<LINE 00>
 //ぼくは剣を放り投げた。<END CHOICE 1C>
 I threw the sword away.<END CHOICE 1C>
 
-// move text after choice to here from below
+// move text at the pointer to here from below
 <SFX 39><$00><$55><FADE IMAGE BLACK 34><$00><$01>
+// glass shatters; fade to black
+// unlike other route, Nami's Memories does not cut out
 It disappeared into the darkness outside the window.<LINE 00>
 <JMP 03>
 #EMBSET(806)
@@ -24809,20 +24814,22 @@ I took the sword and thrust it at her with all my strength.<END CHOICE 1C>
 //<JMP 03>
 //#EMBSET(807)
 
-// move text after choice to here from below
+// move text at the pointer to here from below
+//[$1A84C3-4] -> [1C 26 D4] - moved up
 <STOP SFX 3B><$00><$06><SFX 39><$00><$55>
-I thrust it into a window.<LINE 00>
-I ran out onto the balcony, and threw the sword out into the darkness of the night.<CLEAR 25>
+// cut out music; glass shatters
+//ぼくが突き刺したのは窓ガラスだった。<LINE 00>
+//I thrust it into a window.<LINE 00>
+//ぼくはバルコニーに走り出ると、その剣を夜の闇へ放り投げた。<CLEAR 25>
+//I ran out onto the balcony, and threw the sword out into the darkness of the night.<CLEAR 25>
+
+//[$1A84F8-7] -> [C7 27 D4] - moved up
 <FADE IMAGE BLACK 34><$00><$01>
 
 
 //[$1A8379-7] -> [CF 1B D4]
 #EMBWRITE(806)
-//<SFX 39><$00><$55><FADE IMAGE BLACK 34><$00><$01>
-// glass shatters; fade to black
-// unlike other route, Nami's Memories does not cut out
-//剣は窓外の闇に消えた。<LINE 00>
-//It disappeared into the darkness outside the window.<LINE 00>
+// move text up into choice that leads here
 
 
 //[$1A838B-2] -> [5A 1C D4]
@@ -24888,16 +24895,10 @@ Nami leapt off the balcony.
 
 
 //[$1A84C3-4] -> [1C 26 D4]
-//#EMBWRITE(807)
-<STOP SFX 3B><$00><$06><SFX 39><$00><$55>
-// cut out music; glass shatters
-//ぼくが突き刺したのは窓ガラスだった。<LINE 00>
-//I thrust it into a window.<LINE 00>
-//ぼくはバルコニーに走り出ると、その剣を夜の闇へ放り投げた。<CLEAR 25>
-//I ran out onto the balcony, and threw the sword out into the darkness of the night.<CLEAR 25>
+// move the text up to combine with choice that leads here
 
 //[$1A84F8-7] -> [C7 27 D4]
-//<FADE IMAGE BLACK 34><$00><$01>
+// same, move ctrl code up to combine with choice
 //<JMP 03>
 //#EMBSET(808)
 
@@ -25014,13 +25015,7 @@ I shouted, “No<AUTO ADV 13>! I won't abandon\ you!”<END CHOICE 1C>
 
 
 //[$1A8797-2] -> [BA 3C D4]
-//#EMBWRITE(810)
-// save two pointers by moving this down
-//「わかった<AUTO ADV 13>。そうする<AUTO ADV 13>」<LINE 00>
-//ぼくは奈美を安心させるためにいった。<END CHOICE 1C>
-//For her own safety, I said, “Okay<AUTO ADV 13>. I'll run away.”<END CHOICE 1C>
-//<JMP 03>
-//#EMBSET(813)
+// optimize out two pointers by moving this down
 
 
 //[$1A87B6-7] -> [B7 3D D4]
@@ -25060,8 +25055,13 @@ The flames and laughs disappeared into the mansion, as if being sucked\ in.
 #EMBSET(814)
 
 
+//[$1A8797-2] -> [BA 3C D4] - moved down
 #EMBWRITE(810)
+//「わかった<AUTO ADV 13>。そうする<AUTO ADV 13>」<LINE 00>
+//ぼくは奈美を安心させるためにいった。<END CHOICE 1C>
 For her own safety, I said, “Okay<AUTO ADV 13>. I'll run away.”<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(813)
 
 
 //[$1A884E-6] -> [76 42 D4]
@@ -25413,11 +25413,7 @@ I decided to get into a good mood with Nami.<END CHOICE 1C>
 
 
 //[$1A900E-6] -> [76 80 D4]
-#EMBWRITE(819)
-//奈美を笑わせてやろうと思った。<END CHOICE 1C>
-I decided to make Nami smile.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(822)
+// move down to optimize out the jump code and pointer
 
 
 //[$1A9020-7] -> [07 81 D4]
@@ -25436,11 +25432,18 @@ I decided to make Nami cry.<END CHOICE 1C>
 #EMBSET(823)
 
 
+//[$1A900E-6] -> [76 80 D4] - moved down
+#EMBWRITE(819)
+//奈美を笑わせてやろうと思った。<END CHOICE 1C>
+I decided to make Nami smile.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(822)
+
 //[$1A9045-5] -> [2D 82 D4]
 #EMBWRITE(824)
 #EMBWRITE(825)
 #EMBWRITE(316)
-#EMBWRITE(822)
+//#EMBWRITE(822)
 //「では、話して進ぜよう」<LINE 00>
 // 進ぜる: a dated term that, after a て form, means to do for someone's sake
 “Very well, let's begin the story.”<LINE 00>
@@ -25520,11 +25523,7 @@ I thought it was rude to do something like that.<END CHOICE 1C>
 
 
 //[$1A91E3-3] -> [1B 8F D4]
-#EMBWRITE(826)
-//ほんとうは触ってみたかった。<END CHOICE 1C>
-Actually, I wanted to try to touch\ her.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(831)
+// move down to optimize out jump code and pointer
 
 
 //[$1A91F4-1] -> [A1 8F D4]
@@ -25535,10 +25534,17 @@ I decided to ask her if it felt good.<END CHOICE 1C>
 #EMBSET(832)
 
 
+//[$1A91E3-3] -> [1B 8F D4] - moved down
+#EMBWRITE(826)
+//ほんとうは触ってみたかった。<END CHOICE 1C>
+Actually, I wanted to try to touch\ her.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(831)
+
 //[$1A9208-4] -> [44 90 D4]
 #EMBWRITE(833)
 #EMBWRITE(323)
-#EMBWRITE(831)
+//#EMBWRITE(831)
 //ぼくの頭の中には、さっきから実は、一つのことしかない。<LINE 00>
 To tell the truth, I've had nothing on the mind for a while.<LINE 00>
 //今さらこんなことをいうのも何だが、隣には奈美のしなやかな肢体がある。<LINE 00>
@@ -25985,17 +25991,15 @@ I decided that if we couldn't split\ it right\ in half, I'd make up for it with 
 
 
 //[$1A99D3-0] -> [98 CE D4]
-#EMBWRITE(861)
-//そのときは、もちろん気前よくおごってやるつもりだ。<END CHOICE 1C>
-When we did, my plan was, of course, to generously treat her.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(866)
+// move down to optimize out jump code and pointer
 
 
 //[$1A99EE-0] -> [78 CF D4]
 #EMBWRITE(863)
 //2で割り切れないときはどうしようかと思った。<END CHOICE 1C>
 I wondered what I'd do if we couldn't split it right in half.<END CHOICE 1C>
+// move single line from target to here, to optimize out jump + ptr at target
+I took Nami's hand.<LINE 00>
 <JMP 03>
 #EMBSET(867)
 
@@ -26008,9 +26012,16 @@ I changed my mind, “No, we'll split the cost.”<END CHOICE 1C>
 #EMBSET(868)
 
 
+//[$1A99D3-0] -> [98 CE D4] - moved down
+#EMBWRITE(861)
+//そのときは、もちろん気前よくおごってやるつもりだ。<END CHOICE 1C>
+When we did, my plan was, of course, to generously treat her.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(866)
+
 //[$1A9A1A-5] -> [D5 D0 D4]
 #EMBWRITE(869)
-#EMBWRITE(866)
+//#EMBWRITE(866)
 <SFX 39><$00><$92>
 // thunder
 //そのとき奈美が叫んだ。<LINE 00>
@@ -26043,15 +26054,7 @@ Just then, I was in high spirits.<CLEAR 25>
 
 
 //[$1A9AA8-0] -> [48 D5 D4]
-#EMBWRITE(870)
-//「恐くない<AUTO ADV 13>。<DELAY 17><$00><$03>行くぞ!<AUTO ADV 13>」<LINE 00>
-“I'm not afraid,<DELAY 17><$00><$03> let's go<AUTO ADV 13>!”<LINE 00>
-//ぼくは奈美をタテにして進んだ。<END CHOICE 1C>
-// rewrite, not 100% sure what タテis referring to here, but 館 is a possibility
-// possibly related: 盾に取る= to use as a shield, to hide/shelter behind
-We went forth with Nami as my shield.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(874)
+// move down to optimize out jump code and pointer
 
 
 //[$1A9AC9-1] -> [49 D6 D4]
@@ -26085,11 +26088,22 @@ I tried to cling to Nami.<END CHOICE 1C>
 #EMBSET(876)
 
 
+//[$1A9AA8-0] -> [48 D5 D4] - moved down
+#EMBWRITE(870)
+//「恐くない<AUTO ADV 13>。<DELAY 17><$00><$03>行くぞ!<AUTO ADV 13>」<LINE 00>
+“I'm not afraid,<DELAY 17><$00><$03> let's go<AUTO ADV 13>!”<LINE 00>
+//ぼくは奈美をタテにして進んだ。<END CHOICE 1C>
+// rewrite, not 100% sure what タテis referring to here, but 館 is a possibility
+// possibly related: 盾に取る= to use as a shield, to hide/shelter behind
+We went forth with Nami as my shield.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(874)
+
 //[$1A9B29-2] -> [4A D9 D4]
 #EMBWRITE(877)
 #EMBWRITE(878)
 #EMBWRITE(879)
-#EMBWRITE(874)
+//#EMBWRITE(874)
 //ぼくらは走った。<LINE 00>
 We ran.<LINE 00>
 
@@ -26128,12 +26142,7 @@ So:<LINE 00>
 
 
 //[$1A9BD8-1] -> [C1 DE D4]
-#EMBWRITE(880)
-//ぼくは男らしくいった<AUTO ADV 13>。<LINE 00>
-//「よし、引き返そう!」<END CHOICE 1C>
-I said in a manly way, “Okay, let's turn back!”<END CHOICE 1C>
-<JMP 03>
-#EMBSET(884)
+// move down to optimize out jump code and pointer
 
 
 //[$1A9BF1-3] -> [8B DF D4]
@@ -26166,8 +26175,16 @@ I stared at Nami with teary eyes.<END CHOICE 1C>
 #EMBSET(886)
 
 
+//[$1A9BD8-1] -> [C1 DE D4] - moved down
+#EMBWRITE(880)
+//ぼくは男らしくいった<AUTO ADV 13>。<LINE 00>
+//「よし、引き返そう!」<END CHOICE 1C>
+I said in a manly way, “Okay, let's turn back!”<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(884)
+
 //[$1A9C4D-3] -> [6B E2 D4]
-#EMBWRITE(884)
+//#EMBWRITE(884)
 //ぼくらは引き返しはじめた。<LINE 00>
 We started to turn back.<LINE 00>
 
@@ -26240,11 +26257,7 @@ When I heard that:<LINE 00>
 
 
 //[$1A9DAD-2] -> [6A ED D4]
-#EMBWRITE(888)
-//だったらキスぐらいしてやったのにと思った。<END CHOICE 1C>
-If that was true, I thought I'd at least kiss her.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(892)
+// move down to optimize out jump code and pointer
 
 
 //[$1A9DC3-3] -> [1B EE D4]
@@ -26275,10 +26288,17 @@ I thought Nami had the better figure.<END CHOICE 1C>
 #EMBSET(895)
 
 
+//[$1A9DAD-2] -> [6A ED D4] - moved down
+#EMBWRITE(888)
+//だったらキスぐらいしてやったのにと思った。<END CHOICE 1C>
+If that was true, I thought I'd at least kiss her.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(892)
+
 //[$1A9E10-1] -> [81 F0 D4]
 #EMBWRITE(896)
 #EMBWRITE(897)
-#EMBWRITE(892)
+//#EMBWRITE(892)
 //今のさわぎでぼくらはヨーロッパ調の鉄の門を入ってしまっている。<CLEAR 25>
 In the commotion, we ended up inside the iron, European style gates.<CLEAR 25>
 
@@ -26315,11 +26335,8 @@ I said:<WAIT 16><LINE 00>
 
 
 //[$1A9EC2-1] -> [11 F6 D4]
-#EMBWRITE(899)
-//「競走だ<AUTO ADV 13>。<DELAY 17><$00><$05>ヨーイ、ドン!」<END CHOICE 1C>
-“It's a race<AUTO ADV 13>.<DELAY 17><$00><$05> Ready, go!”<END CHOICE 1C>
-<JMP 03>
-#EMBSET(903)
+// move down to optimize out jump code and pointer
+// the first two options go to same target, so can only do this with one
 
 
 //[$1A9ED7-6] -> [BE F6 D4]
@@ -26352,6 +26369,13 @@ We briskly headed for the entrance.<LINE 00>
 #EMBSET(906)
 
 
+//[$1A9EC2-1] -> [11 F6 D4] - moved down
+#EMBWRITE(899)
+//「競走だ<AUTO ADV 13>。<DELAY 17><$00><$05>ヨーイ、ドン!」<END CHOICE 1C>
+“It's a race<AUTO ADV 13>.<DELAY 17><$00><$05> Ready, go!”<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(903)
+
 //[$1A9F36-4] -> [B4 F9 D4]
 #EMBWRITE(907)
 #EMBWRITE(908)
@@ -26359,7 +26383,7 @@ We briskly headed for the entrance.<LINE 00>
 #EMBWRITE(910)
 #EMBWRITE(378)
 #EMBWRITE(668)
-#EMBWRITE(903)
+//#EMBWRITE(903)
 #EMBWRITE(904)
 <VFX 2C><$00><$85><SFX 39><$00><$92><DELAY 17><$00><$0A>
 // screen flashes, lightning sfx
@@ -26526,13 +26550,7 @@ So...<LINE 00>
 
 
 //[$1AA218-6] -> [C6 10 D5]
-#EMBWRITE(920)
-//「ねえ、奈美・・・<AUTO ADV 13>」<DELAY 17><$00><$05>
-“Hey, Nami...<AUTO ADV 13>”<DELAY 17><$00><$05><LINE 00>
-//と奈美のひとみを見つめた。<END CHOICE 1C>
-I looked into her eyes.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(924)
+// move down to optimize out jump code and pointer
 
 
 //[$1AA233-6] -> [9E 11 D5]
@@ -26567,10 +26585,19 @@ I let Nami sleep.<END CHOICE 1C>
 #EMBSET(926)
 
 
+//[$1AA218-6] -> [C6 10 D5] - moved down
+#EMBWRITE(920)
+//「ねえ、奈美・・・<AUTO ADV 13>」<DELAY 17><$00><$05>
+“Hey, Nami...<AUTO ADV 13>”<DELAY 17><$00><$05><LINE 00>
+//と奈美のひとみを見つめた。<END CHOICE 1C>
+I stared into her eyes.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(924)
+
 //[$1AA28F-0] -> [78 14 D5]
 #EMBWRITE(927)
 #EMBWRITE(928)
-#EMBWRITE(924)
+//#EMBWRITE(924)
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$43>
 // fade in the sofa and fireplace
 //そこはおどろくほどに広い吹きぬけのホールになっている。<LINE 00>
@@ -26779,12 +26806,7 @@ I said, “That's two...”<LINE 00>
 
 
 //[$1AA685-3] -> [2B 34 D5]
-#EMBWRITE(937)
-//「ま、待てよ。三かい目を聞いてくれよ」<END CHOICE 1C>
-// rewrite
-“W-, wait. Let's see if we'll hear it a third time.”<END CHOICE 1C>
-<JMP 03>
-#EMBSET(941)
+// move down to optimize out jump code and pointer
 
 
 //[$1AA69A-7] -> [D7 34 D5]
@@ -26816,10 +26838,18 @@ I spoke my mind.<END CHOICE 1C>
 #EMBSET(944)
 
 
+//[$1AA685-3] -> [2B 34 D5] - moved down
+#EMBWRITE(937)
+//「ま、待てよ。三かい目を聞いてくれよ」<END CHOICE 1C>
+// rewrite
+“W-, wait. Let's see if we'll hear it a third time.”<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(941)
+
 //[$1AA6F2-1] -> [91 37 D5]
 #EMBWRITE(945)
 #EMBWRITE(946)
-#EMBWRITE(941)
+//#EMBWRITE(941)
 #EMBWRITE(942)
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$0E>
 // fade in the stairs
@@ -26935,17 +26965,7 @@ So I said:<LINE 00>
 
 
 //[$1AA929-5] -> [4D 49 D5]
-#EMBWRITE(947)
-//「ニカイじゃないよ。サンカイしよう!<AUTO ADV 13>」<END CHOICE 1C>
-//奈美は、散会のイミがわからなかったらしく先に上がってしまった。<LINE 00>
-// 三階 vs 散会 -> adjournment = stopping a formal meeting until another time
-// "It's not floor 2, let's go to floor 3!"
-// Nami seemed to not get that I meant to meet again later, and went up ahead.
-// the text this leads to has Nami turn to the exit, so my localization is:
-“It's not upstairs. Let's split<AUTO ADV 13>!”<END CHOICE 1C>
-But I should have said, “Let's split\ up!”<LINE 00>
-<JMP 03>
-#EMBSET(951)
+// move down to optimize out jump code and pointer
 
 
 //[$1AA95C-7] -> [E7 4A D5]
@@ -26982,9 +27002,23 @@ I tightly grasped Nami's hand.<END CHOICE 1C>
 #EMBSET(954)
 
 
+//[$1AA929-5] -> [4D 49 D5] - moved down
+#EMBWRITE(947)
+//「ニカイじゃないよ。サンカイしよう!<AUTO ADV 13>」<END CHOICE 1C>
+//奈美は、散会のイミがわからなかったらしく先に上がってしまった。<LINE 00>
+// literal translation: "It's not floor 2, let's go to floor 3!"
+// Nami seemed to not get that I meant to meet again later, and went up ahead.
+
+// 三階 vs 散会 -> adjournment = stopping a formal meeting until another time
+// this leads to text where Nami turns to the exit, so my localization is:
+“It's not upstairs. Let's split<AUTO ADV 13>!”<END CHOICE 1C>
+But I should have said, “Let's split\ up!”<LINE 00>
+//<JMP 03>
+//#EMBSET(951)
+
 //[$1AA9AF-6] -> [7E 4D D5]
 #EMBWRITE(955)
-#EMBWRITE(951)
+//#EMBWRITE(951)
 //「ヨシ、行ってみよう!」<LINE 00>
 “Okay, let's go!”<LINE 00>
 //とマワレ右して出口へ向かった。<LINE 00>
@@ -27069,11 +27103,7 @@ I stood up straight and listened as hard as I could.<END CHOICE 1C>
 
 
 //[$1AAB2D-7] -> [6F 59 D5]
-#EMBWRITE(956)
-//思いきり目を見開いた。<END CHOICE 1C>
-I opened my eyes as wide as I could.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(960)
+// move down to optimize out jump code and pointer
 
 
 //[$1AAB3C-5] -> [E5 59 D5]
@@ -27092,12 +27122,19 @@ I tried to open my nose, but this was unreasonable.<END CHOICE 1C>
 #EMBSET(961)
 
 
+//[$1AAB2D-7] -> [6F 59 D5] - moved down
+#EMBWRITE(956)
+//思いきり目を見開いた。<END CHOICE 1C>
+I opened my eyes as wide as I could.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(960)
+
 //[$1AAB68-1] -> [41 5B D5]
 #EMBWRITE(962)
 #EMBWRITE(963)
 #EMBWRITE(964)
 #EMBWRITE(411)
-#EMBWRITE(960)
+//#EMBWRITE(960)
 //ぼくは壁のスイッチをさがした。<END CHOICE 1C>
 I looked for the light switch.<END CHOICE 1C>
 //そのとき・・・
@@ -27169,13 +27206,7 @@ This time:<LINE 00>
 
 
 //[$1AACC1-7] -> [0F 66 D5]
-#EMBWRITE(965)
-//ぼくはミイラが叫んだように感じた。<END CHOICE 1C>
-I felt like the mummy screamed\ at\ us.<END CHOICE 1C>
-<STOP SFX 3B><$00><$25>
-// cut out wheelchair
-<JMP 03>
-#EMBSET(969)
+// move down to optimize out jump code and pointer
 
 
 //[$1AACD9-1] -> [C9 66 D5]
@@ -27208,10 +27239,19 @@ I would have preferred if the mummy was at least a little younger<STOP SFX 3B><$
 #EMBSET(972)
 
 
+//[$1AACC1-7] -> [0F 66 D5] - moved down
+#EMBWRITE(965)
+//ぼくはミイラが叫んだように感じた。<END CHOICE 1C>
+I felt like the mummy screamed\ at\ us.<END CHOICE 1C>
+<STOP SFX 3B><$00><$25>
+// cut out wheelchair
+//<JMP 03>
+//#EMBSET(969)
+
 //[$1AAD2C-0] -> [68 69 D5]
 #EMBWRITE(973)
 #EMBWRITE(974)
-#EMBWRITE(969)
+//#EMBWRITE(969)
 <STOP SFX 3B><$00><$13><STOP SFX 3B><$00><$17><SFX 39><$00><$68><IMAGE CUT 2E><$00><$45><DELAY 17><$00><$05>
 // cut out hum; close door; cut to hallway
 //ぼくらは廊下へ飛び出した。<LINE 00>
@@ -27443,11 +27483,11 @@ I really said:<LINE 00>
 
 
 //[$1AB11C-6] -> [E6 88 D5]
-#EMBWRITE(985)
+//#EMBWRITE(985)
 //口紅をつけたミイラだったらコワイ。<END CHOICE 1C>
-I'd be scared if it was the mummy's lipstick.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(989)
+//I'd be scared if it was the mummy's lipstick.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(989)
 
 
 //[$1AB132-6] -> [96 89 D5]
@@ -27474,10 +27514,13 @@ Nami's jealousy scared me even more than the mummy.<END CHOICE 1C>
 #EMBSET(432)
 
 
+#EMBWRITE(985)
+I'd be scared if it was the mummy's lipstick.<END CHOICE 1C>
+
 //[$1AB178-1] -> [C1 8B D5]
 #EMBWRITE(992)
 #EMBWRITE(431)
-#EMBWRITE(989)
+//#EMBWRITE(989)
 <SFX FADE OUT 3C><$00><$64><$00><$1D><SFX 39><$00><$64><IMAGE FADE IN 37><$00><$01><$00><$22><SFX LET FINISH 3E><$00><$64>
 // go to bottom of open door; open it
 //ぼくらはさっきの<SFX 39><$00><$16>“ミイラの間”へ来た。<LINE 00>
@@ -28211,7 +28254,7 @@ I said that and headed upstairs.<LINE 00>
 //[$1ABDFB-0] -> [D8 EF D5]
 #EMBWRITE(1043)
 //「秋ナスは、ヨメに食わすな」<END CHOICE 1C>
-// lit: don't let your daughter-in-law eat autumn eggplant (because you wouldn't
+// lit: don't feed autumn eggplant to your daughter-in-law (because you wouldn't
 // "waste" such a tasty food on her, or [ugh] because they'll make her less
 // fertile due to giving her the chills or due to their lack of seeds)
 // source: https://hitherandyonwithdarrellvaughan.wordpress.com/2015/10/26/eggplant-in-autumn-a-not-so-useful-japanese-expression/
@@ -31417,7 +31460,7 @@ I found Nami and kissed her.<END CHOICE 1C>
 I went the way that was best for\ Nami.<END CHOICE 1C>
 I approached those sounds.<LINE 00>
 <STOP SFX 3B><$00><$1C>
-// this JMP code is unnecessary, free up 3 bytes
+// optimize out unnecessary jump code and pointer
 //<JMP 03>
 //#EMBSET(1300)
 
@@ -31530,21 +31573,17 @@ I made up my mind.<LINE 00>
 //ナオミの忠告を無視して食堂へ行こう。<END CHOICE 1C>
 // leaving out the "warning" here because this is the second option in game
 I'll ignore her and go to the dining room.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1304)
+//<JMP 03>
+//#EMBSET(1304)
 
 
 //[$1AF7C1-3] -> [0B BE D7]
-#EMBWRITE(1302)
-//ナオミの忠告を聞いて出て行こう。<END CHOICE 1C>
-I'll listen to Naomi's advice and get out of here.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1305)
+// move down to optimize out two sets of jump codes and pointers (above, here)
 
 
 //[$1AF7D7-0] -> [B8 BE D7]
 #EMBWRITE(1306)
-#EMBWRITE(1304)
+//#EMBWRITE(1304)
 <SFX VOLUME 3F><$00><$01><$00><$47><SFX VOLUME 3F><$00><$01><$00><$48>
 // the sounds become louder
 //ぼくは食堂の明かりをめざして進んだ。<LINE 00>
@@ -31667,8 +31706,15 @@ I felt Nami sending a wavelength of\ love.<END CHOICE 1C>
 #EMBSET(1315)
 
 
+//[$1AF7C1-3] -> [0B BE D7] - moved down
+#EMBWRITE(1302)
+//ナオミの忠告を聞いて出て行こう。<END CHOICE 1C>
+I'll listen to Naomi's advice and get out of here.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1305)
+
 //[$1AFA05-3] -> [2B D0 D7]
-#EMBWRITE(1305)
+//#EMBWRITE(1305)
 <SFX FADE OUT 3C><$00><$7F><$00><$47><SFX FADE OUT 3C><$00><$7F><$00><$48>
 // armor and wheelchair sounds fade out
 //ぼくは忍び足で出口へ向かった。<LINE 00>
@@ -31723,11 +31769,7 @@ Where should I go?!<CLEAR 25>
 
 
 //[$1AFAF9-5] -> [CD D7 D7]
-#EMBWRITE(1316)
-//ぼくは階段をのぼることにした。<END CHOICE 1C>
-I decided to climb the stairs.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1320)
+// move down to optimize out jump code and pointer
 
 
 //[$1AFB0B-0] -> [58 D8 D7]
@@ -31754,11 +31796,18 @@ For some reason, I didn't know where to go.<END CHOICE 1C>
 #EMBSET(777)
 
 
+//[$1AFAF9-5] -> [CD D7 D7] - moved down
+#EMBWRITE(1316)
+//ぼくは階段をのぼることにした。<END CHOICE 1C>
+I decided to climb the stairs.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1320)
+
 //[$1AFB48-5] -> [45 DA D7]
 #EMBWRITE(1322)
 #EMBWRITE(1312)
 #EMBWRITE(1315)
-#EMBWRITE(1320)
+//#EMBWRITE(1320)
 <IMAGE FADE IN 37><$00><$01><$00><$22>
 // fade in bottom of open door
 //二階へ上がると、
@@ -32046,11 +32095,7 @@ Then, she suddenly stood up.<LINE 00>
 
 
 //[$1B836F-7] -> [7F 1B DC]
-#EMBWRITE(1324)
-//愛する奈美に従うことにした。<END CHOICE 1C>
-I decided to follow my beloved\ Nami.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1325)
+// move down to optimize out jump code and pointer
 
 
 //[$1B8381-4] -> [0C 1C DC]
@@ -32061,8 +32106,15 @@ I strongly opposed and said “No!”<END CHOICE 1C>
 #EMBSET(1326)
 
 
+//[$1B836F-7] -> [7F 1B DC] - moved down
+#EMBWRITE(1324)
+//愛する奈美に従うことにした。<END CHOICE 1C>
+I decided to follow my beloved\ Nami.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1325)
+
 //[$1B8397-0] -> [B8 1C DC]
-#EMBWRITE(1325)
+//#EMBWRITE(1325)
 //ぼくと奈美は正装に着替えた。<LINE 00>
 Nami and I changed into formal attire.<LINE 00>
 <SFX 39><$00><$65><IMAGE FADE IN BLOCK 36><$00><$01><$00><$0E>
@@ -32562,7 +32614,7 @@ I hugged Nami tightly.<END CHOICE 1C>
 #EMBWRITE(1339)
 //ぼくと奈美は立ちすくんだ。<END CHOICE 1C>
 Nami and I were petrified.<END CHOICE 1C>
-// unnecessary JMP code and pointer
+// optimize out unnecessary jump code and pointer
 //<JMP 03>
 //#EMBSET(1342)
 
@@ -32693,15 +32745,16 @@ I told Nami, “Let's go home already.”<END CHOICE 1C>
 #EMBWRITE(1348)
 //ぼくは思いきり奈美を見つめた。<END CHOICE 1C>
 I gazed at Nami to my heart's content.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1352)
+// optimize out unnecessary jump code and pointer
+//<JMP 03>
+//#EMBSET(1352)
 
 
 //[$1B8FE8-7] -> [47 7F DC]
 #EMBWRITE(1353)
 #EMBWRITE(1354)
 #EMBWRITE(1350)
-#EMBWRITE(1352)
+//#EMBWRITE(1352)
 //奈美の目には大粒の涙があふれた。<LINE 00>
 Nami's eyes were brimming with tears.<LINE 00>
 
@@ -32914,13 +32967,14 @@ I felt happiness from my heart<AUTO ADV 13>.<END CHOICE 1C>
 #EMBWRITE(1359)
 //なんだか不吉な予感がした。<END CHOICE 1C>
 For some reason, I had an ominous hunch.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1361)
+// optimize out unnecessary jump code and pointer
+//<JMP 03>
+//#EMBSET(1361)
 
 
 //[$1B9442-0] -> [18 A2 DC]
 #EMBWRITE(1362)
-#EMBWRITE(1361)
+//#EMBWRITE(1361)
 <SFX FADE OUT 3C><$00><$32><$00><$07><SFX FADE OUT 3C><$00><$32><$00><$08><SFX FADE OUT 40><$00><$08><$00><$56><DELAY 17><$00><$0A>
 // the wind blows; fade out "theme of love"
 //<SFX 39><$00><$13><SFX 39><$00><$15>
@@ -33210,14 +33264,7 @@ I said that to her, but to tell the truth:<LINE 00>
 
 
 //[$1B9A6A-4] -> [54 D3 DC]
-#EMBWRITE(1373)
-//雨に打たれて修業するつもりだった。<END CHOICE 1C>
-// rewrite; 修業 = pursuit of knowledge, studying/learning; not like physical
-// training
-I planned to train in the the rain.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1377)
-
+// move down to optimize out jump code and pointer
 
 //[$1B9A80-6] -> [06 D4 DC]
 #EMBWRITE(1374)
@@ -33248,9 +33295,17 @@ I thought Nami, walking in the rain, was like a wet amanattou.<END CHOICE 1C>
 #EMBSET(1378)
 
 
+//[$1B9A6A-4] -> [54 D3 DC] - moved down
+#EMBWRITE(1373)
+//雨に打たれて修業するつもりだった。<END CHOICE 1C>
+// 修業 = pursuit of knowledge, studying/learning; not like physical training
+I planned to study in the the rain.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1377)
+
 //[$1B9AE8-1] -> [41 D7 DC]
 #EMBWRITE(1379)
-#EMBWRITE(1377)
+//#EMBWRITE(1377)
 <SFX 39><$00><$93>
 // distant thunder
 //ぼくらは雨の中を歩き出した。<LINE 00>
@@ -33314,15 +33369,8 @@ I thought about what to do, but:<LINE 00>
 #EMBSET(1382)
 #EMBSET(1383)
 
-
 //[$1B9C22-2] -> [12 E1 DC]
-#EMBWRITE(1380)
-//「燃えているのはおれのハートだ!」ぼくは胸をはだけて見せた。<END CHOICE 1C>
-“What's burning is my heart!”<LINE 00>
-I showed my bare chest to her.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1384)
-
+// move down to optimize out jump code and pointer
 
 //[$1B9C42-0] -> [18 E2 DC]
 #EMBWRITE(1381)
@@ -33354,9 +33402,17 @@ I felt a sense of duty in my veins.<END CHOICE 1C>
 #EMBSET(1386)
 
 
+//[$1B9C22-2] -> [12 E1 DC] - moved down
+#EMBWRITE(1380)
+//「燃えているのはおれのハートだ!」ぼくは胸をはだけて見せた。<END CHOICE 1C>
+“What's burning is my heart!”<LINE 00>
+I showed my bare chest to her.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1384)
+
 //[$1B9C9E-6] -> [F6 E4 DC]
 #EMBWRITE(885)
-#EMBWRITE(1384)
+//#EMBWRITE(1384)
 <SFX 39><$00><$1C><DELAY 17><$00><$05>
 // something lights on fire, crackling
 //燃えたのは<DELAY 17><$00><$05>後ろのぼくの車だった。<LINE 00>
@@ -33396,16 +33452,11 @@ This was terrible!<LINE 00>
 
 
 //[$1B9D43-3] -> [1B EA DC]
-#EMBWRITE(1387)
-//あいつにつかまったらビンボーになる。<END CHOICE 1C>
-// rewrite
-If that thing caught us, we'd be\ poor.<END CHOICE 1C>
-//振り返ると、ぼくの火の車は穴ボコに落ちて煙を吹いていた。<CLEAR 25>
-I turned around, and my blazing car had fallen into a hole and was emitting smoke.<CLEAR 25>
+// move down to optimize out jump code and pointer
 
 //[$1B9D70-3] -> [83 EB DC]
-<JMP 03>
-#EMBSET(1391)
+//<JMP 03>
+//#EMBSET(1391)
 
 
 //[$1B9D74-3] -> [A3 EB DC]
@@ -33436,10 +33487,18 @@ If it came to this, I should get fired up in the car with Nami.<END CHOICE 1C>
 #EMBSET(1392)
 
 
+//[$1B9D43-3] -> [1B EA DC] - moved down
+#EMBWRITE(1387)
+//あいつにつかまったらビンボーになる。<END CHOICE 1C>
+// rewrite
+If that thing caught us, we'd be\ poor.<END CHOICE 1C>
+//振り返ると、ぼくの火の車は穴ボコに落ちて煙を吹いていた。<CLEAR 25>
+I turned around, and my blazing car had fallen into a hole and was emitting smoke.<CLEAR 25>
+
 //[$1B9DEF-4] -> [7C EF DC]
 #EMBWRITE(1393)
 #EMBWRITE(893)
-#EMBWRITE(1391)
+//#EMBWRITE(1391)
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$24><SFX FADE OUT 3C><$00><$14><$00><$04><SFX FADE IN 3A><$00><$50><$00><$29><SFX 39><$00><$57>
 // fade in the field of flowers; the wind blows; music fades out
 //ぼくらはいつの間にか門を見上げる位置にいた。<LINE 00>
@@ -33604,14 +33663,7 @@ Without thinking, I said:<LINE 00>
 
 
 //[$1BA0BB-3] -> [DB 05 DD]
-#EMBWRITE(1401)
-//「ゴージャス・・・!<AUTO ADV 13>」<LINE 00><DELAY 17><$00><$05>
-“Gorgeous...<AUTO ADV 13>!”<LINE 00><DELAY 17><$00><$05>
-//奈美と二人で目を見はった。<END CHOICE 1C>
-Nami and I opened our eyes wide.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1405)
-
+// move down to optimize out jump code and pointer
 
 //[$1BA0DA-0] -> [D8 06 DD]
 #EMBWRITE(1402)
@@ -33643,10 +33695,19 @@ I hugged her tight.<END CHOICE 1C>
 #EMBSET(1406)
 
 
+//[$1BA0BB-3] -> [DB 05 DD] - moved down
+#EMBWRITE(1401)
+//「ゴージャス・・・!<AUTO ADV 13>」<LINE 00><DELAY 17><$00><$05>
+“Gorgeous...<AUTO ADV 13>!”<LINE 00><DELAY 17><$00><$05>
+//奈美と二人で目を見はった。<END CHOICE 1C>
+Nami and I opened our eyes wide.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1405)
+
 //[$1BA12F-1] -> [79 09 DD]
 #EMBWRITE(1407)
 #EMBWRITE(925)
-#EMBWRITE(1405)
+//#EMBWRITE(1405)
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$43>
 // fade in couch
 //そこは吹き抜けのホールだった。<LINE 00>
@@ -33692,14 +33753,7 @@ I asked, “How about we try calling out one more time?”<LINE 00>
 
 
 //[$1BA242-4] -> [14 12 DD]
-#EMBWRITE(1408)
-//「新聞とってくれませんかあ!」<END CHOICE 1C>
-“Won't you get your newspaper!”<END CHOICE 1C>
-//そのときぼくは信じられないモノを見てしまった。<LINE 00>
-Then, I saw something unbelievable.<LINE 00>
-<JMP 03>
-#EMBSET(1412)
-
+// move down to optimize out jump code and pointer
 
 //[$1BA269-6] -> [4E 13 DD]
 #EMBWRITE(1409)
@@ -33741,10 +33795,19 @@ Since there was no reply, I hugged Nami tightly.<LINE 00>
 #EMBSET(1413)
 
 
+//[$1BA242-4] -> [14 12 DD] - moved down
+#EMBWRITE(1408)
+//「新聞とってくれませんかあ!」<END CHOICE 1C>
+“Won't you get your newspaper!”<END CHOICE 1C>
+//そのときぼくは信じられないモノを見てしまった。<LINE 00>
+Then, I saw something unbelievable.<LINE 00>
+//<JMP 03>
+//#EMBSET(1412)
+
 //[$1BA2FC-2] -> [E2 17 DD]
 #EMBWRITE(1414)
 #EMBWRITE(933)
-#EMBWRITE(1412)
+//#EMBWRITE(1412)
 <IMAGE CUT 2E><$00><$06><DELAY 17><$00><$05>
 // cut to armor
 //「あッ・・・」<LINE 00>
@@ -34017,12 +34080,7 @@ Then, I thought:<WAIT 16><LINE 00>
 
 
 //[$1BA826-3] -> [33 41 DD]
-#EMBWRITE(1416)
-//今度はオレが抱きついてやる。<END CHOICE 1C>
-This time, I'll hug her.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1419)
-
+// move down to optimize out jump code and pointer
 
 //[$1BA839-1] -> [C9 41 DD]
 #EMBWRITE(1418)
@@ -34041,10 +34099,17 @@ I'll never forgive them. I'll never forgive them, ever.<END CHOICE 1C>
 #EMBSET(962)
 
 
+//[$1BA826-3] -> [33 41 DD] - moved down
+#EMBWRITE(1416)
+//今度はオレが抱きついてやる。<END CHOICE 1C>
+This time, I'll hug her.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1419)
+
 //[$1BA873-3] -> [9B 43 DD]
 #EMBWRITE(1421)
 #EMBWRITE(961)
-#EMBWRITE(1419)
+//#EMBWRITE(1419)
 <STOP SFX 3B><$00><$13><STOP SFX 3B><$00><$16><STOP SFX 3B><$00><$17><VFX 2C><$00><$85><SFX 39><$00><$0C>
 // light flashes; a cheerful-like song plays twice and fades out
 //スポットライトがついた。<LINE 00>
@@ -34103,12 +34168,7 @@ I didn't want to see the mummy taking off its clothes.<END CHOICE 1C>
 
 
 //[$1BA972-6] -> [96 4B DD]
-#EMBWRITE(1422)
-//あれではダイエットのしすぎだと思った。<END CHOICE 1C>
-I thought she overdid her diet.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1426)
-
+// move down to optimize out jump code and pointer
 
 //[$1BA989-4] -> [4C 4C DD]
 #EMBWRITE(1424)
@@ -34126,10 +34186,17 @@ I'd never do it on purpose, but my head was up Nami's skirt.<END CHOICE 1C>
 #EMBSET(1428)
 
 
+//[$1BA972-6] -> [96 4B DD] - moved down
+#EMBWRITE(1422)
+//あれではダイエットのしすぎだと思った。<END CHOICE 1C>
+I thought she overdid her diet.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1426)
+
 //[$1BA9C0-5] -> [05 4E DD]
 #EMBWRITE(1429)
 #EMBWRITE(970)
-#EMBWRITE(1426)
+//#EMBWRITE(1426)
 <SFX 39><$00><$68><IMAGE FADE IN BLOCK 36><$00><$01><$00><$45>
 // close the door; fade in the hallway
 //ぼくらはアワをくって逃げ出した。<LINE 00>
@@ -34474,11 +34541,7 @@ Wishes filled my head, and I thought:<WAIT 16><LINE 00>
 
 
 //[$1BAF2F-0] -> [78 79 DD]
-#EMBWRITE(1444)
-//昔からぼくはコワイことがあると、すぐ眠ることにしている。<END CHOICE 1C>
-Whenever I get scared, I'd try to sleep soon after.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1448)
+// move down to optimize out jump code and pointer
 
 
 //[$1BAF4D-4] -> [6C 7A DD]
@@ -34506,10 +34569,17 @@ Let's sleep close together.<END CHOICE 1C>
 #EMBSET(1449)
 
 
+//[$1BAF2F-0] -> [78 79 DD] - moved down
+#EMBWRITE(1444)
+//昔からぼくはコワイことがあると、すぐ眠ることにしている。<END CHOICE 1C>
+Whenever I get scared, I'd try to sleep soon after.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1448)
+
 //[$1BAF88-4] -> [44 7C DD]
 #EMBWRITE(1450)
 #EMBWRITE(1013)
-#EMBWRITE(1448)
+//#EMBWRITE(1448)
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$45>
 // fade in a hallway
 //だが何にしても、内部をよく調べ直しておく必要がある。<LINE 00>
@@ -34628,11 +34698,7 @@ Nami said, “Hey, I knew it! They weren't toys for practical jokes!”<LINE 00>
 
 
 //[$1BB24B-5] -> [5D 92 DD]
-#EMBWRITE(1451)
-//景気づけに一杯やりたいところだ。<END CHOICE 1C>
-I really wanted to cheer her up.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1455)
+// move down to optimize out jump code and pointer
 
 
 //[$1BB260-6] -> [06 93 DD]
@@ -34662,11 +34728,18 @@ We went through so much, so let's get friendly in a quiet room.<END CHOICE 1C>
 #EMBSET(1456)
 
 
+//[$1BB24B-5] -> [5D 92 DD] - moved down
+#EMBWRITE(1451)
+//景気づけに一杯やりたいところだ。<END CHOICE 1C>
+I really wanted to cheer her up.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1455)
+
 //[$1BB2B4-3] -> [A3 95 DD]
 #EMBWRITE(1457)
 #EMBWRITE(1458)
 #EMBWRITE(1021)
-#EMBWRITE(1455)
+//#EMBWRITE(1455)
 //「こっちだ」<LINE 00>
 “This one.”<LINE 00>
 <STOP SFX 3B><$00><$13><STOP SFX 3B><$00><$17><STOP SFX 3B><$00><$1D><SFX 39><$00><$64><IMAGE FADE IN BLOCK 36><$00><$01><$00><$0B>
@@ -35012,12 +35085,7 @@ Chasing her, I thought:<WAIT 16><LINE 00>
 
 
 //[$1BB929-0] -> [48 C9 DD]
-#EMBWRITE(1473)
-//今のはきっと二階からかけた内線電話だ。<END CHOICE 1C>
-Now, I was sure someone upstairs called with an extension phone.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1477)
-
+// move down to optimize out jump code and pointer
 
 //[$1BB940-5] -> [05 CA DD]
 #EMBWRITE(1474)
@@ -35043,11 +35111,18 @@ I should kiss Nami before I lost my temper.<END CHOICE 1C>
 #EMBSET(1479)
 
 
+//[$1BB929-0] -> [48 C9 DD] - moved down
+#EMBWRITE(1473)
+//今のはきっと二階からかけた内線電話だ。<END CHOICE 1C>
+Now, I was sure someone upstairs called with an extension phone.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1477)
+
 //[$1BB980-0] -> [08 CC DD]
 #EMBWRITE(1480)
 #EMBWRITE(1481)
 #EMBWRITE(1044)
-#EMBWRITE(1477)
+//#EMBWRITE(1477)
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$45>
 // fade in hallway
 //二階へ行くと、左側三番目のドアが開いている。<LINE 00>
@@ -35573,11 +35648,7 @@ But, to tell the truth...<LINE 00>
 
 
 //[$1BC361-6] -> [0E 1B DE]
-#EMBWRITE(1501)
-//ぼくの野心はそうおとなしくない。<END CHOICE 1C>
-My ambitions were not pure.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1505)
+// move down to optimize out jump code and pointer
 
 
 //[$1BC374-4] -> [A4 1B DE]
@@ -35599,16 +35670,23 @@ My mind was already prepared.<END CHOICE 1C>
 //[$1BC399-0] -> [C8 1C DE]
 #EMBWRITE(1504)
 //口実を作って抱きつきたい気持ちだ。<END CHOICE 1C>
-I felt I wanted to make an excuse to hug Nami tightly.<END CHOICE 1C>
+I wanted to make an excuse to hug Nami tightly.<END CHOICE 1C>
 <JMP 03>
 #EMBSET(1506)
 
+
+//[$1BC361-6] -> [0E 1B DE] - moved down
+#EMBWRITE(1501)
+//ぼくの野心はそうおとなしくない。<END CHOICE 1C>
+My ambitions were not pure.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1505)
 
 //[$1BC3AF-1] -> [79 1D DE]
 #EMBWRITE(1507)
 #EMBWRITE(531)
 #EMBWRITE(1110)
-#EMBWRITE(1505)
+//#EMBWRITE(1505)
 //「ありがと。もう出てくれていいわよ」<LINE 00>
 Nami said, “Thanks. You can leave\ now.”<LINE 00>
 //「エンリョすんな。ここにいてやる」<LINE 00>
@@ -36056,18 +36134,13 @@ I couldn't stop and kept rolling.<END CHOICE 1C>
 //[$1BCBA8-3] -> [43 5D DE]
 #EMBWRITE(1530)
 //奈美を抱きしめた・・・と思ったら肩たたきチェアーだった。<END CHOICE 1C>
-// rewrite
-I was holding Nami tight...<DELAY 17><$00><$05> I thought I was, but it was just a chair for shoulder massages.<END CHOICE 1C>
+I hugged Nami tight...<DELAY 17><$00><$05> I thought I was, but it was just a chair for shoulder massages.<END CHOICE 1C>
 <JMP 03>
 #EMBSET(1531)
 
 
 //[$1BCBC6-1] -> [31 5E DE]
-#EMBWRITE(1527)
-//奈美を求めてホールへ向かった。<END CHOICE 1C>
-I headed to the foyer and looked for\ Nami.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1532)
+// move down to optimize out jump code and pointer
 
 
 //[$1BCBD9-6] -> [CE 5E DE]
@@ -36080,10 +36153,17 @@ I turned back to the hot water, wanting that pleasure again.<END CHOICE 1C>
 #EMBSET(1148)
 
 
+//[$1BCBC6-1] -> [31 5E DE] - moved down
+#EMBWRITE(1527)
+//奈美を求めてホールへ向かった。<END CHOICE 1C>
+I headed to the foyer and looked for\ Nami.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1532)
+
 //[$1BCBF6-6] -> [B6 5F DE]
 #EMBWRITE(1533)
 #EMBWRITE(1154)
-#EMBWRITE(1532)
+//#EMBWRITE(1532)
 <SFX 39><$00><$1D><IMAGE FADE IN BLOCK 36><$00><$01><$00><$43>
 // ticking clock; fade in couch
 //ホールへ戻ってみたが、奈美の姿はない。<LINE 00>
@@ -36959,13 +37039,7 @@ I hugged Nami closely, and:<LINE 00>
 
 
 //[$1BDC43-7] -> [1F E2 DE]
-#EMBWRITE(1582)
-//「しないとも!　<DELAY 17><$00><$05>ゲンマンだ<AUTO ADV 13>」<LINE 00>
-“I won't leave you<AUTO ADV 13>!<DELAY 17><$00><$05> I promise<AUTO ADV 13>!”<LINE 00>
-//ぼくは親指をだした。<END CHOICE 1C>
-I gave her a thumbs up.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1586)
+// move down to optimize out jump code and pointer
 
 
 //[$1BDC62-7] -> [17 E3 DE]
@@ -37002,10 +37076,19 @@ I caressed her whole body.<END CHOICE 1C>
 #EMBSET(1587)
 
 
+//[$1BDC43-7] -> [1F E2 DE] - moved down
+#EMBWRITE(1582)
+//「しないとも!　<DELAY 17><$00><$05>ゲンマンだ<AUTO ADV 13>」<LINE 00>
+“I won't leave you<AUTO ADV 13>!<DELAY 17><$00><$05> I promise<AUTO ADV 13>!”<LINE 00>
+//ぼくは親指をだした。<END CHOICE 1C>
+I gave her a thumbs up.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1586)
+
 //[$1BDCBE-6] -> [F6 E5 DE]
 #EMBWRITE(1588)
 #EMBWRITE(1225)
-#EMBWRITE(1586)
+//#EMBWRITE(1586)
 //「私、もッとハッキリ思い出したの!!」<LINE 00>
 “I, remembered more clearly!”<LINE 00>
 //奈美は子供のような叫び声を上げた。<LINE 00>
@@ -37691,7 +37774,7 @@ When I threw it into the fireplace, there was an unpleasant smell.<END CHOICE 1C
 //「イヤッ!」<LINE 00>
 “No!”<LINE 00>
 //奈美は一室に閉じこもってしまった。<END CHOICE 1C>
-// "sic" on using the end choice code instead of a line code
+// "sic" on using the end choice code instead of a line code?
 Nami completely shut herself into a\ room.<LINE 00>
 <JMP 03>
 #EMBSET(1638)
@@ -39403,13 +39486,7 @@ I reserved our next date.<END CHOICE 1C>
 
 
 //[$1C8E74-7] -> [A7 73 E4]
-#EMBWRITE(1692)
-//「マナ板の上のイタイ<AUTO ADV 13>」<LINE 00>
-“It hurts on the chopping board<AUTO ADV 13>.”<LINE 00>
-//ぼくは最後まで笑わそうとした。<END CHOICE 1C>
-I tried to laugh to the very end.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1696)
+// move down to optimize out jump code and pointer
 
 
 //[$1C8E95-0] -> [A8 74 E4]
@@ -39434,9 +39511,18 @@ I clung to her.<END CHOICE 1C>
 #EMBSET(1697)
 
 
+//[$1C8E74-7] -> [A7 73 E4] - moved down
+#EMBWRITE(1692)
+//「マナ板の上のイタイ<AUTO ADV 13>」<LINE 00>
+“It hurts on the chopping board<AUTO ADV 13>.”<LINE 00>
+//ぼくは最後まで笑わそうとした。<END CHOICE 1C>
+I tried to laugh to the very end.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1696)
+
 //[$1C8ED5-2] -> [AA 76 E4]
 #EMBWRITE(1689)
-#EMBWRITE(1696)
+//#EMBWRITE(1696)
 //「おとなしくしてたら痛くはないわ」<LINE 00>
 “If you're quiet, it won't hurt.”<LINE 00>
 //奈美がぼくの耳元へそっといった。<LINE 00>
@@ -39844,20 +39930,16 @@ I got angry and said:<WAIT 16><LINE 00>
 “Nami<AUTO ADV 13>! <DELAY 17><$00><$05>Don't mock me!”<END CHOICE 1C>
 //ぼくは奈美を強引に肩にかついだ。<LINE 00>
 I forcibly carried her on my shoulder.<LINE 00>
-<JMP 03>
-#EMBSET(1705)
+//<JMP 03>
+//#EMBSET(1705)
 
 
 //[$1C98B2-3] -> [93 C5 E4]
-#EMBWRITE(1704)
-//「奈美が逃げないのなら、オレもここで燃えつきる!」<END CHOICE 1C>
-“Nami, if you don't run away, I'll burn to death here, too!”<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1706)
+// move down to optimize out two sets of jump codes and pointers
 
 
 //[$1C98CD-5] -> [6D C6 E4]
-#EMBWRITE(1705)
+//#EMBWRITE(1705)
 <SFX VOLUME 3F><$00><$01><$00><$3E>
 // the fire sfx grow more intense
 //火は見る見るうちに燃えひろがった。<LINE 00>
@@ -39921,8 +40003,15 @@ There, I screamed:<WAIT 16><LINE 00>
 #EMBSET(1713)
 
 
+//[$1C98B2-3] -> [93 C5 E4] - moved down
+#EMBWRITE(1704)
+//「奈美が逃げないのなら、オレもここで燃えつきる!」<END CHOICE 1C>
+“Nami, if you don't run away, I'll burn to death here, too!”<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1706)
+
 //[$1C998B-0] -> [58 CC E4]
-#EMBWRITE(1706)
+//#EMBWRITE(1706)
 <SFX VOLUME 3F><$00><$01><$00><$3E>
 // the sound effects grow more violent
 //あたりはあッという間に火の海となった。<LINE 00>
@@ -39962,13 +40051,7 @@ I grasped her hand again...<WAIT 16><CLEAR 25>
 
 
 //[$1C9A35-0] -> [A8 D1 E4]
-#EMBWRITE(1714)
-//「こっちだ、行け!<AUTO ADV 13>」<LINE 00>
-“This way, go<AUTO ADV 13>!”<LINE 00>
-//ぼくは奈美を先に行かせた。<END CHOICE 1C>
-I made Nami go ahead.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1718)
+// move down to optimize out jump code and pointer
 
 
 //[$1C9A4F-3] -> [7B D2 E4]
@@ -40000,11 +40083,20 @@ I gently embraced her.<END CHOICE 1C>
 #EMBSET(1720)
 
 
+//[$1C9A35-0] -> [A8 D1 E4] - moved down
+#EMBWRITE(1714)
+//「こっちだ、行け!<AUTO ADV 13>」<LINE 00>
+“This way, go<AUTO ADV 13>!”<LINE 00>
+//ぼくは奈美を先に行かせた。<END CHOICE 1C>
+I made Nami go ahead.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1718)
+
 //[$1C9AA3-6] -> [1E D5 E4]
 #EMBWRITE(1341)
 #EMBWRITE(1711)
 #EMBWRITE(1712)
-#EMBWRITE(1718)
+//#EMBWRITE(1718)
 #EMBWRITE(1719)
 <SFX FADE OUT 40><$00><$02><$00><$1E><SFX VOLUME 3F><$00><$08><$00><$3E><VFX 2C><$00><$92><IMAGE CUT 2E><$00><$45>
 // fires grow in size; more fire sfx; cut to hallway
@@ -40161,8 +40253,9 @@ I decided to propose to her.<END CHOICE 1C>
 “Dehehe... At last, it's just the two of us<AUTO ADV 13>.”<LINE 00>
 //ぼくは急に本来のぼくに戻った。<END CHOICE 1C>
 I suddenly returned to my old self.<END CHOICE 1C>
-// <JMP 03>
-// #EMBSET(1727)
+// optimize out unnecessary jump code and pointer
+//<JMP 03>
+//#EMBSET(1727)
 
 
 //[$1C9CDE-5] -> [F5 E6 E4]
@@ -40291,8 +40384,9 @@ In my hazy head, I only thought about biting Nami back and sucking her blood.<EN
 “Ohh, why did Nami become like Dracula<AUTO ADV 13>?”<LINE 00>
 //ぼくはしだいに熱くなる頭の中で、そのことだけを考えていた。<END CHOICE 1C>
 That was all I thought about in my mind as I grew more passionate.<END CHOICE 1C>
-// <JMP 03>
-// #EMBSET(1732)
+// optimize out unnecessary jump code and pointer
+//<JMP 03>
+//#EMBSET(1732)
 
 
 //[$1C9E67-6] -> [3E F3 E4]
@@ -40400,11 +40494,7 @@ Then:<LINE 00>
 
 
 //[$1CA019-5] -> [CD 00 E5]
-#EMBWRITE(1734)
-//そんな奈美をかわいいと思った。<END CHOICE 1C>
-I thought that Nami was cute when she did things like that.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1738)
+// move down to optimize out jump code and pointer
 
 
 //[$1CA02A-1] -> [51 01 E5]
@@ -40431,9 +40521,16 @@ I accidentally looked at her miniskirt.<END CHOICE 1C>
 #EMBSET(1739)
 
 
+//[$1CA019-5] -> [CD 00 E5] - moved down
+#EMBWRITE(1734)
+//そんな奈美をかわいいと思った。<END CHOICE 1C>
+I thought that Nami was cute when she did things like that.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1738)
+
 //[$1CA06C-2] -> [62 03 E5]
 #EMBWRITE(5)
-#EMBWRITE(1738)
+//#EMBWRITE(1738)
 //「あんな花もあるのね」<LINE 00>
 “Those flowers are here, too, huh?”<LINE 00>
 <STOP SFX 3B><$00><$27><SFX 39><$00><$02><IMAGE FADE IN BLOCK 36><$00><$01><$00><$28>
@@ -40468,11 +40565,7 @@ So then:<LINE 00>
 
 
 //[$1CA10A-6] -> [56 08 E5]
-#EMBWRITE(1740)
-//ちょっとだけ奈美を恐がらせてやろうと思った。<END CHOICE 1C>
-I decided to scare her just a little.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1744)
+// move down to optimize out jump code and pointer
 
 
 //[$1CA122-7] -> [17 09 E5]
@@ -40501,10 +40594,17 @@ I decided to tell this story for our<LINE 00>happiness.<END CHOICE 1C>
 #EMBSET(1745)
 
 
+//[$1CA10A-6] -> [56 08 E5] - moved down
+#EMBWRITE(1740)
+//ちょっとだけ奈美を恐がらせてやろうと思った。<END CHOICE 1C>
+I decided to scare her just a little.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1744)
+
 //[$1CA17C-3] -> [E3 0B E5]
 #EMBWRITE(12)
 #EMBWRITE(823)
-#EMBWRITE(1744)
+//#EMBWRITE(1744)
 //「あのダエン形の葉を光にすかすと、黒い点々がいくつも見える。それは・・・<WAIT 16>
 //弟の怨みの血なのさ」<LINE 00>
 “When you hold up the flower's round leaves to a light, you can see many black spots. Those...<WAIT 16> represent the grudge-filled blood of the younger brother.”<LINE 00>
@@ -40565,11 +40665,7 @@ I accidentally made Nami, an only\ child, feel sentimental.<CLEAR 25>
 
 
 //[$1CA2EA-2] -> [52 17 E5]
-#EMBWRITE(1747)
-//ぼくはちょっとやりすぎたかなと思った。<END CHOICE 1C>
-I thought I might have gone a little too far.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1750)
+// move down to optimize out jump code and pointer
 
 
 //[$1CA2FF-4] -> [FC 17 E5]
@@ -40599,11 +40695,18 @@ I timed putting my arm around her<LINE 00>shoulder.<END CHOICE 1C>
 #EMBSET(1751)
 
 
+//[$1CA2EA-2] -> [52 17 E5] - moved down
+#EMBWRITE(1747)
+//ぼくはちょっとやりすぎたかなと思った。<END CHOICE 1C>
+I thought I might have gone a little too far.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1750)
+
 //[$1CA351-0] -> [88 1A E5]
 #EMBWRITE(1752)
 #EMBWRITE(24)
 #EMBWRITE(830)
-#EMBWRITE(1750)
+//#EMBWRITE(1750)
 //ふと、奈美はあたりを見回した。<LINE 00>
 Suddenly, Nami looked around the\ area.<LINE 00>
 //「ねえ、<NAME-SAN 20>、道に迷ったんじゃない?」<LINE 00>
@@ -40707,15 +40810,7 @@ On the left was a big tree, the right a river.<CLEAR 25>
 
 
 //[$1CA4C5-3] -> [2B 26 E5]
-#EMBWRITE(1759)
-//「大丈夫だ!<AUTO ADV 13>」<LINE 00>
-“It's okay<AUTO ADV 13>!”<LINE 00>
-//ぼくはサイドブレーキを引いた。<END CHOICE 1C>
-I pulled the parking brake.<END CHOICE 1C>
-//・・・<DELAY 17><$00><$02>ダメだ。<LINE 00>
-...<DELAY 17><$00><$02>Nothing.<LINE 00>
-<JMP 03>
-#EMBSET(1763)
+// move down to optimize out jump code and pointer
 
 
 //[$1CA4EB-2] -> [5A 27 E5]
@@ -40748,9 +40843,20 @@ In the confusion of the moment,\ I<LINE 00>touched Nami.<END CHOICE 1C>
 #EMBSET(1765)
 
 
+//[$1CA4C5-3] -> [2B 26 E5] - moved down
+#EMBWRITE(1759)
+//「大丈夫だ!<AUTO ADV 13>」<LINE 00>
+“It's okay<AUTO ADV 13>!”<LINE 00>
+//ぼくはサイドブレーキを引いた。<END CHOICE 1C>
+I pulled the parking brake.<END CHOICE 1C>
+//・・・<DELAY 17><$00><$02>ダメだ。<LINE 00>
+...<DELAY 17><$00><$02>Nothing.<LINE 00>
+//<JMP 03>
+//#EMBSET(1763)
+
 //[$1CA546-3] -> [33 2A E5]
 #EMBWRITE(40)
-#EMBWRITE(1763)
+//#EMBWRITE(1763)
 //「死んでたまるか!」<LINE 00>
 // lit: can't bear to
 “I refuse to die!”<LINE 00>
@@ -40795,13 +40901,7 @@ Hiding my embarrassment, I said:<WAIT 16><LINE 00>
 
 
 //[$1CA61F-2] -> [FA 30 E5]
-#EMBWRITE(1766)
-//「大丈夫か、奈美?」<END CHOICE 1C>
-“Are you okay, Nami?”<END CHOICE 1C>
-//「うん・・・」<LINE 00>
-“Yes...”<LINE 00>
-<JMP 03>
-#EMBSET(1770)
+// move down to optimize out jump code and pointer
 
 
 //[$1CA633-3] -> [9B 31 E5]
@@ -40840,9 +40940,18 @@ I crouched down to check the body of the car.<LINE 00>
 “It was very thrilling, huh?”<END CHOICE 1C>
 
 
+//[$1CA61F-2] -> [FA 30 E5] - moved down
+#EMBWRITE(1766)
+//「大丈夫か、奈美?」<END CHOICE 1C>
+“Are you okay, Nami?”<END CHOICE 1C>
+//「うん・・・」<LINE 00>
+“Yes...”<LINE 00>
+//<JMP 03>
+//#EMBSET(1770)
+
 //[$1CA68E-4] -> [74 34 E5]
 #EMBWRITE(1772)
-#EMBWRITE(1770)
+//#EMBWRITE(1770)
 //ぼくらは車から出た。<LINE 00>
 We got out of the car.<LINE 00>
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$59><VFX 2C><$00><$76>
@@ -40922,11 +41031,8 @@ Then:<LINE 00>
 
 
 //[$1CA826-0] -> [38 41 E5]
-#EMBWRITE(1773)
-//まず奈美を安心させたくて、ぼくは奈美の手をとった。<END CHOICE 1C>
-I first comforted Nami and then took her hand.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1777)
+// move down to optimize out jump code and pointer
+// NOTE: requires a little more work than usual -- see below note
 
 
 //[$1CA840-1] -> [01 42 E5]
@@ -40957,17 +41063,24 @@ I charmingly swallowed my drool and looked around the area.<END CHOICE 1C>
 #EMBSET(1779)
 
 
+//[$1CA826-0] -> [38 41 E5] - moved down
+#EMBWRITE(1773)
+I first comforted Nami and then took her hand.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1777)
+
 //[$1CA898-4] -> [C4 44 E5]
 #EMBWRITE(867)
+// NOTE: absorb this line back into the choice that leads here
 //ぼくは奈美の手をとった。<LINE 00>
-I took Nami's hand.<LINE 00>
+//I took Nami's hand.<LINE 00>
 
 
 //[$1CA8A2-1] -> [11 45 E5]
 #EMBWRITE(351)
-#EMBWRITE(1777)
+//#EMBWRITE(1777)
 //「きゃッ、イヤッ!」<LINE 00>
-“No, stop it!”<LINE 00>
+“No, stop!”<LINE 00>
 //まるでチカンあつかいだ。<LINE 00>
 She was treating me like a pervert.<LINE 00>
 //「おい、奈美・・・」<CLEAR 25>
@@ -41020,15 +41133,7 @@ I said:<WAIT 16><LINE 00>
 
 
 //[$1CA97D-3] -> [EB 4B E5]
-#EMBWRITE(1780)
-//「奈美、とりあえず行ってみよう」<END CHOICE 1C>
-“Nami, for now let's go and look.”<END CHOICE 1C>
-//「・・・<DELAY 17><$00><$03>ええ」<LINE 00>
-“...<DELAY 17><$00><$03>Okay.”<LINE 00>
-//ぼくらは歩き続けた。<LINE 00>
-We continued walking.<LINE 00>
-<JMP 03>
-#EMBSET(1784)
+// move down to optimize out jump code and pointer
 
 
 //[$1CA9A2-1] -> [11 4D E5]
@@ -41060,10 +41165,21 @@ We continued walking.<LINE 00>
 #EMBSET(1786)
 
 
+//[$1CA97D-3] -> [EB 4B E5] - moved down
+#EMBWRITE(1780)
+//「奈美、とりあえず行ってみよう」<END CHOICE 1C>
+“For now, let's go look, Nami.”<END CHOICE 1C>
+//「・・・<DELAY 17><$00><$03>ええ」<LINE 00>
+“...<DELAY 17><$00><$03>Okay.”<LINE 00>
+//ぼくらは歩き続けた。<LINE 00>
+We continued walking.<LINE 00>
+//<JMP 03>
+//#EMBSET(1784)
+
 //[$1CA9FD-1] -> [E9 4F E5]
 #EMBWRITE(1787)
 #EMBWRITE(241)
-#EMBWRITE(1784)
+//#EMBWRITE(1784)
 <IMAGE FADE IN 35><$00><$0A>
 // background slowly fades out, but the rain keeps falling
 //不意に奈美が足を止めた。<LINE 00>
@@ -41108,11 +41224,7 @@ When Nami asked me that:<LINE 00>
 
 
 //[$1CAAC9-1] -> [49 56 E5]
-#EMBWRITE(1788)
-//素直に戻ることにした。<END CHOICE 1C>
-I decided to meekly turn back.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1792)
+// move down to optimize out jump code and pointer
 
 
 //[$1CAAD8-5] -> [C5 56 E5]
@@ -41139,9 +41251,16 @@ I liked the sparkling building...<END CHOICE 1C><WAIT 16>
 #EMBSET(1794)
 
 
+//[$1CAAC9-1] -> [49 56 E5] - moved down
+#EMBWRITE(1788)
+//素直に戻ることにした。<END CHOICE 1C>
+I decided to meekly turn back.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1792)
+
 //[$1CAB13-0] -> [98 58 E5]
 #EMBWRITE(1795)
-#EMBWRITE(1792)
+//#EMBWRITE(1792)
 //「引き返そう」<LINE 00>
 “Let's turn back.”<LINE 00>
 //奈美にそう告げて、ぼくはギョッとなった。<LINE 00>
@@ -41199,12 +41318,7 @@ Nami ran to catch up with me.<LINE 00>
 
 
 //[$1CAC46-1] -> [31 62 E5]
-#EMBWRITE(1796)
-//「ここまで来たんだ<AUTO ADV 13>。入ろう<AUTO ADV 13>」<LINE 00>
-//ぼくはおびえながらもキッパリいった。<END CHOICE 1C>
-I was scared but decisively said, “We came this far, so let's go in.”<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1800)
+// move down to optimize out jump code and pointer
 
 
 //[$1CAC6A-3] -> [53 63 E5]
@@ -41227,7 +41341,7 @@ I let Nami decide.<END CHOICE 1C>
 “I can't let her catch up.”<LINE 00>
 I started to run.<END CHOICE 1C>
 //・・・門に入ったのは奈美が先だった。<CLEAR 25>
-...I went into the gate, but Nami was ahead of me.<CLEAR 25>
+...It was Nami who entered the gate first.<CLEAR 25>
 
 //[$1CACBD-7] -> [EF 65 E5]
 <JMP 03>
@@ -41244,10 +41358,18 @@ We went through the gates.<LINE 00>
 #EMBSET(1802)
 
 
+//[$1CAC46-1] -> [31 62 E5] - moved down
+#EMBWRITE(1796)
+//「ここまで来たんだ<AUTO ADV 13>。入ろう<AUTO ADV 13>」<LINE 00>
+//ぼくはおびえながらもキッパリいった。<END CHOICE 1C>
+I was scared but decisively said, “We came this far, so let's go in.”<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1800)
+
 //[$1CACEC-4] -> [64 67 E5]
 #EMBWRITE(1803)
 #EMBWRITE(894)
-#EMBWRITE(1800)
+//#EMBWRITE(1800)
 //雨にぬれて黒光りする門扉だ。<LINE 00>
 The doors of the gate, wet from the rain, shined with a black luster.<LINE 00>
 //「鍵、かかってるかな?」<LINE 00>
@@ -41282,13 +41404,7 @@ In the thunderstorm and the otogirisou:<LINE 00>
 
 
 //[$1CAD92-3] -> [93 6C E5]
-#EMBWRITE(1804)
-//「とにかく行ってみよう<AUTO ADV 13>」<LINE 00>
-“At any rate, let's try going inside<AUTO ADV 13>.”<LINE 00>
-//奈美の手をとり、玄関を目指した。<END CHOICE 1C>
-Taking Nami's hand, I went towards the entrance.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1808)
+// move down to optimize out jump code and pointer
 
 
 //[$1CADB1-6] -> [8E 6D E5]
@@ -41321,13 +41437,22 @@ I crawled along.<END CHOICE 1C>
 #EMBSET(908)
 
 
+//[$1CAD92-3] -> [93 6C E5] - moved down
+#EMBWRITE(1804)
+//「とにかく行ってみよう<AUTO ADV 13>」<LINE 00>
+“At any rate, let's try going inside<AUTO ADV 13>.”<LINE 00>
+//奈美の手をとり、玄関を目指した。<END CHOICE 1C>
+Taking Nami's hand, I went towards the entrance.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1808)
+
 //[$1CAE0F-4] -> [7C 70 E5]
 #EMBWRITE(1809)
 #EMBWRITE(377)
 #EMBWRITE(667)
 #EMBWRITE(906)
 #EMBWRITE(1399)
-#EMBWRITE(1808)
+//#EMBWRITE(1808)
 //「待って」<LINE 00>
 “Wait.”<LINE 00>
 //玄関まで数メートルのところで奈美が止めた。<LINE 00>
@@ -41399,11 +41524,7 @@ We had no choice but to escape into the mansion.
 
 
 //[$1CAF67-4] -> [3C 7B E5]
-#EMBWRITE(1810)
-//奈美の手をつかんで、ぼくは死に物狂いで走った。<END CHOICE 1C>
-I took her hand and ran desperately.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1814)
+// move down to optimize out jump code and pointer
 
 
 //[$1CAF81-0] -> [08 7C E5]
@@ -41442,8 +41563,15 @@ Nami arrived at the entrance first and grabbed the doors.<CLEAR 25>
 #EMBSET(1816)
 
 
+//[$1CAF67-4] -> [3C 7B E5] - moved down
+#EMBWRITE(1810)
+//奈美の手をつかんで、ぼくは死に物狂いで走った。<END CHOICE 1C>
+I took her hand and ran desperately.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1814)
+
 //[$1CB023-7] -> [1F 81 E5]
-#EMBWRITE(1814)
+//#EMBWRITE(1814)
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$21><SFX 39><$00><$62>
 // fade in view of front door; bang on it three times
 //玄関のドアをガンガン叩いた。<LINE 00>
@@ -41461,7 +41589,7 @@ Just then, the door opened.<CLEAR 25>
 <STOP SFX 3B><$00><$03><STOP SFX 3B><$00><$29><SFX 39><$00><$64><FADE IMAGE BLACK 34><$00><$01><SFX LET FINISH 3E><$00><$64><SFX 39><$00><$8F><IMAGE FADE IN 30><$00><$01><$00><$42>
 // cut out music; door opens, fade in view of the foyer; a crash
 //ぼくらは吸いこまれるように転がり込んだ。<LINE 00>
-We rolled in as if the mansion inhaled\ us.<LINE 00>
+We rolled inside, as if the mansion sucked us in.<LINE 00>
 <SFX TEXT DELAY 3D><$00><$68>
 // the door closes
 //同時にドアは重い音をたてて閉まった。<LINE 00>
@@ -41543,13 +41671,7 @@ The stagnating water swelled and billowed, and I caught a glimpse of something i
 
 
 //[$1CB232-4] -> [94 91 E5]
-#EMBWRITE(1818)
-//「何だろ!?<AUTO ADV 13>」<LINE 00>
-“What<AUTO ADV 13>?!”<LINE 00>
-//好奇心から、ぼくはガラスに近づいた。<END CHOICE 1C>
-Curious, I approached the\ glass.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1822)
+// move down to optimize out jump code and pointer
 
 
 //[$1CB251-5] -> [8D 92 E5]
@@ -41580,9 +41702,18 @@ I pulled Nami close to me.<END CHOICE 1C>
 #EMBSET(1824)
 
 
+//[$1CB232-4] -> [94 91 E5] - moved down
+#EMBWRITE(1818)
+//「何だろ!?<AUTO ADV 13>」<LINE 00>
+“What<AUTO ADV 13>?!”<LINE 00>
+//好奇心から、ぼくはガラスに近づいた。<END CHOICE 1C>
+Curious, I approached the\ glass.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1822)
+
 //[$1CB2A6-5] -> [35 95 E5]
 #EMBWRITE(397)
-#EMBWRITE(1822)
+//#EMBWRITE(1822)
 //濁った水がうねる中、ガラス面にゆったりと白いものがよぎった<AUTO ADV 13>。<LINE 00>
 //<SFX 39><$00><$7B><WAIT 16>
 As the muddy water swelled, something white slowly passed by in the glass<AUTO ADV 13>.<SFX 39><$00><$7B><LINE 00>
@@ -41751,7 +41882,7 @@ Many doors stood in a line.<LINE 00>
 We cautiously waited and looked.<CLEAR 25>
 
 //[$1CB5CB-6] -> [5E AE E5]
-// this JMP code is unnecessary
+// optimize out unnecessary jump code and pointer
 //<JMP 03>
 //#EMBSET(1830)
 
@@ -41826,19 +41957,11 @@ Then:<LINE 00>
 
 
 //[$1CB717-6] -> [BE B8 E5]
-#EMBWRITE(1832)
-//ドアを確かめようとした。<END CHOICE 1C>
-I decided to check the door.<END CHOICE 1C>
-//そのとき奈美がぼくの手をつかんだ。<LINE 00>
-Then, Nami took my hand.<LINE 00>
-//「ねえ、あれ、よく見て。テーブルじゃないみたいな気が」<LINE 00>
-“Hey, look more closely at that. I feel like that isn't a table.”<LINE 00>
-//暗がりの中でぼくは目をこらした。<CLEAR 25>
-I concentrated my eyes in the darkness.<CLEAR 25>
+// move down to optimize out jump code and pointer
 
 //[$1CB759-4] -> [CC BA E5]
-<JMP 03>
-#EMBSET(1835)
+//<JMP 03>
+//#EMBSET(1835)
 
 
 //[$1CB75D-4] -> [EC BA E5]
@@ -41881,8 +42004,19 @@ My body tensed up for when Nami came to hug me in this darkness.<END CHOICE 1C>
 #EMBSET(1837)
 
 
+//[$1CB717-6] -> [BE B8 E5] - moved down
+#EMBWRITE(1832)
+//ドアを確かめようとした。<END CHOICE 1C>
+I decided to check the door.<END CHOICE 1C>
+//そのとき奈美がぼくの手をつかんだ。<LINE 00>
+Then, Nami took my hand.<LINE 00>
+//「ねえ、あれ、よく見て。テーブルじゃないみたいな気が」<LINE 00>
+“Hey, look more closely at that. I feel like that isn't a table.”<LINE 00>
+//暗がりの中でぼくは目をこらした。<CLEAR 25>
+I concentrated my eyes in the darkness.<CLEAR 25>
+
 //[$1CB7C7-3] -> [3B BE E5]
-#EMBWRITE(1835)
+//#EMBWRITE(1835)
 <STOP SFX 3B><$00><$17><SFX 39><$00><$0F><IMAGE CUT 2E><$00><$57><SFX LET FINISH 3E><$00><$0F>
 // the music cuts out, and the mummy slides in from the right of the screen
 //「きゃあ!」<LINE 00>
@@ -41984,11 +42118,11 @@ In the darkness:<LINE 00>
 
 
 //[$1CB955-2] -> [AA CA E5]
-#EMBWRITE(1839)
+//#EMBWRITE(1839)
 //音が気になってそちらに注意を向けた。<END CHOICE 1C>
-I drew my attention to the sound that I heard.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1843)
+//I drew my attention to the sound that I heard.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1843)
 
 
 //[$1CB96B-4] -> [5C CB E5]
@@ -42015,8 +42149,11 @@ I tried to look for Nami, and lewdly fumbled around the area.<END CHOICE 1C>
 #EMBSET(1845)
 
 
+#EMBWRITE(1839)
+I drew my attention to the sound that I heard.<END CHOICE 1C>
+
 //[$1CB9BB-2] -> [DA CD E5]
-#EMBWRITE(1843)
+//#EMBWRITE(1843)
 <SFX 39><$00><$59>
 // armor footstep
 //別の音だ。<LINE 00>
@@ -42163,11 +42300,7 @@ We came to the “mummy room<AUTO ADV 13>” from earlier.<LINE 00>
 
 
 //[$1CBCAE-0] -> [78 E5 E5]
-#EMBWRITE(1847)
-//恐かったので、そっと開けてみた。<END CHOICE 1C>
-Afraid, I tried to quietly open it.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1851)
+// move down to optimize out jump code and pointer
 
 
 //[$1CBCC0-1] -> [01 E6 E5]
@@ -42211,11 +42344,18 @@ As if it mattered now, I turned the knob while holding Nami's hand.<END CHOICE 1
 #EMBSET(993)
 
 
+//[$1CBCAE-0] -> [78 E5 E5] - moved down
+#EMBWRITE(1847)
+//恐かったので、そっと開けてみた。<END CHOICE 1C>
+Afraid, I tried to quietly open it.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1851)
+
 //[$1CBD34-0] -> [A8 E9 E5]
 #EMBWRITE(124)
 #EMBWRITE(430)
 #EMBWRITE(990)
-#EMBWRITE(1851)
+//#EMBWRITE(1851)
 <SFX 39><$00><$64><DELAY 17><$00><$01><IMAGE FADE IN BLOCK 36><$00><$01><$00><$16>
 // door opens, show screen of the inside of the mummy room but more bright
 //ドアを開けると、中の明かりがついた。<LINE 00>
@@ -42303,15 +42443,7 @@ The armor that was missing until now was there blocking the way.
 
 
 //[$1CBE97-2] -> [BA F4 E5]
-#EMBWRITE(1855)
-<IMAGE FADE IN BLOCK 36><$00><$01><$00><$45>
-// fade in hallway
-//「逃げろ!<AUTO ADV 13>」<LINE 00>
-“Run away<AUTO ADV 13>!”<LINE 00>
-//そう叫びながらぼくは走った。<END CHOICE 1C>
-I ran away screaming.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1859)
+// move down to optimize out jump code and pointer
 
 
 //[$1CBEB3-2] -> [9A F5 E5]
@@ -42350,9 +42482,20 @@ When I came to...<DELAY 17><$00><$05><LINE 00>
 #EMBSET(1861)
 
 
+//[$1CBE97-2] -> [BA F4 E5] - moved down
+#EMBWRITE(1855)
+//<IMAGE FADE IN BLOCK 36><$00><$01><$00><$45>
+// fade in hallway
+//「逃げろ!<AUTO ADV 13>」<LINE 00>
+“Run away<AUTO ADV 13>!”<LINE 00>
+//そう叫びながらぼくは走った。<END CHOICE 1C>
+I ran away screaming.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1859)
+
 //[$1CBF25-4] -> [2C F9 E5]
 #EMBWRITE(1007)
-#EMBWRITE(1859)
+//#EMBWRITE(1859)
 //「<NAME-SAN 20>」<LINE 00>
 “<NAME-SAN 20>.”<LINE 00>
 //「奈美・・・!?」<LINE 00>
@@ -42419,11 +42562,7 @@ Nami said, “You should try it!”<CLEAR 25>
 
 
 //[$1CC083-2] -> [1A 04 E6]
-#EMBWRITE(1862)
-//何とかしてこの屋敷から出ようと思った。<END CHOICE 1C>
-I decided to leave this mansion one way or another.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1866)
+// move down to optimize out jump code and pointer
 
 
 //[$1CC098-3] -> [C3 04 E6]
@@ -42450,8 +42589,15 @@ Even in a scary experience, I wanted to stay here together with Nami.<END CHOICE
 #EMBSET(1868)
 
 
+//[$1CC083-2] -> [1A 04 E6] - moved down
+#EMBWRITE(1862)
+//何とかしてこの屋敷から出ようと思った。<END CHOICE 1C>
+I decided to leave this mansion one way or another.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1866)
+
 //[$1CC0ED-3] -> [6B 07 E6]
-#EMBWRITE(1866)
+//#EMBWRITE(1866)
 //ぼくらは作戦を練った。<LINE 00>
 We worked out our plan.<LINE 00>
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$42>
@@ -42527,12 +42673,7 @@ She slowly looked at us, and<LINE 00>disappeared.<LINE 00>
 
 
 //[$1CC267-7] -> [3F 13 E6]
-#EMBWRITE(1870)
-//「ヤバい!　とにかく出よう!<AUTO ADV 13>」<LINE 00>
-//と奈美を振り返った。<END CHOICE 1C>
-I looked back at Nami and said, “It's dangerous<AUTO ADV 13>! Let's just leave!”<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1874)
+// move down to optimize out jump code and pointer
 
 
 //[$1CC284-1] -> [21 14 E6]
@@ -42541,7 +42682,7 @@ I looked back at Nami and said, “It's dangerous<AUTO ADV 13>! Let's just leave
 //とりあえずそういった。<END CHOICE 1C>
 Right away, I said, “I'm, sure we just imagined it.”<END CHOICE 1C>
 //「ならいいけど・・・」<LINE 00>
-“I hope you're right, but...”<LINE 00>
+“I hope so, but...”<LINE 00>
 //「奈美、恐がることないさ」<LINE 00>
 “Nami, don't be afraid.”<LINE 00>
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$1D>
@@ -42575,9 +42716,17 @@ I shouted, “I want a room where we can calm down.”<END CHOICE 1C>
 #EMBSET(1876)
 
 
+//[$1CC267-7] -> [3F 13 E6] - moved down
+#EMBWRITE(1870)
+//「ヤバい!　とにかく出よう!<AUTO ADV 13>」<LINE 00>
+//と奈美を振り返った。<END CHOICE 1C>
+I looked back at Nami and said, “It's dangerous<AUTO ADV 13>! Let's just leave!”<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1874)
+
 //[$1CC308-5] -> [45 18 E6]
 #EMBWRITE(1877)
-#EMBWRITE(1874)
+//#EMBWRITE(1874)
 //「逃げ出す前に、やることがあるわ」<LINE 00>
 //奈美はいった。<LINE 00>
 //「とにかく屋敷中さがしてみましょ」<LINE 00>
@@ -42662,11 +42811,7 @@ While chasing her:<LINE 00>
 
 
 //[$1CC4DC-7] -> [E7 26 E6]
-#EMBWRITE(1878)
-//この屋敷に誰かの激しい憎しみがこもっているのを感じはじめた。<END CHOICE 1C>
-I began to feel this mansion was filled with someone's intense hatred.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1882)
+// move down to optimize out jump code and pointer
 
 
 //[$1CC4FD-3] -> [EB 27 E6]
@@ -42693,10 +42838,17 @@ I wished whoever had a grudge against me was an exceptionally beautiful woman.<E
 #EMBSET(1884)
 
 
+//[$1CC4DC-7] -> [E7 26 E6] - moved down
+#EMBWRITE(1878)
+//この屋敷に誰かの激しい憎しみがこもっているのを感じはじめた。<END CHOICE 1C>
+I began to feel this mansion was filled with someone's intense hatred.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1882)
+
 //[$1CC55C-5] -> [E5 2A E6]
 #EMBWRITE(1885)
 #EMBWRITE(1463)
-#EMBWRITE(1882)
+//#EMBWRITE(1882)
 <STOP SFX 3B><$00><$17><STOP SFX 3B><$00><$13><SFX 39><$00><$1D><IMAGE FADE IN BLOCK 36><$00><$01><$00><$43>
 // sound cuts out, back to the fireplace + sofa, and clock ticking
 //ぼくたちはホールに戻ってきた。<LINE 00>
@@ -42752,11 +42904,7 @@ The phone with<SFX 39><$00><$13> a cut cord was ringing.<LINE 00>
 
 
 //[$1CC66B-6] -> [5E 33 E6]
-#EMBWRITE(1886)
-//放ってはおけず、ぼくは受話器を引っつかんだ。<END CHOICE 1C>
-Not leaving it alone, I grabbed the<LINE 00>receiver.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1890)
+// move down to optimize out jump code and pointer
 
 //[$1CC685-7] -> [2F 34 E6]
 #EMBWRITE(1887)
@@ -42792,9 +42940,16 @@ Since I'm unsociable on the phone, I decided to get Nami to answer with her ange
 #EMBSET(1892)
 
 
+//[$1CC66B-6] -> [5E 33 E6] - moved down
+#EMBWRITE(1886)
+//放ってはおけず、ぼくは受話器を引っつかんだ。<END CHOICE 1C>
+Not leaving it alone, I grabbed the<LINE 00>receiver.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1890)
+
 //[$1CC715-1] -> [A9 38 E6]
 #EMBWRITE(1893)
-#EMBWRITE(1890)
+//#EMBWRITE(1890)
 <STOP SFX 3B><$00><$4A><SFX TEXT DELAY 3D><$00><$74>
 // it stops ringing; pick it up
 //・・・つながってはいるようだが、何も聞こえない。<LINE 00>
@@ -42941,7 +43096,8 @@ When I went in<SFX 39><$00><$16>, there was an ordinary guest room.<LINE 00>
 But, something shiny was on a table.<LINE 00>
 // 5-5-4 tones
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$4E>
-// fade in a knife
+// fade in a knife - note that this graphics ID is a stationary version of one
+// with an animation that slices in on screen
 //「ナイフだ」<LINE 00>
 “It's a knife.”<LINE 00>
 //ナイフに何本かの草がからまっている。<LINE 00>
@@ -42985,12 +43141,7 @@ When I threw it away:<LINE 00>
 
 
 //[$1CCA4E-0] -> [78 52 E6]
-#EMBWRITE(1902)
-//何だか知らないけど復讐のまきぞえはゴメンだと思った。<END CHOICE 1C>
-// rewrite
-I didn't know why, but I wanted to avoid getting involved with the revenge.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1905)
+// move down to optimize out jump code and pointer
 
 
 //[$1CCA6C-5] -> [65 53 E6]
@@ -43020,10 +43171,18 @@ We then checked the second floor.<LINE 00>
 #EMBSET(1059)
 
 
+//[$1CCA4E-0] -> [78 52 E6] - moved down
+#EMBWRITE(1902)
+//何だか知らないけど復讐のまきぞえはゴメンだと思った。<END CHOICE 1C>
+// rewrite
+I didn't know why, but I wanted to avoid getting involved with the revenge.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1905)
+
 //[$1CCABB-1] -> [D9 55 E6]
 #EMBWRITE(1906)
 #EMBWRITE(705)
-#EMBWRITE(1905)
+//#EMBWRITE(1905)
 <SFX 39><$00><$65><IMAGE FADE IN BLOCK 36><$00><$01><$00><$45>
 // close door; fade in hallway
 
@@ -43121,11 +43280,11 @@ As Nami was heading for the dining\ room:<LINE 00>
 
 
 //[$1CCCAF-4] -> [7C 65 E6]
-#EMBWRITE(1908)
+//#EMBWRITE(1908)
 //きっとおいしい食べ物があるにちがいないと思った。<END CHOICE 1C>
-I thought for sure that delicious food had to be there.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1911)
+//I thought for sure that delicious food had to be there.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1911)
 
 
 //[$1CCCC8-4] -> [44 66 E6]
@@ -43156,8 +43315,11 @@ If there was alcohol... Hee hee, I decided to get Nami drunk.<END CHOICE 1C>
 #EMBSET(1913)
 
 
+#EMBWRITE(1908)
+I thought for sure that delicious food had to be there.<END CHOICE 1C>
+
 //[$1CCD2B-5] -> [5D 69 E6]
-#EMBWRITE(1911)
+//#EMBWRITE(1911)
 <SFX 39><$00><$64><IMAGE FADE IN BLOCK 36><$00><$01><$00><$0A>
 // open door; fade in fridge
 //ぼくらは食堂の奥にある調理場へ入った。<LINE 00>
@@ -43249,19 +43411,12 @@ Nami muttered, “Looks like my home cooking will have to wait...”<LINE 00>
 
 
 //[$1CCF31-7] -> [8F 79 E6]
-#EMBWRITE(1914)
-//「いいさ。もう少し腕上げてから作ってもらうよ」<END CHOICE 1C>
-“It's okay. You can do it when you're a little more skilled.”<END CHOICE 1C>
-//「・・・うん、ベンキョウしておくわ」<LINE 00>
-“...Okay, I'll study for it.”<LINE 00>
-<JMP 03>
-#EMBSET(1918)
+// move down to optimize out jump code and pointer
 
 
 //[$1CCF5C-3] -> [E3 7A E6]
 #EMBWRITE(1915)
 //「そんなこといわないで作ってくれ」<END CHOICE 1C>
-// rewrite? "*make* it" doesn't quite have the right connotation here
 “Don't say stuff like that, just cook\ it.”<END CHOICE 1C>
 //「がまんしてよォ・・・」<LINE 00>
 “Be patient...”<LINE 00>
@@ -43287,11 +43442,20 @@ Nami muttered, “Looks like my home cooking will have to wait...”<LINE 00>
 #EMBSET(1078)
 
 
+//[$1CCF31-7] -> [8F 79 E6] - moved down
+#EMBWRITE(1914)
+//「いいさ。もう少し腕上げてから作ってもらうよ」<END CHOICE 1C>
+“It's okay. You can do it when you're a little more skilled.”<END CHOICE 1C>
+//「・・・うん、ベンキョウしておくわ」<LINE 00>
+“...Okay, I'll study for it.”<LINE 00>
+//<JMP 03>
+//#EMBSET(1918)
+
 //[$1CCFAA-5] -> [55 7D E6]
 #EMBWRITE(1919)
 #EMBWRITE(495)
 #EMBWRITE(710)
-#EMBWRITE(1918)
+//#EMBWRITE(1918)
 <SFX STEREO 41><$00><$28><$00><$00><$00><$6D>
 // a sound like a faint scream plays
 //その悲嗚は突然に起こった。<LINE 00>
@@ -43344,11 +43508,7 @@ I pointed at a different door.<LINE 00>
 
 
 //[$1CD06A-3] -> [53 83 E6]
-#EMBWRITE(1920)
-//奈美のいうドアを開けてやった。<END CHOICE 1C>
-I opened Nami's door.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1924)
+// move down to optimize out jump code and pointer
 
 
 //[$1CD07C-0] -> [E8 83 E6]
@@ -43375,9 +43535,16 @@ Expecting to find something good, I opened a door.<END CHOICE 1C>
 #EMBSET(1926)
 
 
+//[$1CD06A-3] -> [53 83 E6] - moved down
+#EMBWRITE(1920)
+//奈美のいうドアを開けてやった。<END CHOICE 1C>
+I opened Nami's door.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1924)
+
 //[$1CD0CB-1] -> [59 86 E6]
 #EMBWRITE(508)
-#EMBWRITE(1924)
+//#EMBWRITE(1924)
 <SFX 39><$00><$64><IMAGE FADE IN BLOCK 36><$00><$01><$00><$07>
 // open door; fade in empty hallway
 //そこはふしぎな作りの部屋だ。<LINE 00>
@@ -43579,11 +43746,7 @@ For some reason, there was a strange light in her eyes.<CLEAR 25>
 
 
 //[$1CD4DB-0] -> [D8 A6 E6]
-#EMBWRITE(1934)
-//ただごとじゃないと感じて、あわてて振り返った。<END CHOICE 1C>
-I felt this wasn't normal, so I looked behind me in a panic.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1938)
+// move down to optimize out jump code and pointer
 
 
 //[$1CD4F4-5] -> [A5 A7 E6]
@@ -43614,8 +43777,15 @@ I affectionately winked at Nami.<END CHOICE 1C>
 #EMBSET(1940)
 
 
+//[$1CD4DB-0] -> [D8 A6 E6] - moved down
+#EMBWRITE(1934)
+//ただごとじゃないと感じて、あわてて振り返った。<END CHOICE 1C>
+I felt this wasn't normal, so I looked behind me in a panic.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1938)
+
 //[$1CD54A-1] -> [51 AA E6]
-#EMBWRITE(1938)
+//#EMBWRITE(1938)
 //「どうしたの？　そんな顔しちゃって」<LINE 00>
 “What's the matter? Why that<LINE 00>expression?”<LINE 00>
 //奈美はいつものやさしい顔で笑った。<LINE 00>
@@ -43684,13 +43854,7 @@ There was a large, stylish bathroom inside.<LINE 00>
 
 
 //[$1CD67D-5] -> [ED B3 E6]
-#EMBWRITE(1941)
-//「何だバスルームか、出よう<AUTO ADV 13>」<LINE 00>
-“What, a bathroom? Let's leave<AUTO ADV 13>.”<LINE 00>
-//ぼくは奈美を振り返った。<END CHOICE 1C>
-I turned back to Nami.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(1945)
+// move down to optimize out jump code and pointer
 
 
 //[$1CD69C-1] -> [E1 B4 E6]
@@ -43722,9 +43886,18 @@ I chased her with bloodshot eyes.<END CHOICE 1C>
 #EMBSET(1947)
 
 
+//[$1CD67D-5] -> [ED B3 E6] - moved down
+#EMBWRITE(1941)
+//「何だバスルームか、出よう<AUTO ADV 13>」<LINE 00>
+“What, a bathroom? Let's leave<AUTO ADV 13>.”<LINE 00>
+//ぼくは奈美を振り返った。<END CHOICE 1C>
+I turned back to Nami.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(1945)
+
 //[$1CD6F2-0] -> [98 B7 E6]
 #EMBWRITE(1948)
-#EMBWRITE(1945)
+//#EMBWRITE(1945)
 //「<NAME-SAN 20> 、こんなときに、あれなんだけど」<LINE 00>
 // rewrite
 “<NAME-SAN 20>, at a time like this, why don't we use it?”<LINE 00>
@@ -45230,11 +45403,7 @@ I thought:<WAIT 16><LINE 00>
 
 
 //[$1CF246-5] -> [35 92 E7]
-#EMBWRITE(2035)
-//奈美がぼくを殺すとはどういうことだろう。<END CHOICE 1C>
-What did she mean when she said she'd kill me?<END CHOICE 1C>
-<JMP 03>
-#EMBSET(2038)
+// move down to optimize out jump code and pointer
 
 
 //[$1CF25C-0] -> [E8 92 E7]
@@ -45253,9 +45422,16 @@ A monster would eat her if she was saying nonsense like that.<END CHOICE 1C>
 #EMBSET(623)
 
 
+//[$1CF246-5] -> [35 92 E7] - moved down
+#EMBWRITE(2035)
+//奈美がぼくを殺すとはどういうことだろう。<END CHOICE 1C>
+What did she mean when she said she'd kill me?<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2038)
+
 //[$1CF291-2] -> [8A 94 E7]
 #EMBWRITE(2040)
-#EMBWRITE(2038)
+//#EMBWRITE(2038)
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$3A>
 // fade in a picture of a terrace
 //奈美がいた。<LINE 00>
@@ -45480,11 +45656,7 @@ I noticed a door that was slightly open.<LINE 00>
 
 
 //[$1CF77A-1] -> [D1 BB E7]
-#EMBWRITE(2043)
-//ぼくは力まかせにドアをあけた。<END CHOICE 1C>
-I opened it with all my strength.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(2044)
+// move down to optimize out jump code and pointer
 
 
 //[$1CF78C-5] -> [65 BC E7]
@@ -45539,8 +45711,15 @@ The sword fell to my feet.<LINE 00>
 #EMBSET(2045)
 
 
+//[$1CF77A-1] -> [D1 BB E7] - moved down
+#EMBWRITE(2043)
+//ぼくは力まかせにドアをあけた。<END CHOICE 1C>
+I opened it with all my strength.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2044)
+
 //[$1CF8BC-3] -> [E3 C5 E7]
-#EMBWRITE(2044)
+//#EMBWRITE(2044)
 <SFX 39><$00><$67><IMAGE FADE IN BLOCK 36><$00><$01><$00><$18>
 // slam door; fade in dresser + mirror + lipstick + makeup
 //奈美が振り返った。<LINE 00>
@@ -45704,13 +45883,7 @@ She suddenly started walking.<LINE 00>
 #EMBSET(2047)
 
 //[$1CFCB1-3] -> [8B E5 E7]
-#EMBWRITE(2047)
-//「よし、ではおれも行く!<AUTO ADV 13>」<LINE 00>
-“Okay, then I'll go too<AUTO ADV 13>!”<LINE 00>
-//ぼくは奈美についていくことにした。<END CHOICE 1C>
-I followed her.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(2048)
+// move down to optimize out jump code and pointer
 
 
 //[$1CFCCF-6] -> [7E E6 E7]
@@ -45740,8 +45913,17 @@ Sobbing, Nami ran away into a nearby room<AUTO ADV 13>.
 #EMBSET(2049)
 
 
+//[$1CFCB1-3] -> [8B E5 E7] - moved down
+#EMBWRITE(2047)
+//「よし、ではおれも行く!<AUTO ADV 13>」<LINE 00>
+“Okay, then I'll go too<AUTO ADV 13>!”<LINE 00>
+//ぼくは奈美についていくことにした。<END CHOICE 1C>
+I followed her.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2048)
+
 //[$1CFD66-3] -> [33 EB E7]
-#EMBWRITE(2048)
+//#EMBWRITE(2048)
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$45>
 // fade in the hallway
 //「来ないで」<LINE 00>
@@ -46000,13 +46182,7 @@ What to do with this sword... I hesitated for an instant.<LINE 00>
 
 
 //[$1D8414-3] -> [A3 20 EC]
-#EMBWRITE(2050)
-//「ばかにするな!<AUTO ADV 13>」<LINE 00>
-“Don't be stupid<AUTO ADV 13>!”<LINE 00>
-//ぼくはその剣を引き抜いて叩きつけ、奈美を追った。<END CHOICE 1C>
-I pulled out the sword, threw it at the floor, and chased after Nami.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(2052)
+// move down to optimize out jump code and pointer (look past next choice)
 
 
 //[$1D8438-4] -> [C4 21 EC]
@@ -46057,6 +46233,7 @@ At this rate, I'd slash her.<LINE 00>
 
 //[$1D8506-2] -> [32 28 EC]
 #EMBWRITE(2053)
+// note: cannot optimize this out; convergence point not after screen clear
 //「奈美、そこを動くな!<AUTO ADV 13>」<LINE 00>
 “Nami, stay there<AUTO ADV 13>!”<LINE 00>
 //そう叫んで、ぼくは奈美に斬りつけた。<END CHOICE 1C>
@@ -46078,8 +46255,17 @@ Suddenly, another sword appeared in mid-air.<LINE 00>
 #EMBSET(2056)
 
 
+//[$1D8414-3] -> [A3 20 EC] - moved down
+#EMBWRITE(2050)
+//「ばかにするな!<AUTO ADV 13>」<LINE 00>
+“Don't be stupid<AUTO ADV 13>!”<LINE 00>
+//ぼくはその剣を引き抜いて叩きつけ、奈美を追った。<END CHOICE 1C>
+I pulled out the sword, threw it at the floor, and chased after Nami.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2052)
+
 //[$1D855C-3] -> [E3 2A EC]
-#EMBWRITE(2052)
+//#EMBWRITE(2052)
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$45>
 // fade in hallway
 //「奈美!」<LINE 00>
@@ -46115,13 +46301,7 @@ Without leaving an opening:<LINE 00>
 
 
 //[$1D85D1-2] -> [8A 2E EC]
-#EMBWRITE(2057)
-//「よし、来い<AUTO ADV 13>」<LINE 00>
-“Alright, c'mere<AUTO ADV 13>!”<LINE 00>
-//その剣をかまえた。<END CHOICE 1C>
-I readied my sword.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(2059)
+// move down to optimize out jump and pointer
 
 
 //[$1D85E5-1] -> [29 2F EC]
@@ -46201,23 +46381,27 @@ I decided to do as Nami said.<END CHOICE 1C>
 <CLEAR 25>
 
 //[$1D8747-3] -> [3B 3A EC]
+// note: cannot optimize this out; after a clear, not a jump
 <JMP 03>
 #EMBSET(2062)
 
 
 //[$1D874B-3] -> [5B 3A EC]
-#EMBWRITE(2061)
-//「できない・・・!<AUTO ADV 13>」<LINE 00>
-“I can't...<AUTO ADV 13>!”<LINE 00>
-//ぼくは思い切り叫んだ。<END CHOICE 1C>
-I shouted as loud as I could.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(2063)
+// move down to optimize out jump code and pointer
 
+
+//[$1D85D1-2] -> [8A 2E EC] - moved down
+#EMBWRITE(2057)
+//「よし、来い<AUTO ADV 13>」<LINE 00>
+“Alright, c'mere<AUTO ADV 13>!”<LINE 00>
+//その剣をかまえた。<END CHOICE 1C>
+I readied my sword.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2059)
 
 //[$1D8763-2] -> [1A 3B EC]
 #EMBWRITE(2056)
-#EMBWRITE(2059)
+//#EMBWRITE(2059)
 <SFX 39><$00><$87>
 // the second sword slashes
 //空中の剣はぼくに斬りかかってくる！<LINE 00>
@@ -46257,6 +46441,7 @@ Why was I about to kill her, of all people...<LINE 00><WAIT 16>
 “No<AUTO ADV 13>!”<LINE 00>
 //ぼくはぼくの剣を放りだした。<END CHOICE 1C>
 I dropped my sword.<END CHOICE 1C>
+// can only optimize this pointer or another, but not both
 <JMP 03>
 #EMBSET(2066)
 
@@ -46293,8 +46478,17 @@ As I screamed, I fell into a swirling, blood-red world of darkness.
 #EMBSET(2067)
 
 
+//[$1D874B-3] -> [5B 3A EC] - moved down
+#EMBWRITE(2061)
+//「できない・・・!<AUTO ADV 13>」<LINE 00>
+“I can't...<AUTO ADV 13>!”<LINE 00>
+//ぼくは思い切り叫んだ。<END CHOICE 1C>
+I shouted as loud as I could.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2063)
+
 //[$1D889F-1] -> [F9 44 EC]
-#EMBWRITE(2063)
+//#EMBWRITE(2063)
 #EMBWRITE(2066)
 //剣はいったん床へ叩きつけられたが、
 //すぐにカマ首をもたげたコブラのように立ち上がった。<LINE 00>
@@ -46967,13 +47161,7 @@ But, we had neither the strength nor the weapons to fight it...<WAIT 16>
 
 
 //[$1D991E-1] -> [F1 C8 EC]
-#EMBWRITE(2069)
-//「オレたち、まだ死ねん!<AUTO ADV 13>」<LINE 00>
-“We won't die yet<AUTO ADV 13>!”<LINE 00>
-//奈美を抱いたまま、ぼくはヨロイに全力で体当りした。<END CHOICE 1C>
-Still embracing Nami, I charged into the armor with all my strength.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(2070)
+// move down to optimize out jump code and pointer
 
 
 //[$1D9948-0] -> [48 CA EC]
@@ -47000,8 +47188,17 @@ Something felt off about the armor.<CLEAR 25>
 #EMBSET(2071)
 
 
+//[$1D991E-1] -> [F1 C8 EC] - moved down
+#EMBWRITE(2069)
+//「オレたち、まだ死ねん!<AUTO ADV 13>」<LINE 00>
+“We won't die yet<AUTO ADV 13>!”<LINE 00>
+//奈美を抱いたまま、ぼくはヨロイに全力で体当りした。<END CHOICE 1C>
+Still embracing Nami, I charged into the armor with all my strength.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2070)
+
 //[$1D99AF-2] -> [7A CD EC]
-#EMBWRITE(2070)
+//#EMBWRITE(2070)
 <SFX 39><$00><$8F><DELAY 17><$00><$05>
 // a thud
 //鎧はビクともしなかった。<LINE 00>
@@ -47401,13 +47598,7 @@ The entire field of otogirisou swayed together, just like a guidepost towards th
 
 
 //[$1DA117-6] -> [BE 08 ED]
-#EMBWRITE(2076)
-//「ほかに行くところがない<AUTO ADV 13>」<LINE 00>
-//仕方ないさというように奈美を見た。<END CHOICE 1C>
-// "I looked at Nami as if I was saying 'it can't be helped.'"
-I looked at Nami and said, “We don't have anywhere else to go.”<END CHOICE 1C>
-<JMP 03>
-#EMBSET(2080)
+// move down to optimize out jump code and pointer
 
 
 //[$1DA137-6] -> [BE 09 ED]
@@ -47440,9 +47631,18 @@ I said an encouraging wish.<END CHOICE 1C>
 #EMBSET(2081)
 
 
+//[$1DA117-6] -> [BE 08 ED] - moved down
+#EMBWRITE(2076)
+//「ほかに行くところがない<AUTO ADV 13>」<LINE 00>
+//仕方ないさというように奈美を見た。<END CHOICE 1C>
+// "I looked at Nami as if I was saying 'it can't be helped.'"
+I looked at Nami and said, “We don't have anywhere else to go.”<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2080)
+
 //[$1DA19F-5] -> [FD 0C ED]
 #EMBWRITE(1785)
-#EMBWRITE(2080)
+//#EMBWRITE(2080)
 //ぼくと奈美は歩きはじめた。<LINE 00>
 Nami and I began walking.<LINE 00>
 
@@ -47479,11 +47679,11 @@ Nami and I began walking.<LINE 00>
 
 
 //[$1DA22D-3] -> [6B 11 ED]
-#EMBWRITE(2082)
+//#EMBWRITE(2082)
 //怖じ気づいてはいけないと、ぼくは恐怖を隠してムネを張った。<END CHOICE 1C>
-I shouldn't chicken out, so I hid my fear and filled out my chest.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(2086)
+//I shouldn't chicken out, so I hid my fear and filled out my chest.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2086)
 
 
 //[$1DA24E-2] -> [72 12 ED]
@@ -47511,10 +47711,13 @@ At any rate, I tried to not let Nami get away from me.<END CHOICE 1C>
 #EMBSET(2087)
 
 
+#EMBWRITE(2082)
+I shouldn't chicken out, so I hid my fear and filled out my chest.<END CHOICE 1C>
+
 //[$1DA29E-6] -> [F6 14 ED]
 #EMBWRITE(370)
 #EMBWRITE(1793)
-#EMBWRITE(2086)
+//#EMBWRITE(2086)
 //「いいキモだめしだ、行こう」<LINE 00>
 “It's a good test of our courage, let's go.”<LINE 00>
 
@@ -47557,12 +47760,7 @@ Then:<LINE 00>
 
 
 //[$1DA353-4] -> [9C 1A ED]
-#EMBWRITE(2088)
-//奈美を恐がらせたくないので、迷わず入ろうと思った。<END CHOICE 1C>
-// "make Nami afraid" -> scare her
-I didn't want to scare Nami, so I decided to go in without hesitation.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(2092)
+// move down to optimize out jump code and pointer
 
 
 //[$1DA36E-4] -> [74 1B ED]
@@ -47589,9 +47787,17 @@ I was excited to go in with Nami.<END CHOICE 1C>
 #EMBSET(2093)
 
 
+//[$1DA353-4] -> [9C 1A ED] - moved down
+#EMBWRITE(2088)
+//奈美を恐がらせたくないので、迷わず入ろうと思った。<END CHOICE 1C>
+// "make Nami afraid" -> scare her
+I didn't want to scare Nami, so I decided to go in without hesitation.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2092)
+
 //[$1DA3B1-3] -> [8B 1D ED]
 #EMBWRITE(1801)
-#EMBWRITE(2092)
+//#EMBWRITE(2092)
 //雨にぬれ、黒光りする重そうな門扉は、
 //手で押すと抵抗もなくカンタンに開いた。<LINE 00>
 Wet from the rain, the heavy gate doors had a black luster. When I pushed them, they opened without resistance.<CLEAR 25>
@@ -48046,13 +48252,7 @@ I said:<WAIT 16><LINE 00>
 
 
 //[$1DAC80-6] -> [06 64 ED]
-#EMBWRITE(2099)
-//「そうカンタンに食われてたまるか」<END CHOICE 1C>
-“It won't swallow us so easily.”<END CHOICE 1C>
-//ぼくは開き直った。<LINE 00>
-I fought back.<LINE 00>
-<JMP 03>
-#EMBSET(2102)
+// move down to optimize out jump code and pointer
 
 
 //[$1DAC9D-5] -> [ED 64 ED]
@@ -48082,10 +48282,19 @@ Then...<LINE 00>
 #EMBSET(2103)
 
 
+//[$1DAC80-6] -> [06 64 ED] - moved down
+#EMBWRITE(2099)
+//「そうカンタンに食われてたまるか」<END CHOICE 1C>
+“It won't swallow us so easily.”<END CHOICE 1C>
+//ぼくは開き直った。<LINE 00>
+I fought back.<LINE 00>
+//<JMP 03>
+//#EMBSET(2102)
+
 //[$1DACE3-6] -> [1E 67 ED]
 #EMBWRITE(248)
 #EMBWRITE(1867)
-#EMBWRITE(2102)
+//#EMBWRITE(2102)
 //「こうなりゃ探検だ」<LINE 00>
 “Now it's time to go exploring.”<LINE 00>
 //「タンケン?」<LINE 00>
@@ -48162,20 +48371,12 @@ Then:<LINE 00>
 
 
 //[$1DAE22-1] -> [11 71 ED]
-#EMBWRITE(2105)
-//「あれはリンが燃えてるだけだよ」<END CHOICE 1C>
-// there is a word 燐火= りんか= phosphorous light or "will-o'-the-wisp"
-“That was just burning phosphorous.”<END CHOICE 1C>
-//「え・・・<DELAY 17><$00><$03>本当に?」<LINE 00>
-“Huh...<DELAY 17><$00><$03> really?”<LINE 00>
-//「ああ、ホントさ<AUTO ADV 13>。おれは科学的なんだ」<LINE 00>
-“Yeah, really<AUTO ADV 13>. I'm scientific.”<LINE 00>
-//そういってぼくは、ふるえながら次のドアを開けた。<CLEAR 25>
-Shaking, I said that and opened the next door.<CLEAR 25>
+// move down to optimize out jump code and pointer
+
 
 //[$1DAE68-1] -> [41 73 ED]
-<JMP 03>
-#EMBSET(2108)
+//<JMP 03>
+//#EMBSET(2108)
 
 
 //[$1DAE6C-1] -> [61 73 ED]
@@ -48211,9 +48412,21 @@ Then...<LINE 00>
 #EMBSET(2109)
 
 
+//[$1DAE22-1] -> [11 71 ED] - moved down
+#EMBWRITE(2105)
+//「あれはリンが燃えてるだけだよ」<END CHOICE 1C>
+// there is a word 燐火= りんか= phosphorous light or "will-o'-the-wisp"
+“That was just burning phosphorous.”<END CHOICE 1C>
+//「え・・・<DELAY 17><$00><$03>本当に?」<LINE 00>
+“Huh...<DELAY 17><$00><$03> really?”<LINE 00>
+//「ああ、ホントさ<AUTO ADV 13>。おれは科学的なんだ」<LINE 00>
+“Yeah, really<AUTO ADV 13>. I'm scientific.”<LINE 00>
+//そういってぼくは、ふるえながら次のドアを開けた。<CLEAR 25>
+Shaking, I said that and opened the next door.<CLEAR 25>
+
 //[$1DAEB4-5] -> [A5 75 ED]
 #EMBWRITE(1875)
-#EMBWRITE(2108)
+//#EMBWRITE(2108)
 <SFX TEXT DELAY 3D><$00><$64><IMAGE CUT 2E><$00><$54>
 // open a door, and the view suddenly changes to a cat's eyes opening
 //「きゃあ!」<LINE 00>
@@ -48359,13 +48572,7 @@ Smoke was rising from the molten\ tip.<LINE 00>
 
 
 //[$1DB10F-5] -> [7D 88 ED]
-#EMBWRITE(2115)
-//何かトリックでもあるのか、とぼくは考えた。<END CHOICE 1C>
-I pondered if there was some kind\ of trick to it.<END CHOICE 1C>
-//ぼくは受話器を取った。<LINE 00>
-I took the receiver.<LINE 00>
-<JMP 03>
-#EMBSET(2119)
+// move down to optimize out jump code and pointer
 
 
 //[$1DB133-0] -> [98 89 ED]
@@ -48392,10 +48599,19 @@ I tried to pretend to be out, but thought it'd be weird to say that in a strange
 #EMBSET(2120)
 
 
+//[$1DB10F-5] -> [7D 88 ED] - moved down
+#EMBWRITE(2115)
+//何かトリックでもあるのか、とぼくは考えた。<END CHOICE 1C>
+I pondered if there was some kind\ of trick to it.<END CHOICE 1C>
+//ぼくは受話器を取った。<LINE 00>
+I took the receiver.<LINE 00>
+//<JMP 03>
+//#EMBSET(2119)
+
 //[$1DB18E-7] -> [77 8C ED]
 #EMBWRITE(1470)
 #EMBWRITE(1891)
-#EMBWRITE(2119)
+//#EMBWRITE(2119)
 <STOP SFX 3B><$00><$4A><SFX 39><$00><$74>
 // pick up the phone; it stops ringing
 //「もしもし・・・」<LINE 00>
@@ -48664,7 +48880,7 @@ The dried up fish were brown...<WAIT 16><LINE 00>
 //[$1DB5FB-4] -> [DC AF ED]
 #EMBWRITE(2131)
 //それを見て、ぼくはさっきのミイラを思い出してしまった。<END CHOICE 1C>
-// "when I saw them, I [etc.]"
+// "I saw them and [etc.]"
 I accidentally remembered the mummy from earlier.<END CHOICE 1C>
 <JMP 03>
 #EMBSET(1919)
@@ -48692,7 +48908,6 @@ I promised Nami, “Someday, I'll catch a huge fish for you!”<END CHOICE 1C>
 //奈美にいいところをみせようと、それをムシャムシャ食べた。<END CHOICE 1C>
 I tried to show Nami the best part and munched on them.<END CHOICE 1C>
 <CLEAR 25>
-
 
 //[$1DB672-1] -> [91 B3 ED]
 <JMP 03>
@@ -48928,16 +49143,7 @@ This time:<LINE 00>
 
 
 //[$1DBA6B-1] -> [59 D3 ED]
-#EMBWRITE(2138)
-//シャワーが出るのをたしかめた<AUTO ADV 13>。<LINE 00>
-I made sure the shower was working<AUTO ADV 13>.<LINE 00>
-//「入れるぞ奈美」<END CHOICE 1C>
-“Go on in, Nami.”<END CHOICE 1C>
-//そしていった。<LINE 00>
-// Then I said.<LINE 00>
-// this fits with the other pointer that goes to the particular text
-<JMP 03>
-#EMBSET(2142)
+// move down to optimize out jump code and pointer
 
 
 //[$1DBA8C-0] -> [68 D4 ED]
@@ -48967,15 +49173,27 @@ If I was a man, I decided to just say this before taking off my pants.<END CHOIC
 #EMBSET(2143)
 
 
+//[$1DBA6B-1] -> [59 D3 ED] - moved down
+#EMBWRITE(2138)
+//シャワーが出るのをたしかめた<AUTO ADV 13>。<LINE 00>
+I made sure the shower was working<AUTO ADV 13>.<LINE 00>
+//「入れるぞ奈美」<END CHOICE 1C>
+“Go on in, Nami.”<END CHOICE 1C>
+//そしていった。<LINE 00>
+// Then I said.<LINE 00>
+// this fits with the other pointer that goes to the particular text
+//<JMP 03>
+//#EMBSET(2142)
+
 //[$1DBAE3-1] -> [19 D7 ED]
 #EMBWRITE(1946)
-#EMBWRITE(2142)
+//#EMBWRITE(2142)
 //「おれ、バッグの着替え、取ってきとくからな」<LINE 00>
 Then I said, “I'll, get the bag with the change of clothes.”<LINE 00>
 //「行っちゃうの?」<LINE 00>
 “You're going?”<LINE 00>
 //急に奈美が不安そうな声を出す。<LINE 00>
-Suddenly, Nami spoke like she was anxious.<LINE 00>
+Suddenly, Nami sounded anxious.<LINE 00>
 //「こんなに広いお風呂で、私一人になるなんて・・・」<CLEAR 25>
 “In this big bathtub, I'll be all alone...”<CLEAR 25>
 
@@ -49093,13 +49311,7 @@ I got a chill.<END CHOICE 1C>
 
 
 //[$1DBD5A-0] -> [D8 EA ED]
-#EMBWRITE(2145)
-//他に脱出口がないかとあたりを見回した。<END CHOICE 1C>
-I looked around the area for another means of escape.<END CHOICE 1C>
-//だめだ、密室だ・・・。<LINE 00>
-No use, the room was locked...<WAIT 16><LINE 00>
-<JMP 03>
-#EMBSET(2148)
+// move down to optimize out jump code and pointer
 
 
 //[$1DBD7B-3] -> [DB EB ED]
@@ -49122,9 +49334,18 @@ If possible, I wanted to meet those twin girls in fifteen years.<END CHOICE 1C>
 #EMBSET(2149)
 
 
+//[$1DBD5A-0] -> [D8 EA ED] - moved down
+#EMBWRITE(2145)
+//他に脱出口がないかとあたりを見回した。<END CHOICE 1C>
+I looked around the area for another means of escape.<END CHOICE 1C>
+//だめだ、密室だ・・・。<LINE 00>
+No use, the room was locked...<WAIT 16><LINE 00>
+//<JMP 03>
+//#EMBSET(2148)
+
 //[$1DBDC6-6] -> [36 EE ED]
 #EMBWRITE(1962)
-#EMBWRITE(2148)
+//#EMBWRITE(2148)
 <STOP SFX 3B><$00><$3A><SFX 39><$00><$6C>
 // cut out water sfx; bang on door
 //「奈美、開けてくれッ!」<LINE 00>
@@ -50054,11 +50275,7 @@ I thought:<WAIT 16><LINE 00>
 
 
 //[$1DCEE3-4] -> [1C 77 EE]
-#EMBWRITE(2185)
-//やっぱり奈美のあの考えを取り去ってやらなければ。<END CHOICE 1C>
-I knew it, I have to make Nami stop thinking those thoughts.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(2188)
+// move down to optimize out jump code and pointer
 
 
 //[$1DCEFF-1] -> [F9 77 EE]
@@ -50077,9 +50294,16 @@ Was all this just Nami's plan?<END CHOICE 1C>
 #EMBSET(778)
 
 
+//[$1DCEE3-4] -> [1C 77 EE] - moved down
+#EMBWRITE(2185)
+//やっぱり奈美のあの考えを取り去ってやらなければ。<END CHOICE 1C>
+I knew it, I have to make Nami stop thinking those thoughts.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2188)
+
 //[$1DCF2B-5] -> [5D 79 EE]
 #EMBWRITE(2039)
-#EMBWRITE(2188)
+//#EMBWRITE(2188)
 <SFX 39><$00><$64><IMAGE FADE IN BLOCK 36><$00><$01><$00><$3B>
 // open a door; fade in piano hall
 //「奈美・・・!」<LINE 00>
@@ -50128,9 +50352,9 @@ The woman wasn't Nami, but the mummy.<LINE 00>
 //[$1DD02F-6] -> [7E 81 EE]
 //抱きつきたい気持ちをおさえ、ぼくはゆっくりと奈美に歩み寄った。<LINE 00>
 Holding back my urge to hug her, I slowly walked up to her.<LINE 00>
-// this JMP code is unnecessary
-// <JMP 03>
-// #EMBSET(2189)
+// optimize out unnecessary jump code and pointer
+//<JMP 03>
+//#EMBSET(2189)
 
 
 //[$1DD050-6] -> [86 82 EE]
@@ -52533,7 +52757,7 @@ Having endured not eating gyoza for today, I used my super action of love.<END C
 
 
 //[$1E827A-4] -> [D4 13 F4]
-// pointer doesn't do anything, so cutting out
+// optimize out unnecessary jump code and pointer
 //<JMP 03>
 //#EMBSET(2217)
 
@@ -52597,7 +52821,7 @@ So I said:<WAIT 16><LINE 00>
 //「ほな帰ろか・・・<AUTO ADV 13>」<LINE 00>
 “Then shall we go home...<AUTO ADV 13>”<LINE 00>
 //つい関西弁になってしまった。<END CHOICE 1C>
-// 関西弁= the Kansai dialect; is this translatable?
+// rewrite; 関西弁= the Kansai dialect; is this translatable?
 Just now, I accidentally used the Kansai dialect.<END CHOICE 1C>
 <JMP 03>
 #EMBSET(333)
@@ -52649,7 +52873,7 @@ I laughed dryly.<CLEAR 25>
 #EMBWRITE(331)
 #EMBWRITE(841)
 #EMBWRITE(1758)
-// #EMBWRITE(2221)
+//#EMBWRITE(2221)
 <STOP SFX 3B><$00><$27><VFX 2C><$00><$7E>
 // cut out driving sfx; car animation
 //「うわ、ぶつかるッ!」<LINE 00>
@@ -52756,7 +52980,6 @@ Then I thought:<WAIT 16><LINE 00>
 I at least wanted a 500 gram steak.<END CHOICE 1C>
 <CLEAR 25>
 
-
 //[$1E8632-4] -> [94 31 F4]
 <JMP 03>
 #EMBSET(1365)
@@ -52766,7 +52989,6 @@ I at least wanted a 500 gram steak.<END CHOICE 1C>
 #EMBWRITE(2222)
 //ワオ!<AUTO ADV 13>？　これがあのときの快感なのか。<END CHOICE 1C>
 Wow<AUTO ADV 13>?! Was this that pleasure\ I\ felt that time?<END CHOICE 1C>
-
 
 //[$1E864A-3] -> [53 32 F4]
 #EMBWRITE(1765)
@@ -53007,10 +53229,9 @@ So I said:<WAIT 16><LINE 00>
 #EMBWRITE(2228)
 //「今夜こそ、アダムとイブの花ひらく」<END CHOICE 1C>
 “Tonight, Adam and Eve's flowers will bloom.”<END CHOICE 1C>
-// pointer is not useful, so leaving it out
+// optimize out unnecessary jump code and pointer
 //<JMP 03>
 //#EMBSET(2231)
-
 
 //[$1E8AC2-3] -> [13 56 F4]
 #EMBWRITE(359)
@@ -53862,11 +54083,7 @@ Summoning my courage:<LINE 00>
 
 
 //[$1E9972-3] -> [93 CB F4]
-#EMBWRITE(2250)
-//二人のドリーミィナイトのために、奈美の先に立った。<END CHOICE 1C>
-I stood ahead of Nami to have a dreamy night together with her.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(2253)
+// move down to optimize out jump code and pointer
 
 
 //[$1E998F-1] -> [79 CC F4]
@@ -53886,9 +54103,16 @@ I put the panties on my head.<END CHOICE 1C>
 #EMBSET(1415)
 
 
+//[$1E9972-3] -> [93 CB F4] - moved down
+#EMBWRITE(2250)
+//二人のドリーミィナイトのために、奈美の先に立った。<END CHOICE 1C>
+I stood ahead of Nami to have a dreamy night together with her.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2253)
+
 //[$1E99B1-1] -> [89 CD F4]
 #EMBWRITE(954)
-#EMBWRITE(2253)
+//#EMBWRITE(2253)
 <STOP SFX 3B><$00><$1D><IMAGE FADE IN BLOCK 36><$00><$01><$00><$45>
 // cut out clock ticking; fade in hallway
 //廊下の突き当りのドアが半開きになっている。<LINE 00>
@@ -56048,12 +56272,7 @@ I like a woman who replies like that.<CLEAR 25>
 
 
 //[$1EBEA0-7] -> [07 F5 F5]
-#EMBWRITE(2306)
-//奈美と二人で新婚映画の主役気分だ。<END CHOICE 1C>
-// 新婚映画= "newlywed movie", I'll just go with "romance movie"
-It felt like Nami and I were the two leading parts in a romance movie.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(2309)
+// move down to optimize out jump code and pointer
 
 
 //[$1EBEBA-4] -> [D4 F5 F5]
@@ -56072,10 +56291,18 @@ I became a diligent man.<END CHOICE 1C>
 #EMBSET(1513)
 
 
+//[$1EBEA0-7] -> [07 F5 F5] - moved down
+#EMBWRITE(2306)
+//奈美と二人で新婚映画の主役気分だ。<END CHOICE 1C>
+// 新婚映画= "newlywed movie", I'll just go with "romance movie"
+It felt like Nami and I were the two leading parts in a romance movie.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2309)
+
 //[$1EBEE4-3] -> [23 F7 F5]
 #EMBWRITE(1120)
 #EMBWRITE(1512)
-#EMBWRITE(2309)
+//#EMBWRITE(2309)
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$23>
 // fade in sliding door
 //バスルームの前で奈美を守るぼくは、恋の戦士だ。<LINE 00>
@@ -58087,12 +58314,7 @@ Then...<LINE 00>
 
 
 //[$1EE44F-2] -> [7A 22 F7]
-#EMBWRITE(2358)
-//「愛してるんだ、奈美<AUTO ADV 13>」<LINE 00>
-//ブルブルとふるえる奈美にいった。<END CHOICE 1C>
-Nami was trembling, and I told her, “I love you, Nami.”<END CHOICE 1C>
-<JMP 03>
-#EMBSET(2361)
+// move down to optimize out jump code and pointer
 
 
 //[$1EE46D-3] -> [6B 23 F7]
@@ -58100,7 +58322,7 @@ Nami was trembling, and I told her, “I love you, Nami.”<END CHOICE 1C>
 //「ダンナ、やったのはあっしでさ<AUTO ADV 13>」<LINE 00>
 //シクシクと泣き出した奈美にいった。<END CHOICE 1C>
 // rewrite the dialogue; 旦那= the master of a house
-I said to the sobbing Nami, “Sir, I did\ it.”<END CHOICE 1C>
+I said to the sobbing Nami, “Ma'am, I did it.”<END CHOICE 1C>
 <JMP 03>
 #EMBSET(1282)
 
@@ -58116,10 +58338,18 @@ I chased Nami, who was noisily running away.<END CHOICE 1C>
 #EMBSET(2190)
 
 
+//[$1EE44F-2] -> [7A 22 F7] - moved down
+#EMBWRITE(2358)
+//「愛してるんだ、奈美<AUTO ADV 13>」<LINE 00>
+//ブルブルとふるえる奈美にいった。<END CHOICE 1C>
+Nami was trembling, and I told her, “I love you, Nami.”<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2361)
+
 //[$1EE4C0-1] -> [01 26 F7]
 #EMBWRITE(1280)
 #EMBWRITE(1637)
-#EMBWRITE(2361)
+//#EMBWRITE(2361)
 //ぼくの腕の中でも奈美のふるえは止まらない。<LINE 00>
 Even in my arms, Nami wouldn't stop shaking.<LINE 00>
 //「私の中の悪い血が呼ぶの・・・」<LINE 00>
@@ -58258,13 +58488,14 @@ I accidentally threw fire from the fireplace at Nami.<END CHOICE 1C>
 I kicked the wall as hard as I could.<END CHOICE 1C>
 <JMP 03>
 #EMBSET(2366)
+// note: you cannot optimize this one out
 
 
 //[$1EE804-4] -> [24 40 F7]
 #EMBWRITE(2365)
 //「火を見てせざるは勇なきなり!<AUTO ADV 13>」<LINE 00>
 // せざるis a negative form of する
-// https://japanesetest4you.com/flashcard/learn-jlpt-n1-grammar-%E3%81%96%E3%82%8B-zaru/
+// https://japanesetest4you.com/flashcard/learn-jlpt-n1-grammar-ざる-zaru/
 // “Seeing a fire and doing nothing isn't courage<AUTO ADV 13>!”<LINE 00>
 // rewrite dialogue
 //隣室へ逃げ込んだ奈美に迫った。<END CHOICE 1C>
@@ -58392,6 +58623,7 @@ I had no choice but to shut Nami's mouth.<CLEAR 25>
 I kissed her.<END CHOICE 1C>
 <JMP 03>
 #EMBSET(2371)
+// note: cannot optimize this out
 
 
 //[$1EEAB4-0] -> [A8 55 F7]
@@ -58496,11 +58728,7 @@ Each of us<DELAY 17><$00><$03> was being tormented<DELAY 17><$00><$03> by anothe
 
 
 //[$1EECE6-2] -> [32 67 F7]
-#EMBWRITE(2374)
-//ぼくらは互いに相手の光体を叩き落しあった。<END CHOICE 1C>
-We knocked off each other's bodies of light.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(2375)
+// move down to optimize out jump code and pointer
 
 
 //[$1EED00-0] -> [08 68 F7]
@@ -58582,9 +58810,16 @@ I completely lost my will to go on.<END CHOICE 1C>
 #EMBSET(1658)
 
 
+//[$1EECE6-2] -> [32 67 F7] - moved down
+#EMBWRITE(2374)
+//ぼくらは互いに相手の光体を叩き落しあった。<END CHOICE 1C>
+We knocked off each other's bodies of light.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2375)
+
 //[$1EEE2E-2] -> [72 71 F7]
 #EMBWRITE(2372)
-#EMBWRITE(2375)
+//#EMBWRITE(2375)
 <SFX FADE OUT 3C><$00><$1E><$00><$15><VFX 2C><$00><$9E>
 // fade out voice
 //光体は消えた。<LINE 00>
@@ -59082,11 +59317,12 @@ Nami held out her arms all the way for me to save her.<CLEAR 25>
 
 
 //[$1EFADF-2] -> [FA D6 F7]
-#EMBWRITE(2380)
+//#EMBWRITE(2380)
+// move down to optimize out jump code and pointer
 //ぼくは床を蹴って、ヨロイに飛び蹴りをくらわせた。<END CHOICE 1C>
-I firmly pressed my feet into the floor and performed a dropkick.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(2381)
+//I firmly pressed my feet into the floor and performed a dropkick.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2381)
 
 
 //[$1EFAFC-1] -> [E1 D7 F7]
@@ -59133,10 +59369,17 @@ I planted my feet down as hard as I could, and pulled Nami's hands.<END CHOICE 1
 <JMP 03>
 #EMBSET(2385)
 
+//[$1EFADF-2] -> [FA D6 F7] - moved down
+#EMBWRITE(2380)
+//ぼくは床を蹴って、ヨロイに飛び蹴りをくらわせた。<END CHOICE 1C>
+I firmly pressed my feet into the floor and performed a dropkick.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2381)
+
 //[$1EFBB0-0] -> [88 DD F7]
 // TL note: inaccessible Japanese text? it doesn't add too much to the story,
 // but I tried to incorporate it in anyway; moved embedded pointer to here
-#EMBWRITE(2381)
+//#EMBWRITE(2381)
 <STOP SFX 3B><$00><$44>
 //ぼくは思いきり鎧を蹴った<SFX 39><$00><$59>。<LINE 00>
 // on its own, "I kicked the armor as hard as I could"
@@ -59195,11 +59438,7 @@ Then:<LINE 00>
 
 
 //[$1EFCCD-1] -> [69 E6 F7]
-#EMBWRITE(2387)
-//ぼくは奈美の両手を引っ張ってヨロイからもぎ取ろうとした。<END CHOICE 1C>
-I pulled Nami's hands and tried to take her from the armor.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(2388)
+// move down to optimize out jump and pointer
 
 
 //[$1EFCEC-4] -> [64 E7 F7]
@@ -59319,9 +59558,16 @@ I felt Nami clinging to me.<END CHOICE 1C>
 #EMBSET(2393)
 
 
+//[$1EFCCD-1] -> [69 E6 F7] - moved down
+#EMBWRITE(2387)
+//ぼくは奈美の両手を引っ張ってヨロイからもぎ取ろうとした。<END CHOICE 1C>
+I pulled Nami's hands and tried to take her from the armor.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2388)
+
 //[$1EFF00-0] -> [08 F8 F7]
 #EMBWRITE(2385)
-#EMBWRITE(2388)
+//#EMBWRITE(2388)
 <STOP SFX 3B><$00><$03>
 // cut out "to the mansion in darkness"
 //「痛い、やめて!」<LINE 00>
@@ -59514,11 +59760,7 @@ I decided.<CLEAR 25>
 
 
 //[$1F82A1-0] -> [08 15 FC]
-#EMBWRITE(2399)
-//「黙っておれについて来い!」<END CHOICE 1C>
-“Stay quiet and come follow me!”<END CHOICE 1C>
-<JMP 03>
-#EMBSET(2400)
+// move down to optimize out jump and pointer
 
 
 //[$1F82B2-1] -> [91 15 FC]
@@ -59603,8 +59845,15 @@ I dived at Nami and grabbed both her hands.<CLEAR 25>
 #EMBSET(2401)
 
 
+//[$1F82A1-0] -> [08 15 FC] - moved down
+#EMBWRITE(2399)
+//「黙っておれについて来い!」<END CHOICE 1C>
+“Stay quiet and come follow me!”<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2400)
+
 //[$1F8455-5] -> [AD 22 FC]
-#EMBWRITE(2400)
+//#EMBWRITE(2400)
 //ぼくは奈美を従わせて、強引に前へ進んだ。<LINE 00>
 I made Nami follow me and forced my way ahead.<LINE 00>
 <SFX 39><$00><$15><VFX 2C><$00><$9B>
@@ -59990,11 +60239,7 @@ The fireflies above our heads, shined and turned into stars<AUTO ADV 13>.<LINE 0
 
 
 //[$1F8C0E-7] -> [77 60 FC]
-#EMBWRITE(2404)
-//奈美の流す涙を、ぼくはそっと吸いとってあげた。<END CHOICE 1C>
-I gently dried Nami's tears for her.<END CHOICE 1C>
-<JMP 03>
-#EMBSET(2406)
+// move down to optimize out jump code and pointer
 
 
 //[$1F8C27-7] -> [3F 61 FC]
@@ -60005,8 +60250,15 @@ I hugged Nami and thought, “If\ her family's like that, I don't want to marry 
 #EMBSET(1354)
 
 
+//[$1F8C0E-7] -> [77 60 FC] - moved down
+#EMBWRITE(2404)
+//奈美の流す涙を、ぼくはそっと吸いとってあげた。<END CHOICE 1C>
+I gently dried Nami's tears for her.<END CHOICE 1C>
+//<JMP 03>
+//#EMBSET(2406)
+
 //[$1F8C4B-3] -> [5B 62 FC]
-#EMBWRITE(2406)
+//#EMBWRITE(2406)
 //「<NAME-SAN 20>・・・」<LINE 00>
 “<NAME-SAN 20>...”<LINE 00>
 //奈美は小さくあえいだ。<LINE 00>
@@ -60233,13 +60485,13 @@ My body twisted from pleasure rising from within.<END CHOICE 1C>
 #EMBWRITE(2411)
 //身中からこみ上げる幸福感に心からひたった。<END CHOICE 1C>
 Happiness rising from within my\ heart flooded through my whole body.<END CHOICE 1C>
-// unnecessary jump code
+// optimize out unnecessary jump code and pointer
 //<JMP 03>
 //#EMBSET(2413)
 
 
 //[$1F902C-0] -> [68 81 FC]
-// #EMBWRITE(2413)
+//#EMBWRITE(2413)
 <SFX FADE OUT 3C><$00><$32><$00><$08><SFX 39><$00><$56>
 // fade out theme of love; low wind blows
 //そのとき、風が起こった。<LINE 00>
