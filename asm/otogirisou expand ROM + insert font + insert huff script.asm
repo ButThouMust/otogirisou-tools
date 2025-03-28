@@ -1,7 +1,6 @@
+asar 1.90
 check title "OTOGIRISOU           "
-
 lorom
-math pri on
 
 ; pad the ROM from 1 MB to 1.5 MB, filling with 00 bytes
 org $2FFFFF
@@ -25,17 +24,18 @@ org $00FFD7
 
 !OldMusicBlockStart = $08D39B
 !NewMusicBlockStart = $22EF9A
-!OldMusicBlockStartROM = 4539B
-!OldMusicBlockEndROM = AE400
+!OldMusicBlockStartROM = $4539B
+!OldMusicBlockEndROM = $AE400
 
-incbin "rom/Otogirisou (Japan).sfc":!OldMusicBlockStartROM-!OldMusicBlockEndROM -> !NewMusicBlockStart
+org !NewMusicBlockStart
+    check bankcross off
+    incbin "rom/Otogirisou (Japan).sfc":!OldMusicBlockStartROM..!OldMusicBlockEndROM
 
 ; fill the original space with 00 bytes
 org !OldMusicBlockStart
-    check bankcross off
     fillbyte $00
-    fill $!OldMusicBlockEndROM-$!OldMusicBlockStartROM+1
-    check bankcross on
+    fill !OldMusicBlockEndROM-!OldMusicBlockStartROM+1
+    check bankcross full
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -59,8 +59,9 @@ MusicBankNumberLocation:
 
 ; insert data for the new font here
 !NewFontLocation = $228000
-; incbin "font/new font data.bin" -> !NewFontLocation
-incbin "font/new uncomp font data.bin" -> !NewFontLocation
+org !NewFontLocation
+    ; incbin "font/new font data.bin"
+    incbin "font/new uncomp font data.bin"
 
 ; change font storage system to be uncompressed in this format (hex editor view)
 ;    00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F 
@@ -230,12 +231,12 @@ OldScriptStart:
     check bankcross off
     fillbyte $00
     fill $!OldFontEndROM-$!OldScriptStartROM+1
-    check bankcross on
+    check bankcross full
 
 org !OldMusicBlockStart
     check bankcross off
     incbin "script/huffman script.bin"
-    check bankcross on
+    check bankcross full
 
 org $02C1E1
     incbin "script/huffman tree - game data format.bin"
@@ -262,9 +263,9 @@ org $02A627
     ; print hex((pctosnes($!OldMusicBlockStartROM+numBytes(Start2))<<3)|numBits(Start2))
     ; print ""
 
-    dl numBits(Start0)|(pctosnes($!OldMusicBlockStartROM+numBytes(Start0))<<3)
-    dl numBits(Start1)|(pctosnes($!OldMusicBlockStartROM+numBytes(Start1))<<3)
-    dl numBits(Start2)|(pctosnes($!OldMusicBlockStartROM+numBytes(Start2))<<3)
+    dl numBits(Start0)|(pctosnes(!OldMusicBlockStartROM+numBytes(Start0))<<3)
+    dl numBits(Start1)|(pctosnes(!OldMusicBlockStartROM+numBytes(Start1))<<3)
+    dl numBits(Start2)|(pctosnes(!OldMusicBlockStartROM+numBytes(Start2))<<3)
 
 ; also need to update values used for the script start in other places
 org $009EAA

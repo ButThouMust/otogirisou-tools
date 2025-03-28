@@ -1,7 +1,8 @@
+asar 1.90
 check title "OTOGIRISOU           "
 
 lorom
-math pri on
+; math pri on
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -161,13 +162,13 @@ org $00AC11
 ; May as well insert the new list after the kerning code.
 ; Copy the old list, add the four kerning codes, and add the FFFF list ender.
 
-!ListEnder = #$FFFF
+!ListEnder = $FFFF
 
 !ScrollingCodeListStart = 06095
 !ScrollingCodeListEnd = 060A7
 pullpc
 NewScrollingCodeList:
-    incbin "rom/Otogirisou (Japan).sfc":!ScrollingCodeListStart-!ScrollingCodeListEnd
+    incbin "rom/Otogirisou (Japan).sfc":!ScrollingCodeListStart..!ScrollingCodeListEnd
     dw !KernLeftNum, !KernRightNum, !KernUpNum, !KernDownNum
     dw !ListEnder
 pushpc

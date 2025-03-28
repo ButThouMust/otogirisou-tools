@@ -1,7 +1,6 @@
+asar 1.90
 check title "OTOGIRISOU           "
-
 lorom
-math pri on
 
 ; ----------------------
 
@@ -20,8 +19,8 @@ math pri on
 ; 1|#   #  |      1|#---#- |      1|#---#- |  to also copy a font pixel directly
 ; 2|  ###  | orig 2| -###- | goal 2|x-###- |  down by 1.
 ; 3| #  #  | ---> 3| #--#- | ---> 3| #--#- |
-; 4|#   #  |      4|#-- #- | 'x'  4|#-- #- |
-; 5|#   #  |      5|#-  #- |      5|#-  #- |
+; 4|#   #  | add  4|#-- #- | add  4|#-- #- |
+; 5|#   #  | '-'  5|#-  #- | 'x'  5|#-  #- |
 ; 6| ### # |      6| ###-#-|      6|x###-#-|
 ; 7|       |      7|  --- -|      7| x---x-|
 ;  +-------+       +-------+       +-------+
@@ -60,8 +59,9 @@ AddShadowOnePixelDown:
 
     ; original shadowing subroutine assumes that M flag is set (8-bit arith)
     sep #$20
-    jsr MainShadowing
-    rts
+    jmp MainShadowing
+    ; jsr MainShadowing
+    ; rts
 
 ; ----------------------
 
