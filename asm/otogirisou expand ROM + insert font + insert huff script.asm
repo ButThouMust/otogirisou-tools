@@ -221,11 +221,9 @@ org $02B4DB
 ; - The Huffman tree's data.
 ; - The three pointers to where the game can start.
 
-; But first, clear out the original Huffman script and font.
-
+; first, clear out the original Huffman script and font.
 !OldFontEndROM = FFFB8
 !OldScriptStartROM = AE401
-
 org $15E401
 OldScriptStart:
     check bankcross off
@@ -233,39 +231,33 @@ OldScriptStart:
     fill $!OldFontEndROM-$!OldScriptStartROM+1
     check bankcross full
 
+; insert the new script
 org !OldMusicBlockStart
     check bankcross off
     incbin "script/huffman script.bin"
     check bankcross full
 
+; insert the new Huffman tree data
 org $02C1E1
     incbin "script/huffman tree - game data format.bin"
 
+; insert the new script start points
 !StartPointScriptOffsetsFile = "script/start points' script offsets.bin"
-
 org $02A627
-
     ; need to convert script offset values into a 21+3 SNES pointer format
     ; 21 bit LoROM offset, plus 3 bits for the "bit in a byte" position
 
     ; formula: add script_start + num_bytes_into_script (using *file* offsets)
     ; convert file offset to LoROM address, then left shift 3 to make room for
     ; the bit offset
-
-    Start0 = readfile3("!StartPointScriptOffsetsFile",3*0)
-    Start1 = readfile3("!StartPointScriptOffsetsFile",3*1)
-    Start2 = readfile3("!StartPointScriptOffsetsFile",3*2)
     function numBytes(startVal) = startVal>>3
     function numBits(startVal)  = startVal&$7
-
-    ; print hex((pctosnes($!OldMusicBlockStartROM+numBytes(Start0))<<3)|numBits(Start0))
-    ; print hex((pctosnes($!OldMusicBlockStartROM+numBytes(Start1))<<3)|numBits(Start1))
-    ; print hex((pctosnes($!OldMusicBlockStartROM+numBytes(Start2))<<3)|numBits(Start2))
+    for startNum = 0..3
+        !start #= readfile3("!StartPointScriptOffsetsFile",3*!startNum)
+        ; print hex((pctosnes($!OldMusicBlockStartROM+numBytes(!start))<<3)|numBits(!start))
+        dl numBits(!start)|(pctosnes(!OldMusicBlockStartROM+numBytes(!start))<<3)
+    endfor
     ; print ""
-
-    dl numBits(Start0)|(pctosnes(!OldMusicBlockStartROM+numBytes(Start0))<<3)
-    dl numBits(Start1)|(pctosnes(!OldMusicBlockStartROM+numBytes(Start1))<<3)
-    dl numBits(Start2)|(pctosnes(!OldMusicBlockStartROM+numBytes(Start2))<<3)
 
 ; also need to update values used for the script start in other places
 org $009EAA
