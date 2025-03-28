@@ -2,7 +2,6 @@ asar 1.90
 check title "OTOGIRISOU           "
 
 lorom
-; math pri on
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -162,15 +161,13 @@ org $00AC11
 ; May as well insert the new list after the kerning code.
 ; Copy the old list, add the four kerning codes, and add the FFFF list ender.
 
-!ListEnder = $FFFF
-
-!ScrollingCodeListStart = 06095
-!ScrollingCodeListEnd = 060A7
+!ScrollingCodeListStart = $06095
+!ScrollingCodeListEnd = $060A7
 pullpc
 NewScrollingCodeList:
     incbin "rom/Otogirisou (Japan).sfc":!ScrollingCodeListStart..!ScrollingCodeListEnd
     dw !KernLeftNum, !KernRightNum, !KernUpNum, !KernDownNum
-    dw !ListEnder
+    dw $FFFF
 pushpc
 
 ; update the pointer to this list of control code IDs
@@ -236,7 +233,7 @@ Loop:
     lda.w CharsCanAutoLineBreak,X ; get char value from list, advance list ptr
     inx                           ; 
     inx                           ; 
-    cmp.w !ListEnder              ; if no matches in whole list,
+    cmp.w #$FFFF                  ; if no matches in whole list,
     beq DoNotLineBreak            ;   print on current line
 
     cmp.w MostRecentChar          ; compare space/punct. value with script char
