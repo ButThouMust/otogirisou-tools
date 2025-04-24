@@ -276,8 +276,6 @@ public class DumpHuffmanScript {
         scriptOutput.write(String.format(format2, currPtrNum++));
     }
 
-    // TODO sometimes this will be off by 1 byte if bitOffset is 0
-    // i.e. if file position is byte-aligned
     private static void printROMFilePos() throws IOException {
         int cpuOffset = getCPUOffsetVar();
 
@@ -286,7 +284,7 @@ public class DumpHuffmanScript {
         // anywhere you want in the script without playing the game "normally"
         // access by starting a new file or by selecting "restart" on continue file prompt
         // repeat the 3 byte sequence a total of 3 times
-        int startPoint = (cpuOffset << 3) | bitOffset;
+        int startPoint = (cpuOffset << 3) | (bitOffset & 0x7);
         int startLow = startPoint & 0xFF;
         int startMid = (startPoint >> 8) & 0xFF;
         int startHi  = (startPoint >> 16) & 0xFF;
