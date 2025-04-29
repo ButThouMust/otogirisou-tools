@@ -63,8 +63,7 @@ KernUp:
 ; I want to next incorporate the kerning code's pointers into the game code
 pushpc
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;
 
 ; replace ptrs for ctrl codes 100A, 100B, 100D, 100E with the four kerning codes
 
@@ -96,8 +95,7 @@ org (!CtrlCodeASMPointers+2*!KernLeftNum)
 org (!CtrlCodeASMPointers+2*!KernRightNum)
     dw KernRight
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;
 
 ; set data about arguments for each control code (what kind, how many)
 ; all 4 codes take one arg that is a regular script value; data should be 01 00
@@ -116,8 +114,7 @@ org (!CtrlCodeArgTable+2*!KernLeftNum)
 org (!CtrlCodeArgTable+2*!KernRightNum)
     db $01,$00
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;
 
 ; If the game gets a control code in text when printing a choice option, it will
 ; only execute the code if it is in a specific list at $00AC01. By default:
@@ -137,8 +134,7 @@ org (!CtrlCodeArgTable+2*!KernRightNum)
 org $00AC11
     db !KernLeftNum
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;
 
 ; Similar issue for when the player presses X or Y to view previous pages.
 ; Game will check another list at $00E095. By default:
@@ -250,11 +246,9 @@ CharsCanAutoLineBreak:
   ; because Asar doesn't support 16-bit table encodings, oh well
   incbin "font/auto linebreak chars.bin"
 
-; for any other possible additions to this file in free space
 pushpc
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;
 
 ; Aside: the file select and name entry screens work fine with the stock logic,
 ; so their control flow is unmodified.
@@ -275,8 +269,7 @@ LineBreakControlFlow:
     jsr.w LineBreakNewLogic ; now check if need to linebreak for the next char
     rts
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;
 
 ; control flow for linebreaking when reading previous pages by pressing X/Y
 ; just copy in the new control flow used for the main gameplay
@@ -332,8 +325,7 @@ org $008584
     ; jump over the code for "read P3/P4"
     ; jmp.w $8590
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;
 
 ; to check for R button being pressed, take value in $0A25, bitwise AND with
 ; 0x0010 (bit 4), and check if result is zero or not
@@ -343,32 +335,63 @@ org $008584
     ; and.w #$0010
     ; rts
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;
 
-; intercept the NAME-SAN control code to only print honorific if the flag is on
+; note: honorifics are longer in English than Japanese (1-4 chars -> 4-7 chars)
+; so if you write a long name and an honorific, possible to overflow the string
+; buffer at $5F when using the NAME-SAN 20 control code as-is
 
-NAME_SAN_20 = $A83A
-NAME_21 = $A825
+; this section accomplishes two things:
+; - change NAME-SAN into just "-SAN" (only print the honorific)
+; - intercept NAME-SAN control code to only print honorific if the flag is on
+; tradeoff: instances of <NAME-SAN 20> must now be encoded as <NAME 21><-SAN 20>
+; i.e. they take more space in the script
+
+; original ASM of NAME-SAN 20 for your convenience:
+;
+; NAME_SAN_20 = $A83A
+; NAME_21 = $A825
+;
+; org $00A83A
+;     jsr.w NAME_21         ; copy player's name with FFFF terminator into $5F
+;     dex                   ; the DEXes set honorific to start after the name,
+;     dex                   ;   specifically on the FFFF terminator
+; org $00a83f
+;     lda.l $7005a8         ; read ID # for which honorific to use
+; org $00a843
+;     cmp.w #$000c          ; process ID # and read an honorific to $5F buffer
+;     bcc $03               ; if ID value not in range 0-B, default to san
+;     lda #$0000
+;     cmp #$0002            ; check if ID value is for "no honorific"
+;     beq $1e               ; if yes, then branch to an RTS = do nothing
+;     ...
+
+!NoHonorific = #$0002
 
 pullpc
 
-NewNameSanCtrlCode:
+PrintCurrHonorificCtrlCode:
     rep #$30
-    lda.w UseHonorificFlag  ; if should not use honorifics, run NAME 21
-    bne NameSanLikeNormal
-    jmp.w NAME_21
-NameSanLikeNormal:
-    jmp.w NAME_SAN_20       ; otherwise, run (original) NAME-SAN 20
+    lda.w UseHonorificFlag  ; if should not use honorifics, do nothing
+    beq HonorificRTS
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    lda.l $7005a8           ; - only write honorific if not 2 ("no honorific")
+    cmp.w !NoHonorific      ; not checking this here makes game print name twice
+    beq   HonorificRTS
+
+                            ; note: this 10 byte block of code gets reused below
+HonorificCheckOkay:
+    ldx.w #$0000            ; set to write text to start of buffer at $5F
+    jsr.w $a83f             ; run just the original "print curr. honorific" code
+    jsr.w $adf5             ; signal that text to be printed is in $5F
+HonorificRTS:
+    rts
+
+;;;;;;;;;;;;;;;;;;;;
 
 ; implement a control code that prints an honorific from the list in the ROM,
 ; given an index into it; purpose is to handle any "hard-coded" honorifics in
 ; the script
-
-!NoHonorific = #$0002
 
 PrintHonorific:
     rep #$30
@@ -382,34 +405,25 @@ HonorificFlagOn:
     cmp.w !NoHonorific      ; - only write honorific if not 2 ("no honorific")
     beq   HonorificRTS
     cmp.w #$000C            ;   also check if index is within bounds for list
-    bcs   HonorificRTS
-HonorificCheckOkay:
-    ldx.w #$0000            ; set to write text to start of buffer at $5F
-    jsr.w $a843             ; reuse code in <NAME 20> for printing an honorific
-    jsr.w $adf5             ; signal that text to be printed will be in $5F
-HonorificRTS:
-    rts
+    bcs HonorificRTS
+    bra HonorificCheckOkay
 
+;     ldx.w #$0000            ; set to write text to start of buffer at $5F
+;     jsr.w $a843             ; reuse <NAME-SAN 20>'s code for printing honorific
+;     jsr.w $adf5             ; signal that text to be printed is in $5F
+; HonorificRTS:
+    ; rts
+
+; for any other possible additions to this file in free space
 pushpc
 
-; for your convenience:
-; org $00A83A               ; original code for NAME-SAN 20
-;     jsr.w NAME_21         ; copy player's name with FFFF terminator into $5F
-;     dex                   ; the DEXes set honorific to start after the name,
-;     dex                   ;   specifically on the FFFF terminator
-;     lda.l $7005a8         ; read ID # for which honorific to use
-; org $00a843
-;     cmp.w #$000c          ; process ID # and read an honorific to $5F buffer
-;     ...
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;
 
 ; set pointers to the new control codes in the control code table
 
-; overwrite Name-san code with version that checks honorific flag
+; set up pointer to code that just prints current honorific, instead of Name-San
 org (!CtrlCodeASMPointers+2*$20)
-    dw NewNameSanCtrlCode
+    dw PrintCurrHonorificCtrlCode
 
 ; reasoning for position: overwrite an unused control code for altering the text
 ; printing speed
