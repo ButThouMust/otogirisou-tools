@@ -9654,8 +9654,7 @@ Maybe, the woman in the white dress?<CLEAR 25>
 //「なんて呼ばれたの?」<LINE 00>
 “What did you hear?”<LINE 00>
 //「奈美、奈美ちゃん、って・・・」<LINE 00>
-// “I heard, ʻNami, Nami-chan...'”<LINE 00>
-“I heard, ʻNami, Nami<HONORIFIC><$00><$03>...'”<LINE 00>
+“I heard, ʻNami, Nami<CHAN>...'”<LINE 00>
 //「名前を!?」<CLEAR 25>
 “Your name?!”<CLEAR 25>
 
@@ -13008,7 +13007,7 @@ It read, “I'm afraid to sleep. What if I wake up and find Naoki dead?
 //姉さん、ぼくを殺して。<LINE 00>
 // rewrite, should you keep or remove the honorific if talking to siblings?
 Naomi, please kill me.<LINE 00>
-// Naomi<HONORIFIC><$00><$00>, please kill me.<LINE 00>
+// Naomi<SAN>, please kill me.<LINE 00>
 //お願い、ぼくを楽にさせて。<LINE 00>
 Please, let me pass peacefully.<LINE 00>
 //殺して！<CLEAR 25>
@@ -13030,7 +13029,7 @@ Choking up crying, Nami started to\ speak.<LINE 00>
 //「あの人、ナオミ・・・さん。<NAME-SAN 20>が来るまで、
 //ずっとこれを私に読んできかせるの。<LINE 00>
 // rewrite; need the honorific for siblings?
-// “That person, Na-, Naomi<HONORIFIC><$00><$00>...<WAIT 16>
+// “That person, Na-, Naomi<SAN>...<WAIT 16>
 “That person, Na-, Naomi...<WAIT 16>
  She read this to me and made me listen the whole time until you came here.<LINE 00>
 //あなたがいないあいだ、どんなに私がつらい思いをしていたか、
@@ -13909,7 +13908,7 @@ I started crying.<CLEAR 25>
 //「あっ、思い出した・・・<WAIT 16>ナオミさんは・・・
 //<DELAY 17><$00><$05>姉さんは・・・」<LINE 00>
 “Oh, I remembered... Naomi...<DELAY 17><$00><$05> My sister...”<LINE 00>
-// “Oh, I remembered... Naomi<HONORIFIC><$00><$00>...<DELAY 17><$00><$05> My sister...”<LINE 00>
+// “Oh, I remembered... Naomi<SAN>...<DELAY 17><$00><$05> My sister...”<LINE 00>
 //奈美は燃え上がる屋敷に顔を向けた。<LINE 00>
 Nami turned to the mansion going up in flames.<LINE 00>
 //「屋敷が燃えてる・・・。まさか・・・」<LINE 00>
@@ -13982,7 +13981,7 @@ It was like only Naomi's resentment was supporting the old mansion,
 //・<AUTO ADV 13>
 //」<LINE 00>
 “Naomi<DELAY 17><$00><$03>
-// “Naomi<HONORIFIC><$00><$00><DELAY 17><$00><$03>
+// “Naomi<SAN><DELAY 17><$00><$03>
 .<DELAY 17><$00><$03>
 .<DELAY 17><$00><$03>
 <AUTO ADV 13>.”<LINE 00>
@@ -17980,8 +17979,7 @@ I've never seen Nami like this.<CLEAR 25>
  Then suddenly, there was a terrible sound. We were thrown off a cliff...<WAIT 16><LINE 00>
 //誰かの声がして、<LINE 00>
 //『痛いよ、奈美ちゃん、痛いよ<AUTO ADV 13>』って。子供の声だった・・・」<CLEAR 25>
-// ʻIt hurts, Nami-chan, it hurts...'”<CLEAR 25>
-I heard a child's voice saying, ʻIt hurts, Nami<HONORIFIC><$00><$03>, it hurts...'”<CLEAR 25>
+I heard a child's voice saying, ʻIt hurts, Nami<CHAN>, it hurts...'”<CLEAR 25>
 
 //[$18F1AE-1] -> [71 8D C7]
 //「そんな話、はじめて聞いたぞ・・・<WAIT 16>
@@ -19429,13 +19427,11 @@ Naomi was on the floor, and her head was bloody.<LINE 00>
 //ぼくらが抱き起こすと、ナオミはうっすらと目をあけた。<LINE 00>
 We helped her sit up, and Naomi faintly opened her eyes.<LINE 00>
 //「ナオミさん・・・<WAIT 16>君はナオミさんだね?」<LINE 00>
-// I asked, “Naomi-san...<WAIT 16> You're Naomi-san, right?”<LINE 00>
-I asked, “Naomi<HONORIFIC><$00><$00>...<WAIT 16> You're Naomi<HONORIFIC><$00><$00>, right?”<LINE 00>
+I asked, “Naomi<SAN>...<WAIT 16> You're Naomi<SAN>, right?”<LINE 00>
 //うなずいたナオミは、奈美の姿を見つけると、目にいっぱいの涙を浮かべた。<LINE 00>
 She nodded, noticed Nami, and cried her eyes out.<LINE 00>
 //「<NAME 21>さん」<LINE 00>
-// “<NAME 21>-san.”<LINE 00>
-“<NAME 21><HONORIFIC><$00><$00>.”<LINE 00>
+“<NAME 21><SAN>.”<LINE 00>
 //ナオミはいきなりぼくの名を呼んだ。<CLEAR 25>
 She suddenly called out my name.<CLEAR 25>
 
@@ -19517,7 +19513,7 @@ Naomi stood up, her body shaking.<CLEAR 25>
 
 //[$199509-2] -> [4A A8 CC]
 //「あとは私が何とかするから。奈美、<NAME 21>さんと二人で逃げて。
-“I'll take care of the rest from here. Nami, escape with <NAME 21><HONORIFIC><$00><$00>.
+“I'll take care of the rest, so Nami, escape with <NAME 21><SAN>.
 //それから、二度とここには戻って来ないで!」<LINE 00>
  Then, never come back here again!”<LINE 00>
 //「お姉さん、私そんなことできない!」<LINE 00>
@@ -19582,8 +19578,7 @@ The sounds of her steps disappeared into the back of the house.<CLEAR 25>
 
 //[$1996C7-6] -> [3E B6 CC]
 //「つかまえて、<NAME 21>さん!」<LINE 00>
-// “Catch her, <NAME 21>-san!”<LINE 00>
-“Catch her, <NAME 21><HONORIFIC><$00><$00>!”<LINE 00>
+“Catch her, <NAME 21><SAN>!”<LINE 00>
 //ナオミは半狂乱だった。<LINE 00>
 Naomi was frantic.<LINE 00>
 //「奈美は怪魚に食べられてしまう!」<LINE 00>
@@ -19603,7 +19598,7 @@ Naomi was frantic.<LINE 00>
 //奈美の声だ！<LINE 00>
 That was Nami's voice!<LINE 00>
 //「<NAME 21>さん、奈美を助けて!」<CLEAR 25>
-“<NAME 21><HONORIFIC><$00><$00>, help her!”<CLEAR 25>
+“<NAME 21><SAN>, help her!”<CLEAR 25>
 
 //[$199748-6] -> [46 BA CC]
 <CODE 45><$00><$67><CODE 46><$00><$67>
@@ -19667,7 +19662,7 @@ I couldn't abandon her now that I knew this much.<LINE 00>
 //せめてホールのソファに寝かせようと思った。<LINE 00>
 I thought I'd at least lay her down on the sofa in the foyer.<LINE 00>
 //「私、一人で歩けます。<NAME 21>さんは早く奈美のところへ・・・」<LINE 00>
-“I, can walk by myself. Hurry to Nami, <NAME 21><HONORIFIC><$00><$00>...”<LINE 00>
+“I, can walk by myself. Hurry to Nami, <NAME 21><SAN>...”<LINE 00>
 //ナオミはそういって失神した。<CLEAR 25>
 Naomi fainted as she said that.<CLEAR 25>
 
@@ -19978,7 +19973,7 @@ Rather,<SFX 39><$00><$70> it was a cry of confusion and surprise.<LINE 00>
 // a slash, and a cut into flesh
 //「<NAME 21>さん、今のうちに、奈美を!」<CLEAR 25>
 Naomi called out while slashing it<SFX 39><$00><$88>,<LINE 00>
-“<NAME 21><HONORIFIC><$00><$00>, get Nami right now!”<CLEAR 25>
+“<NAME 21><SAN>, get Nami right now!”<CLEAR 25>
 
 //[$199FB7-2] -> [BA FD CC]
 //怪魚はナオミに向き直っていた。<LINE 00>
@@ -20000,7 +19995,7 @@ Its cries almost sounded like it was very sadly asking, “Naomi, why are you ki
 //ズタズタにされながら怪魚は泣いて許しをこおうとしている。<LINE 00>
 Naomi cried as she slashed the fish to shreds. Crying, it tried to beg for forgiveness.<LINE 00>
 //「<NAME 21>さん、奈美をッ！　早くッ!」<LINE 00>
-“<NAME 21><HONORIFIC><$00><$00>, take Nami! Hurry!”<LINE 00>
+“<NAME 21><SAN>, take Nami! Hurry!”<LINE 00>
 //ナオミの声はもっと悲痛だ。<CLEAR 25>
 Naomi sounded heartbroken.<CLEAR 25>
 
@@ -20018,7 +20013,7 @@ I jumped at them.<END CHOICE 1C>
 //ナオミはその振り上げた剣をぼくにめがけて放った。<LINE 00>
 Naomi threw the sword towards me.<LINE 00>
 //「<NAME 21>さんお願い、これで・・・!」<LINE 00>
-“<NAME 21><HONORIFIC><$00><$00>, please, use this...!”<LINE 00>
+“<NAME 21><SAN>, please, use this...!”<LINE 00>
 //ぼくは悟った。<LINE 00>
 I understood.<LINE 00>
 //剣を拾い上げ、怪魚に向けて突進した。<CLEAR 25>
@@ -20344,7 +20339,7 @@ Did the boiler catch fire or something? The floor burst into flames, engulfing t
 <SFX FADE IN 3A><$00><$64><$00><$3E><SFX VOLUME 3F><$00><$08><$00><$3E><SFX VOLUME 3F><$00><$01><$00><$1E>
 // crackling gets louder
 //「ナオミさん、逃げるんだ!」<LINE 00>
-I said, “Naomi<HONORIFIC><$00><$00>, run away!”<LINE 00>
+I said, “Naomi<SAN>, run away!”<LINE 00>
 //「お姉さん、早く!」<LINE 00>
 Nami said, “Naomi, hurry!”<LINE 00>
 //だが、死んだ弟直樹を抱きしめたナオミは動こうとしない。<LINE 00>
@@ -20403,7 +20398,7 @@ She was tightly hugging Naoki's corpse, and now was about to collapse here.<LINE
 //「お姉さん・・・!」<LINE 00>
 “Naomi...!”<LINE 00>
 //「ナオミさん!」<LINE 00>
-“Naomi<HONORIFIC><$00><$00>!”<LINE 00>
+“Naomi<SAN>!”<LINE 00>
 //ぼくらはかけ寄った。<LINE 00>
 We embraced.<LINE 00>
 //ナオミは虫の息だった。<CLEAR 25>
@@ -20423,7 +20418,7 @@ She weakly opened her eyes.<LINE 00>
 //ナオミは弱々しく奈美の手をつかんだ。<LINE 00>
 She weakly took Nami's hand.<LINE 00>
 //「<NAME 21>さんも聞いて下さい・・・」<CLEAR 25>
-“<NAME 21><HONORIFIC><$00><$00>, please listen, too...”<CLEAR 25>
+“<NAME 21><SAN>, please listen, too...”<CLEAR 25>
 
 //[$19AADC-7] -> [E7 56 CD]
 //ぼくはボイラーが気になったが、ナオミの言葉には迫力があった。<LINE 00>
@@ -23261,14 +23256,11 @@ When I decorated for the Tanabata festival, Naomi didn't even try to leave her r
 // 短冊 "tanzaku" are narrow strips of paper used for writing poems vertically
 I happened to find a long strip of paper with wishes written on it.<LINE 00>
 //「奈美ちゃんに会いたい」<LINE 00>
-//ʻI want to see Nami-chan.ʼ<LINE 00>
-ʻI want to see Nami<HONORIFIC><$00><$03>.ʼ<LINE 00>
+ʻI want to see Nami<CHAN>.ʼ<LINE 00>
 //「奈美ちゃんとくらせますように」<LINE 00>
-//ʻI wish I can live with Nami-chan.ʼ<LINE 00>
-ʻI wish I can live with Nami<HONORIFIC><$00><$03>.ʼ<LINE 00>
+ʻI wish I can live with Nami<CHAN>.ʼ<LINE 00>
 //「奈美ちゃんが帰ってきますように」<LINE 00>
-//ʻI wish Nami-chan will come home.ʼ<LINE 00>
-ʻI wish Nami<HONORIFIC><$00><$03> will come home.ʼ<CLEAR 25>
+ʻI wish Nami<CHAN> will come home.ʼ<CLEAR 25>
 //そんなことしか書かれていない。<CLEAR 25>
 // cutting this out due to redundancy and screen space
 // That was all it said.<LINE 00>
@@ -23337,9 +23329,8 @@ I saw Naomi's picture diary.<LINE 00>
 Nami is all she ever writes about.<LINE 00>
 //「奈美ちゃんゴメンネ。奈美ちゃんゴメンネ。奈美ちゃんゴメンネ」<LINE 00>
 //そればかり書かれている一ページがあった。<LINE 00>
-// ʻI'm sorry, Nami-chan. I'm sorry, Nami-chan. I'm sorry, Nami-chan.ʼ<LINE 00>
-// DONE: make sure this works both with and without honorifics
-One page was full of, ʻI'm sorry, Nami<HONORIFIC><$00><$03>. I'm sorry, Nami<HONORIFIC><$00><$03>. I'm sorry, Nami<HONORIFIC><$00><$03>.ʼ<LINE 00>
+// DONE: make sure this line has no overflow, both with and without honorifics
+One page was full of, ʻI'm sorry, Nami<CHAN>. I'm sorry, Nami<CHAN>. I'm sorry, Nami<CHAN>.ʼ<LINE 00>
 //ナオミは、自分が奈美を追い出したように思っているのだろうか』<CLEAR 25>
 Does Naomi, think she's driven Nami away?”<CLEAR 25>
 
@@ -27578,8 +27569,7 @@ My voice became hoarse at the end.<LINE 00>
 //「きゃッ、これでもッ?」<LINE 00>
 “Kya-, what's that?”<LINE 00>
 //「へ、平気・・・<DELAY 17><$00><$03>わがロボットRP23G君だ」<LINE 00>
-// “It-, it's fine...<DELAY 17><$00><$03> It's their RP23G-kun robot.”<LINE 00>
-“It-, it's fine...<DELAY 17><$00><$03> It's their RP23G<HONORIFIC><$00><$01> robot.”<LINE 00>
+“It-, it's fine...<DELAY 17><$00><$03> It's their RP23G<KUN> robot.”<LINE 00>
 <SFX VOLUME 3F><$00><$01><$00><$47>
 // it slowly gets louder
 //「笑えない冗談ヤメて」<CLEAR 25>
@@ -27597,8 +27587,7 @@ We looked into the hallway over there, and saw the armor lumbering away.<LINE 00
 // ambient low hum
 //奈美は白茶けた顔でいった。<LINE 00>
 //「ホントだ、RP23G君・・・<DELAY 17><$00><$05>逃げましょ!」<CLEAR 25>
-// “It's really an RP23G-kun...<DELAY 17><$00><$05> let's get out of here!”<CLEAR 25>
-Pale, Nami said, “It's really an RP23G<HONORIFIC><$00><$01>...<DELAY 17><$00><$05> Let's get out of here!”<CLEAR 25>
+Pale, Nami said, “It's really an RP23G<KUN>...<DELAY 17><$00><$05> Let's get out of here!”<CLEAR 25>
 
 //[$1AB477-6] -> [BE A3 D5]
 //奈美の意見にサンセイだ。<LINE 00>
@@ -31412,13 +31401,11 @@ No...<DELAY 17><$00><$02> This wasn't Nami.<CLEAR 25>
 
 //[$1AF65B-2] -> [DA B2 D7]
 //「ナオミさん・・・<DELAY 17><$00><$05>君は、ナオミさんだね?」<LINE 00>
-// “Naomi-san...<DELAY 17><$00><$05> You're, Naomi-san, right?”<LINE 00>
-“Naomi<HONORIFIC><$00><$00>...<DELAY 17><$00><$05> You're, Naomi<HONORIFIC><$00><$00>, right?”<LINE 00>
+“Naomi<SAN>...<DELAY 17><$00><$05> You're, Naomi<SAN>, right?”<LINE 00>
 //ナオミはとても悲しそうな目をしていた。<LINE 00>
 There was a very sorrowful look in her eyes.<LINE 00>
 //「<NAME 21>さん・・・<DELAY 17><$00><$05>行ったらみんなが不幸になる。
-// “<NAME 21>-san...<DELAY 17><$00><$05> Everyone became sad when you came.
-“<NAME 21><HONORIFIC><$00><$00>...<DELAY 17><$00><$05> Everyone became sad when you came.
+“<NAME 21><SAN>...<DELAY 17><$00><$05> Everyone became sad when you came.
 //奈美を本当に愛しているのなら、いますぐここから帰ってあげて」<LINE 00>
  If you really love Nami, please go home right now.”<LINE 00>
 //ぼくはナオミの腕をつかんだ。<LINE 00>
@@ -32698,8 +32685,7 @@ From a basement staircase in the gaping wide hole,<DELAY 17><$00><$05>
 //「<NAME 21>君、キミはよくやった。合格じゃ」<LINE 00>
 // rewrite; it says that a high-pitched voice came out the top of his bald head
 // eh, I'll just leave out those details
-// “<NAME 21>-kun, you passed!”<LINE 00>
-He said, “Well done, <NAME 21><HONORIFIC><$00><$01>, well done! You passed!”<LINE 00>
+He said, “Well done, <NAME 21><KUN>, well done! You passed!”<LINE 00>
 //「ゴ・・・<DELAY 17><$00><$05>合格?」<CLEAR 25>
 “I...<DELAY 17><$00><$05> passed?”<CLEAR 25>
 
@@ -32731,8 +32717,7 @@ The armor took off its face plate, and showed the smiling, rough, sunburned face
 //ミイラがその仮面を取ると、美しい母親の素顔になった。<LINE 00>
 The mummy took off her mask, and showed the beautiful face of Nami's mother.<LINE 00>
 //「あーおもしろかった。<NAME 21>さん・・・ステキだったわよ」<LINE 00>
-// “Ah, that was fun. <NAME 21>-san... you were wonderful.”<LINE 00>
-“Ah, that was fun. <NAME 21><HONORIFIC><$00><$00>... you were wonderful.”<LINE 00>
+“Ah, that was fun. <NAME 21><SAN>... you were wonderful.”<LINE 00>
 //ナオミが奈美そっくりの美しい顔で笑った。<CLEAR 25>
 Naomi had a beautiful smile just like Nami's.<CLEAR 25>
 
@@ -38846,8 +38831,7 @@ The armor, Naomi, and even Nami<DELAY 17><$00><$03> also took out their own blac
 //怪魚はただヨダレをたらして舌なめずりしている。<LINE 00>
 The monstrous fish only drooled and licked its lips.<LINE 00>
 //「さあ、いいかね<NAME 21>君」<LINE 00>
-// “Well, listen, <NAME 21>-kun.”<LINE 00>
-“Well, listen, <NAME 21><HONORIFIC><$00><$01>.”<LINE 00>
+“Well, listen, <NAME 21><KUN>.”<LINE 00>
 //全員がニコニコとぼくを見る。<LINE 00>
 Everybody was grinning at me.<LINE 00>
 //「な・・・<DELAY 17><$00><$03>何がはじまるんですか」<CLEAR 25>
@@ -38902,8 +38886,7 @@ The monstrous fish<DELAY 17><$00><$02> slurped loudly and licked its lips.<LINE 
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$06>
 // fade in armor
 //「わはは・・・<DELAY 17><$00><$03>では<NAME 21>君、私の番だ」<CLEAR 25>
-// “Wahaha...<DELAY 17><$00><$03> My turn now, <NAME 21>-kun.”<CLEAR 25>
-“Wahaha...<DELAY 17><$00><$03> My turn now, <NAME 21><HONORIFIC><$00><$01>.”<CLEAR 25>
+“Wahaha...<DELAY 17><$00><$03> My turn now, <NAME 21><KUN>.”<CLEAR 25>
 
 //[$1C8552-5] -> [95 2A E4]
 //鎧は自慢気に、ひとまわり大きなアタッシュケースをひらいた。<LINE 00>
@@ -39389,8 +39372,7 @@ I tried to laugh to the very end.<END CHOICE 1C>
 Nami quietly said that close to my ear.<LINE 00>
 //「あなたが好きよ、<NAME 21>さん」<LINE 00>
 //ナオミも負けずにささやいた。<LINE 00>
-// Not to be outdone, Naomi whispered, “I love you, <NAME 21>-san.”<LINE 00>
-Not to be outdone, Naomi whispered, “I love you, <NAME 21><HONORIFIC><$00><$00>.”<LINE 00>
+Not to be outdone, Naomi whispered, “I love you, <NAME 21><SAN>.”<LINE 00>
 //いや、こっちが奈美か？<LINE 00>
 No, was this Nami?<LINE 00>
 //全く同じ顔、同じ声ではわからなくなる。<CLEAR 25>
@@ -49544,8 +49526,7 @@ She finally went back to her ordinary expression.<CLEAR 25>
 
 // moving this line down to next screen to avoid screen overflow
 //「このナミちゃんだって、いまは大きくなってるわよね?」<CLEAR 25>
-// “Even this little girl Nami-chan grew up, right?”<CLEAR 25>
-“This little girl Nami<HONORIFIC><$00><$03> would be an adult now, right?”<LINE 00>
+“This little girl Nami<CHAN> would be an adult now, right?”<LINE 00>
 
 //[$1DC49A-7] -> [D7 24 EE]
 //「あ・・・<DELAY 17><$00><$03>ああ・・・!?」<LINE 00>
@@ -60141,8 +60122,7 @@ I heard him speak as if his voice came out the top of his head.<LINE 00>
 
 //[$1F8EA1-0] -> [08 75 FC]
 //「ハハハ・・・、<NAME 21>君、キミはなかなかよくやった」<LINE 00>
-// “Hahaha... <NAME 21>-kun, you did very well.”<LINE 00>
-“Hahaha... <NAME 21><HONORIFIC><$00><$01>, you did very well.”<LINE 00>
+“Hahaha... <NAME 21><KUN>, you did very well.”<LINE 00>
 //爺ちゃん博士は機嫌のいいキンキン声でつづけた。<LINE 00>
 Dr<AUTO ADV 13>. Einstein continued talking in good spirits.<LINE 00>
 //「奈美への愛情はある。度胸もいい。キスもうまい。
