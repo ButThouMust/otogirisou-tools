@@ -1,10 +1,10 @@
 16E989-4	x needs rewrite; tunnel back to the past
-17BC34-0	  needs rewrite; charred black newts
+17BC34-0	x needs rewrite; charred black newts
 18D0B0-7	x what does 抜く mean here? involves champagne
 19C668-1	  needs rewrite? possible typo in original JP text, いうぞ
 19C675-2	  needs rewrite? Nami asking something about undressing
-19D14F-6	x is 濡れる "get wet" also a double entendre in JP?
-19E2FC-6	x sensitivity note: one of the words translates to "autism"
+19D14F-6	x is 濡れる "get wet" also a double entendre in Japanese?
+19E2FC-6	x sensitivity note: contains the Japanese word for autism
 19E80E-1	  needs rewrite; what definition to use for 許す?
 1AA525-6	x 人魚/金魚, possibly a pun or play on words in JP
 1AA6CC-0	x subliminal 69 with ムカイの部屋 and 行クカイ?
@@ -48,7 +48,6 @@
 1E9AA1-3	  needs rewrite; 愛おしい means close but like 親しい, not 近い
 1EA1E2-1	  needs rewrite; "love name"
 1EA999-1	x translated original Japanese text with nuance of outdated language
-1EACF9-0	x 育ちがいいということがちがう
 1EB2B2-2	  NEEDS rewrite; one wall between Kouhei and Nami
 1EB643-2	x does アラブ人のアブラ qualify as a pun?
 1ED025-2	x is Nami saying she gave birth to the girl?
@@ -56,5 +55,4 @@
 1EDDE8-2	  needs rewrite; 気を残す means what?
 1EE23D-0	x これは血なのオッ？
 1EE7C9-0	  needs rewrite; can use more natural translation than "damn it"
-1F864B-7	x - sound didn't play when coming from 1C8C68-6
 1F931A-7	  needs rewrite; getting discouraged
