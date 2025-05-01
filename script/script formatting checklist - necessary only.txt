@@ -1,15 +1,13 @@
 16E989-4	x needs rewrite; tunnel back to the past
 17BC34-0	  needs rewrite; charred black newts
-17E59C-7	  needs rewrite; reference to game's title
 18D0B0-7	x what does 抜く mean here? involves champagne
 19C668-1	  needs rewrite? possible typo in original JP text, いうぞ
 19C675-2	  needs rewrite? Nami asking something about undressing
-19C6A8-1	  needs rewrite? what does 中とって mean? check
-19D14F-6	  needs rewrite; is 濡れる "get wet" also a double entendre in JP?
-19E2FC-6	  needs rewrite - one of the words translates to "autism"
+19D14F-6	x is 濡れる "get wet" also a double entendre in JP?
+19E2FC-6	x sensitivity note: one of the words translates to "autism"
 19E80E-1	  needs rewrite; what definition to use for 許す?
 1AA525-6	x 人魚/金魚, possibly a pun or play on words in JP
-1AA6CC-0	  needs rewrite; subliminal 69 with ムカイの部屋 and 行クカイ?
+1AA6CC-0	x subliminal 69 with ムカイの部屋 and 行クカイ?
 1AA828-7	  needs rewrite; why an old man instead of an old woman?
 1AA975-6	  needs rewrite; pun, 6F and 7F
 1AC6E0-7	x Japanese pun, 蛇口 "faucet" is spelled snake mouth
@@ -19,7 +17,6 @@
 1AD12A-6	  needs rewrite; 清く、正しく、美しく、よろしく
 1AD16E-7	x sound effects for Kouhei struggling for air
 1AE246-7	x Japanese cultural reference, rakugo story Jugemu
-1AE68B-2	  Japanese pun with word for torpedo
 1AE869-6	x 私の顔に免じて
 1B899B-3	  だぢげでぐでえ what does this mean???
 1B9069-7	  needs rewrite; leave out details about high-pitched voice
@@ -30,7 +27,6 @@
 1BD1E0-2	x two animals and a profession? one is not like the other
 1BEC08-2	x leave out エイと in all associated choices? 
 1BEEE5-0	x "magic spell" アブラカブラ、ブラノスヤ
-1BF001-2	x - but found this strange audio bug once on clear code from 1298
 1BF493-3	  needs rewrite; situation lets ハイ be conceivably "hi" or "yes"
 1BFA07-3	  needs rewrite; 今からこんなにかんじゃって
 1CCD0B-0	  needs rewrite; make Nami drunk (yikes)
@@ -44,7 +40,7 @@
 --------------------------------------------------------------------------------
 1DFDF3-6	  needs rewrite; JP pun, can't talk about flowers if not there
 1DFE2A-4	  needs rewrite; professional storyteller
-1E8360-6	  needs rewrite; untranslatable Kansai dialect joke
+1E8360-6	  needs rewrite; Kansai dialect joke
 1E83A8-1	x has reference to Ultraman's battle cry
 1E8C88-6	x god of thunder, and belly buttons
 1E8F55-2	  needs rewrite; "bed name"
@@ -52,13 +48,13 @@
 1E9AA1-3	  needs rewrite; 愛おしい means close but like 親しい, not 近い
 1EA1E2-1	  needs rewrite; "love name"
 1EA999-1	x translated original Japanese text with nuance of outdated language
-1EACF9-0	  NEEDS rewrite; 育ちがいいということがちがう
+1EACF9-0	x 育ちがいいということがちがう
 1EB2B2-2	  NEEDS rewrite; one wall between Kouhei and Nami
-1EB643-2	  needs rewrite? does アラブ人のアブラ qualify as a pun?
+1EB643-2	x does アラブ人のアブラ qualify as a pun?
 1ED025-2	x is Nami saying she gave birth to the girl?
 1EDAFB-1	  needs rewrite; gently caressing Nami's bones?
 1EDDE8-2	  needs rewrite; 気を残す means what?
-1EE23D-0	  needs rewrite; これは血なのオッ？
+1EE23D-0	x これは血なのオッ？
 1EE7C9-0	  needs rewrite; can use more natural translation than "damn it"
 1F864B-7	x - sound didn't play when coming from 1C8C68-6
 1F931A-7	  needs rewrite; getting discouraged

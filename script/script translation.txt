@@ -165,7 +165,7 @@ They had long, narrow stems and round leaves.<CLEAR 25>
 // The game's title 弟切草 is the Japanese name for a flower, St. John's wort.
 // The Japanese script depends on how it is written, so I will translate it
 // using the romanized name "otogirisou", rather than St. John's wort.
-“Ahh, those. They are otogirisou. The name is from Japanese and is written with characters that mean ʻyounger-brother-cutting grass.ʼ”<LINE 00>
+“Ahh, those. They are otogirisou. In Japanese, its name is written as ʻgrass that cuts the younger brother.ʼ”<LINE 00>
 //「弟切草?」<LINE 00>
 “Otogirisou?”<LINE 00>
 //「うん」<CLEAR 25>
@@ -1655,8 +1655,6 @@ An intercom was on the right gatepost.<CLEAR 25>
 #EMBWRITE(94)
 //「押してみる?」<LINE 00>
 //ぼくは奈美に言った。<END CHOICE 1C>
-// rewrite; I'm not entirely sure of the subjects for translating here since
-// Japanese allows you to drop subjects while English doesn't
 I asked, “Should we press it?”<END CHOICE 1C>
 //「私が?」<LINE 00>
 “Who, me?”<LINE 00>
@@ -11148,9 +11146,6 @@ Nami's cold voice echoed in my head.<LINE 00>
 
 //[$17E59C-7] -> [E7 2C BF]
 //弟を切る・・・。<LINE 00>
-// 弟 can refer to a brother-in-law, which Kouhei sort of would be to Naomi,
-// but this doesn't come across in English quite as well; this must refer
-// to the game's title, possibly rewrite to express this?
 Cutting the younger brother...<WAIT 16><LINE 00>
 //「まさか、奈美。違うよね。三人で暮らすのに邪魔だから、
 //ぼくを殺すんじゃないよね」<LINE 00>
@@ -21979,7 +21974,6 @@ I let Nami go first.<END CHOICE 1C>
 //奈美が怒った。<LINE 00>
 Nami got angry.<LINE 00>
 //「わかった、じゃあ中とって、奈美が脱ぐまで見届けることにしよう」<LINE 00>
-// not sure if correct, but 中を取る= to work out a compromise
 “Okay, let's meet halfway. I'll make sure you won't, until you do undress.”<LINE 00>
 //「出て行きなさい!」<LINE 00>
 “Please get out!”<LINE 00>
@@ -22513,8 +22507,8 @@ I held her shoulder and headed for the exit.<LINE 00>
 //[$19D14F-6] -> [7E 8A CE]
 #EMBWRITE(754)
 //「奈美が濡れた・・・」<END CHOICE 1C>
-// rewrite; I can't believe I'm actually asking this, but does 濡れる have the
-// same double entendre meaning like in English?
+// I can't believe I'm actually asking this, but does 濡れる have the same
+// double entendre meaning like "get wet" does in English?
 “Nami got wet...”<END CHOICE 1C>
 //「・・・ううん、私、何ともない」<LINE 00>
 “...No, I, I'm alright.”<LINE 00>
@@ -26788,14 +26782,14 @@ I like Nami's sense of humor<SFX VOLUME 3F><$00><$05><$00><$2A>.<CLEAR 25>
 //ギクリと奈美が叫んだ。<LINE 00>
 Suddenly, Nami screamed.<LINE 00>
 //「ヨロイが・・・！　ねえ、ヨロイが消えてるッ!<SFX 39><$00><$10>」<LINE 00>
-“The armor...! Look, it's gone<SFX 39><$00><$10>!”<LINE 00>
+“Look...! The armor's gone<SFX 39><$00><$10>!”<LINE 00>
 // mysterious discovery
 //奈美の指さした所を見ると、たった今まであった鎧が消えていた。<LINE 00>
 I looked where she pointed, and the armor that was there until just now was gone.<LINE 00>
 //ぼくは笑った。<LINE 00>
 I laughed.<LINE 00>
 //「手品さ。うまいもんだろ」<LINE 00>
-“It's a magic trick. Pretty good, huh?”<LINE 00>
+“Pretty cool magic trick, Nami.”<LINE 00>
 //「ありがと。でも声がふるえてるわよ」<CLEAR 25>
 “Thanks. But your voice is shaking.”<CLEAR 25>
 
@@ -30465,8 +30459,8 @@ I spoke, believing I had become a UN ambassador.<LINE 00>
 //「いいや、ギョライになる!」<END CHOICE 1C>
 // ぎょらい -> 魚雷 "torpedo"; direct translation is "No, I'll become a torpedo"
 // I'd wracked my brain a lot, to no avail, trying to come up with a clever pun
-// that rhymes with "hate"; a mine and a torpedo are both explosive weapons, so
-// I decided to use this instead, with different degrees of dislike
+// that rhymes with "hate"; mines and torpedoes are different kinds of explosive
+// weapons, so I decided to use this instead, with different degrees of dislike
 “No, I'll just mildly dislike you instead!”<END CHOICE 1C>
 <JMP 03>
 #EMBSET(1225)
@@ -55063,8 +55057,8 @@ I exclaimed, “A phone...!”<LINE 00>
 //フランス料理にワインといきたいわ」<LINE 00>
 “Good idea. But before that, I want to call a good chef and have French food and wine.”<LINE 00>
 //育ちがいいということがちがう。<CLEAR 25>
-// rewrite; "saying she was brought up well is wrong/incorrect"??
-I wouldn't exactly say she was brought up well.<CLEAR 25>
+// "saying she was brought up well is wrong/incorrect"?
+Was it right to say she was brought up well?<CLEAR 25>
 
 //[$1EAD75-1] -> [A9 6B F5]
 //「おれならフロントに電話して、ルームキーを届けさせる」<LINE 00>
@@ -55159,10 +55153,10 @@ So I loudly shouted, “I won't answer\ it!”<LINE 00>
 //「もしもし?・・・きゃッ!」<LINE 00>
 “Hello<AUTO ADV 13>?<DELAY 17><$00><$03> ...Kya!”<LINE 00>
 //勇気を出して奈美がとったが、小さく叫んで放りだしてしまった<SFX 39><$00><$A0>。<LINE 00>
-Nami got the courage to take it, but screamed a little and threw it away<SFX 39><$00><$A0>.<LINE 00>
+Nami got the courage to take it, but screamed quietly and threw it away<SFX 39><$00><$A0>.<LINE 00>
 // it hits the ground
 //なんだかわからないがぼくが代った。<LINE 00>
-I didn't really know why, but I took\ it in her place for some reason.<LINE 00>
+I didn't really know why, but I took\ it for her instead.<LINE 00>
 //「もしもしッ?」<CLEAR 25>
 “Hello?”<CLEAR 25>
 
@@ -56986,7 +56980,7 @@ I shouted, “What?! Are you saying, you've given birth to twins here?!”<LINE 
 //「ちがう。よく聞いてヨ!」<LINE 00>
 “No. Listen to me!”<LINE 00>
 //奈美もすこしヒステリックになっている。<CLEAR 25>
-She was becoming a little hysterical.<CLEAR 25>
+She was becoming a little hysterical, too.<CLEAR 25>
 
 //[$1ED025-2] -> [2A 81 F6]
 //「あたし、このベッドで遊んだのよ！・・・ここで、もう一人の女の子と背くらべした!
