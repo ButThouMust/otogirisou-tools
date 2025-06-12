@@ -2,8 +2,8 @@
 Otogirisou has two sections in ROM that hold data about the font for the script.
 It is 1bpp with variable width and variable height.
 
-0xF95A8 - 0xFFFB8: font space that holds the actual font data
-0x074AC - 0x075CD: lookup table with 58 entries of metadata for the font data
+0xF95A8 - 0xFFFB8: space for the font data itself
+0x074AC - 0x075CD: font metadata lookup table (58 structures)
 
 $00A4DB: Subroutine for reading the font data for a character.
          The relevant assembly code goes until $00A5DF.
@@ -37,15 +37,19 @@ Caution: the font data must stay within one bank, because the assembly code does
 not bank wrap for you from, say, $1EFFFF to $1F8000.
 
 For all 58 structures, the four bits surrounding the height value are all 0s.
-According to the assembly code, there shouldn't be any special meaning to this.
-It is most likely just a coincidence that the first character of every new
-dimension range always starts byte-aligned.
+As for why it's in the middle of the byte, I found a possible explanation when
+messing around a little in Dragon Quest V (another Chunsoft SFC game). DQ V's
+font format is nearly identical but dedicates bits 0-1 of byte 4 to encode how
+many banks to advance. For example, its font data starts in bank 07, with the
+code thus allowing to load from banks 07, 08, 09, or 0A. That Otogirisou's font
+(and DQ V's, for that matter) could fit in one bank made that bank advance code
+unnecessary, and the rest of the metadata format got carried over unchanged.
 
 Encoding value 0000 is a space character that reuses the dimensions (width) of
-the previously printed character. That's all that happens. Even if you think
-this seems useless, I recommend that you don't tamper with it because lots of
-assembly code for it assumes that its value is 0000, as in like:
-LDA char_value ; BEQ do_something ; BNE do_something_else
+the previously printed character. Even if you think this seems useless, I'd
+rather not try to assign a non-whitespace character to encoding 0000, since some
+assembly code does things like:
+LDA char_value ; BEQ handle_space [or BNE handle_character]
 
 ---
 
@@ -69,66 +73,66 @@ pixels tall. The font data for these characters start at 1F[9EAE]-0.
 
 Here is a table summarizing the data for the 58 structures.
 
- ## |  raw ROM data  | W | H | 1st char | last char | # chars | offset 
-----+----------------+---+---+----------+-----------+---------+--------
- 00 | 8C B0 A8 95 30 | B | C |   001    |    08C    |    8C   |  95A8
- 01 | 7E B4 AE 9E 34 | B | D |   08D    |    50A    |   47E   |  9EAE
- 02 | 16 C0 FB EE 30 | C | C |   50B    |    520    |    16   |  EEFB
- 03 | 0D 70 87 F0 30 | 7 | C |   521    |    52D    |     D   |  F087
- 04 | 01 50 10 F1 30 | 5 | C |   52E    |    52E    |     1   |  F110
- 05 | 1B 90 18 F1 2C | 9 | 7 |   52F    |    549    |    1B   |  F118
- 06 | 14 80 67 F2 2C | 8 | 7 |   54A    |    55D    |    14   |  F267
- 07 | 07 70 43 F3 2C | 7 | 7 |   55E    |    564    |     7   |  F343
- 08 | 03 50 87 F3 2C | 5 | 7 |   565    |    567    |     3   |  F387
- 09 | 20 B0 9C F3 2C | B | 7 |   568    |    587    |    20   |  F39C
- 10 | 17 A0 80 F5 2C | A | 7 |   588    |    59E    |    17   |  F580
- 11 | 07 80 BD F6 20 | 8 | 8 |   59F    |    5A5    |     7   |  F6BD
- 12 | 02 70 F5 F6 20 | 7 | 8 |   5A6    |    5A7    |     2   |  F6F5
- 13 | 04 70 03 F7 24 | 7 | 9 |   5A8    |    5AB    |     4   |  F703
- 14 | 04 30 23 F7 2C | 3 | 7 |   5AC    |    5af    |     4   |  F723
- 15 | 03 40 34 F7 30 | 4 | C |   5B0    |    5B2    |     3   |  F734
- 16 | 01 B0 46 F7 20 | B | 8 |   5B3    |    5B3    |     1   |  F746
- 17 | 03 90 51 F7 20 | 9 | 8 |   5B4    |    5B6    |     3   |  F751
- 18 | 04 80 6C F7 28 | 8 | A |   5B7    |    5BA    |     4   |  F76C
- 19 | 01 60 94 F7 20 | 6 | 8 |   5BB    |    5BB    |     1   |  F794
- 20 | 03 70 9A F7 28 | 7 | A |   5BC    |    5BE    |     3   |  F79A
- 21 | 04 90 B5 F7 24 | 9 | 9 |   5BF    |    5C2    |     4   |  F7B5
- 22 | 03 B0 DE F7 24 | B | 9 |   5C3    |    5C5    |     3   |  F7DE
- 23 | 02 90 04 F8 0C | 9 | 3 |   5C6    |    5C7    |     2   |  F804
- 24 | 01 90 0B F8 14 | 9 | 5 |   5C8    |    5C8    |     1   |  F80B
- 25 | 06 90 11 F8 30 | 9 | C |   5C9    |    5CE    |     6   |  F811
- 26 | 01 50 62 F8 08 | 5 | 2 |   5CF    |    5CF    |     1   |  F862
- 27 | 01 70 64 F8 34 | 7 | D |   5D0    |    5D0    |     1   |  F864
- 28 | 01 70 70 F8 04 | 7 | 1 |   5D1    |    5D1    |     1   |  F870
- 29 | 01 50 71 F8 18 | 5 | 6 |   5D2    |    5D2    |     1   |  F871
- 30 | 02 90 75 F8 18 | 9 | 6 |   5D3    |    5D4    |     2   |  F875
- 31 | 01 10 83 F8 30 | 1 | C |   5D5    |    5D5    |     1   |  F883
- 32 | 01 30 85 F8 14 | 3 | 5 |   5D6    |    5D6    |     1   |  F885
- 33 | 05 30 87 F8 30 | 3 | C |   5D7    |    5DB    |     5   |  F887
- 34 | 01 50 9E F8 34 | 5 | D |   5DC    |    5DC    |     1   |  F89E
- 35 | 01 50 A7 F8 1C | 5 | 7 |   5DD    |    5DD    |     1   |  F8A7
- 36 | 01 60 AC F8 34 | 6 | D |   5DE    |    5DE    |     1   |  F8AC
- 37 | 03 60 B6 F8 24 | 6 | 9 |   5DF    |    5E1    |     3   |  F8B6
- 38 | 0E A0 CB F8 30 | A | C |   5E2    |    5EF    |     E   |  F8CB
- 39 | 05 80 9D F9 30 | 8 | C |   5F0    |    5F4    |     5   |  F99D
- 40 | 03 B0 D9 F9 38 | B | E |   5F5    |    5F7    |     3   |  F9D9
- 41 | 1D A0 13 FA 34 | A | D |   5F8    |    614    |    1D   |  FA13
- 42 | 07 90 EB FB 34 | 9 | D |   615    |    61B    |     7   |  FBEB
- 43 | 0B C0 52 FC 34 | C | D |   61C    |    626    |     B   |  FC52
- 44 | 05 80 29 FD 24 | 8 | 9 |   627    |    62B    |     5   |  FD29
- 45 | 01 90 56 FD 1C | 9 | 7 |   62C    |    62C    |     1   |  FD56
- 46 | 05 B0 5E FD 28 | B | A |   62D    |    631    |     5   |  FD5E
- 47 | 10 C0 A3 FD 2C | C | 7 |   632    |    641    |    10   |  FDA3
- 48 | 03 D0 AB FE 2C | D | 7 |   642    |    644    |     3   |  FEAB
- 49 | 03 A0 E1 FE 28 | A | A |   645    |    647    |     3   |  FEE1
- 50 | 09 90 07 FF 28 | 9 | A |   648    |    650    |     9   |  FF07
- 51 | 01 A0 6D FF 20 | A | 8 |   651    |    651    |     1   |  FF6D
- 52 | 01 B0 77 FF 1C | B | 7 |   652    |    652    |     1   |  FF77
- 53 | 01 70 81 FF 1C | 7 | 7 |   653    |    653    |     1   |  FF81
- 54 | 02 A0 88 FF 24 | A | 9 |   654    |    655    |     2   |  FF88
- 55 | 01 C0 9F FF 24 | C | 9 |   656    |    656    |     1   |  FF9F
- 56 | 01 80 AD FF 18 | 8 | 6 |   657    |    657    |     1   |  FFAD
- 57 | 01 60 B3 FF 1C | 6 | 7 |   658    |    658    |     1   |  FFB3
+ ## |  raw ROM data  | W | H |  range   | # chars | offset 
+----+----------------+---+---+----------+---------+--------
+ 00 | 8C B0 A8 95 30 | B | C |   1- 8C  |    8C   |  95A8
+ 01 | 7E B4 AE 9E 34 | B | D |  8D-50A  |   47E   |  9EAE
+ 02 | 16 C0 FB EE 30 | C | C | 50B-520  |    16   |  EEFB
+ 03 | 0D 70 87 F0 30 | 7 | C | 521-52D  |     D   |  F087
+ 04 | 01 50 10 F1 30 | 5 | C | 52E      |     1   |  F110
+ 05 | 1B 90 18 F1 2C | 9 | 7 | 52F-549  |    1B   |  F118
+ 06 | 14 80 67 F2 2C | 8 | 7 | 54A-55D  |    14   |  F267
+ 07 | 07 70 43 F3 2C | 7 | 7 | 55E-564  |     7   |  F343
+ 08 | 03 50 87 F3 2C | 5 | 7 | 565-567  |     3   |  F387
+ 09 | 20 B0 9C F3 2C | B | 7 | 568-587  |    20   |  F39C
+ 10 | 17 A0 80 F5 2C | A | 7 | 588-59E  |    17   |  F580
+ 11 | 07 80 BD F6 20 | 8 | 8 | 59F-5A5  |     7   |  F6BD
+ 12 | 02 70 F5 F6 20 | 7 | 8 | 5A6-5A7  |     2   |  F6F5
+ 13 | 04 70 03 F7 24 | 7 | 9 | 5A8-5AB  |     4   |  F703
+ 14 | 04 30 23 F7 2C | 3 | 7 | 5AC-5af  |     4   |  F723
+ 15 | 03 40 34 F7 30 | 4 | C | 5B0-5B2  |     3   |  F734
+ 16 | 01 B0 46 F7 20 | B | 8 | 5B3      |     1   |  F746
+ 17 | 03 90 51 F7 20 | 9 | 8 | 5B4-5B6  |     3   |  F751
+ 18 | 04 80 6C F7 28 | 8 | A | 5B7-5BA  |     4   |  F76C
+ 19 | 01 60 94 F7 20 | 6 | 8 | 5BB      |     1   |  F794
+ 20 | 03 70 9A F7 28 | 7 | A | 5BC-5BE  |     3   |  F79A
+ 21 | 04 90 B5 F7 24 | 9 | 9 | 5BF-5C2  |     4   |  F7B5
+ 22 | 03 B0 DE F7 24 | B | 9 | 5C3-5C5  |     3   |  F7DE
+ 23 | 02 90 04 F8 0C | 9 | 3 | 5C6-5C7  |     2   |  F804
+ 24 | 01 90 0B F8 14 | 9 | 5 | 5C8      |     1   |  F80B
+ 25 | 06 90 11 F8 30 | 9 | C | 5C9-5CE  |     6   |  F811
+ 26 | 01 50 62 F8 08 | 5 | 2 | 5CF      |     1   |  F862
+ 27 | 01 70 64 F8 34 | 7 | D | 5D0      |     1   |  F864
+ 28 | 01 70 70 F8 04 | 7 | 1 | 5D1      |     1   |  F870
+ 29 | 01 50 71 F8 18 | 5 | 6 | 5D2      |     1   |  F871
+ 30 | 02 90 75 F8 18 | 9 | 6 | 5D3-5D4  |     2   |  F875
+ 31 | 01 10 83 F8 30 | 1 | C | 5D5      |     1   |  F883
+ 32 | 01 30 85 F8 14 | 3 | 5 | 5D6      |     1   |  F885
+ 33 | 05 30 87 F8 30 | 3 | C | 5D7-5DB  |     5   |  F887
+ 34 | 01 50 9E F8 34 | 5 | D | 5DC      |     1   |  F89E
+ 35 | 01 50 A7 F8 1C | 5 | 7 | 5DD      |     1   |  F8A7
+ 36 | 01 60 AC F8 34 | 6 | D | 5DE      |     1   |  F8AC
+ 37 | 03 60 B6 F8 24 | 6 | 9 | 5DF-5E1  |     3   |  F8B6
+ 38 | 0E A0 CB F8 30 | A | C | 5E2-5EF  |     E   |  F8CB
+ 39 | 05 80 9D F9 30 | 8 | C | 5F0-5F4  |     5   |  F99D
+ 40 | 03 B0 D9 F9 38 | B | E | 5F5-5F7  |     3   |  F9D9
+ 41 | 1D A0 13 FA 34 | A | D | 5F8-614  |    1D   |  FA13
+ 42 | 07 90 EB FB 34 | 9 | D | 615-61B  |     7   |  FBEB
+ 43 | 0B C0 52 FC 34 | C | D | 61C-626  |     B   |  FC52
+ 44 | 05 80 29 FD 24 | 8 | 9 | 627-62B  |     5   |  FD29
+ 45 | 01 90 56 FD 1C | 9 | 7 | 62C      |     1   |  FD56
+ 46 | 05 B0 5E FD 28 | B | A | 62D-631  |     5   |  FD5E
+ 47 | 10 C0 A3 FD 2C | C | 7 | 632-641  |    10   |  FDA3
+ 48 | 03 D0 AB FE 2C | D | 7 | 642-644  |     3   |  FEAB
+ 49 | 03 A0 E1 FE 28 | A | A | 645-647  |     3   |  FEE1
+ 50 | 09 90 07 FF 28 | 9 | A | 648-650  |     9   |  FF07
+ 51 | 01 A0 6D FF 20 | A | 8 | 651      |     1   |  FF6D
+ 52 | 01 B0 77 FF 1C | B | 7 | 652      |     1   |  FF77
+ 53 | 01 70 81 FF 1C | 7 | 7 | 653      |     1   |  FF81
+ 54 | 02 A0 88 FF 24 | A | 9 | 654-655  |     2   |  FF88
+ 55 | 01 C0 9F FF 24 | C | 9 | 656      |     1   |  FF9F
+ 56 | 01 80 AD FF 18 | 8 | 6 | 657      |     1   |  FFAD
+ 57 | 01 60 B3 FF 1C | 6 | 7 | 658      |     1   |  FFB3
 
 --------------------------------------------------------------------------------
 
@@ -170,9 +174,8 @@ We start at bit position 3, using a width of B pixels (bits), and loop D times.
 
 Calculate value: (bit_position & 0x7) + width - 0x10 = 3 + B - 10 = -2 (FFFE)
 
-The best way to explain this value's purpose is that it represents the # of bits
-out of alignment the pixel row is from having its topmost bit (leftmost pixel)
-on the MSB of the middle byte in the three bytes we read from ROM.
+This value represents how many bits out of alignment the pixel row is from
+having its topmost bit (leftmost pixel) on the MSB of the middle data byte.
 Negative values mean to shift left. Positive values mean to shift right.
 Of course, a 0 means that the pixel row is already aligned correctly.
 
@@ -187,13 +190,14 @@ Anyways, the -2 represents that, here, we have to left shift the 3 bytes twice.
 Next, the game calculates: bit_position <- bit_position + width
 This gives us the bit position of the start of the next row, measured from the
 pointer that goes to the start of the character.
-Here, bit_pos <- 3 + B = E. If you prefer, this means 1 byte at bit position 6.
+Here, bit_pos <- 3 + B = E -> 1*8 + 6 -> advance 1 byte, go to bit position 6.
 
 Then, calculate Y <- (width - 1) * 2. Y indexes a list of bitmasks at $00A5F1.
 Each bitmask has the top (width) bits set, and the remaining bits clear.
 The list of bitmasks is 8000, C000, E000, F000, F800, ..., FFFE, FFFF
 (Technically, the FFFF is unreachable, requiring a width of 16, but it's there)
-A simple way to calculate this: bitmask = (FFFF << (16 - width)) & FFFF
+A simple way to calculate this if you want to code your own decompressor:
+bitmask = (FFFF << (16 - width)) & FFFF
 
 The bitmask we want uses Y <- (B - 1) * 2 = 0x14. At $00A605, [E0 FF] or FFE0.
 Bitwise AND the bitmask with the bottom two bytes of font data:
@@ -273,7 +277,7 @@ Isolate out the groups
 [00101111110][00101000010][11101111110][00100010000][00011111111][00100101100]
 [11001100110]
 
-Take the rows and reverse their order to arrange them correctly vertically:
+Take the rows and reverse their order to correctly arrange them vertically:
 Then replace the 0's with spaces and surround in a BxD box.
                   0123456789A
                  +-----------+
@@ -294,6 +298,26 @@ Then replace the 0's with spaces and surround in a BxD box.
 
 Another motivation for a new dumper was that Chunsoft reused this format for the
 font in Kamaitachi no Yoru, but stored the font metadata table differently.
+
+--------------------------------------------------------------------------------
+
+You may notice that on screen, the game applies a drop    0123456789AB
+shadow to the font. The subroutine at $00A6FF generates  +============+
+it by copying font pixels once to the right, and once   0|##- ##- ##- |
+down and to the right. Here is an example reusing 道,	1| -#- #-##-- |
+with '#' being font pixels and '-' being shadow pixels. 2|   ########-|
+                                               			3|  #---#-----|
+I found it was not too difficult to improve the text's  4|###-######- |
+readability by modifying the ASM to also copy font      5| -#-#----#- |
+pixels once directly down. You may notice that with     6|  #-######- |
+the fairly pixel-dense kanji at right, this wouldn't    7|  #-#----#- |
+alter that many pixels (r1c0, r1c4, r2c2, r5c0, rDc0).  8|  #-######- |
+However, I did find this change to be useful for the    9|  #-#----#- |
+English font, especially in certain story scenarios     A| ##-######- |
+when the background becomes just solid white.           B| ###------- |
+                                                        C|##-########-|
+                                                        D| -----------|
+                                                         +============+
 
 --------------------------------------------------------------------------------
 
