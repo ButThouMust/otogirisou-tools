@@ -27,6 +27,12 @@ public class RecompressGraphics {
                    (length == other.length) &&
                    (position == other.position);
         }
+
+        public String toString() {
+            String str = "0x%5X: 0x%5X byte %s\n";
+            String type = isRun ? "run" : "sequence";
+            return String.format(str, position, length, type);
+        }
     }
 
     private static FileInputStream graphics;
@@ -56,73 +62,60 @@ public class RecompressGraphics {
         graphics.close();
     }
 
+    private static int getRunLengthAtPosition(int startPos) {
+        if (startPos < 0 || startPos >= gfxData.length) return 0;
+
+        int size = 1;
+        // limit size of run based on the RLE format
+        while (startPos + size < gfxData.length && size < MAX_RUN_LENGTH) {
+            if (gfxData[startPos] != gfxData[startPos + size]) {
+                break;
+            }
+            size++;
+        }
+        return size;
+    }
+
     private static void getDataGroups() {
         dataGroups = new ArrayList<>();
 
-        // set up initial state for keeping track of groups
-        // ASSUMPTION: an input file will contain at least one byte
-        int prevByte = ((int) gfxData[0]) & 0xFF;
-        int groupStart = 0;
-        int groupSize = 1;
-        boolean inRun = false;
-
-        for (int pos = 1; pos < gfxData.length; pos++) {
-            int currByte = ((int) gfxData[pos]) & 0xFF;
-            if (inRun) {
-                // run continues if data value matches and enough space exists
-                if (currByte == prevByte && groupSize < MAX_RUN_LENGTH) {
-                    groupSize++;
-                }
-                // otherwise, group is done, and set up for next one
-                else {
-                    DataGroup dataGroup = new DataGroup(inRun, groupSize, groupStart);
-                    dataGroups.add(dataGroup);
-
-                    // the next group is a sequence of literals that starts after
-                    // the last byte of the current group
-                    groupStart = pos;
-                    groupSize = 1;
-                    inRun = false;
+        int pos = 0;
+        int numLits = 0;
+        while (pos < gfxData.length) {
+            int runLength = getRunLengthAtPosition(pos);
+            // run length of 1 means the value is a literal
+            if (runLength == 1) {
+                // combine into group of literals, if any
+                // if size maxed out, this is the end of the group; output it
+                numLits++;
+                if (numLits == MAX_CONSEC_LITERALS) {
+                    DataGroup lits = new DataGroup(false, numLits, pos - numLits);
+                    dataGroups.add(lits);
+                    numLits = 0;
                 }
             }
+            // run length of 2+ means, well, we have a run
             else {
-                // list of literals stops if two matching bytes in a row
-                if (currByte == prevByte) {
-                    if (groupSize - 1 != 0) {
-                        DataGroup dataGroup = new DataGroup(inRun, groupSize - 1, groupStart);
-                        dataGroups.add(dataGroup);
-                    }
-
-                    // the next group is a run that starts on the first of the
-                    // two matching bytes
-                    groupStart = pos - 1;
-                    groupSize = 2;
-                    inRun = true;
+                // output any literals we have accumulated so far
+                if (numLits != 0) {
+                    DataGroup lits = new DataGroup(false, numLits, pos - numLits);
+                    dataGroups.add(lits);
+                    numLits = 0;
                 }
-                // list of literals continues if two bytes do not match and if
-                // there is enough space
-                else {
-                    if (groupSize == MAX_CONSEC_LITERALS) {
-                        DataGroup dataGroup = new DataGroup(inRun, groupSize, groupStart);
-                        dataGroups.add(dataGroup);
 
-                        // the next group is a sequence of literals that starts
-                        // on the current byte
-                        groupStart = pos;
-                        groupSize = 1;
-                        inRun = false;
-                    }
-                    else {
-                        groupSize++;
-                    }
-                }
+                // we already know how long the run is, so output the group
+                DataGroup run = new DataGroup(true, runLength, pos);
+                dataGroups.add(run);
             }
-            prevByte = currByte;
+            // advance past run or literal
+            pos += runLength;
         }
 
-        // create object for whatever data is left over in the last group 
-        DataGroup dataGroup = new DataGroup(inRun, groupSize, groupStart);
-        dataGroups.add(dataGroup);
+        // output any straggling literals we have at the end of the file 
+        if (numLits > 0) {
+            DataGroup lits = new DataGroup(false, numLits, pos - numLits);
+            dataGroups.add(lits);
+        }
     }
 
     private static void combineGroups() {
@@ -168,8 +161,7 @@ public class RecompressGraphics {
                     // for now, group as [7F] [5] [5] -- 5s will combine later
 
                     // manually create new sequence with the remaining bytes
-                    int combinedLength = lastCombinedDG.length + currDG.length;
-                    int newLength = combinedLength - MAX_CONSEC_LITERALS;
+                    int newLength = (lastCombinedDG.length + currDG.length) - MAX_CONSEC_LITERALS;
                     int newPosition = lastCombinedDG.position + MAX_CONSEC_LITERALS;
                     DataGroup newGroup = new DataGroup(false, newLength, newPosition);
                     combinedDataGroups.add(newGroup);
@@ -188,10 +180,8 @@ public class RecompressGraphics {
 
     private static void interpretGroups() throws IOException {
         // for debugging group creation process -- sizes, starts, types
-        String format = "0x%5X: 0x%5X byte %s\n";
         for (DataGroup dg : dataGroups) {
-            String type = dg.isRun ? "run" : "sequence";
-            logFile.write(String.format(format, dg.position, dg.length, type));
+			logFile.write(dg.toString());
         }
     }
 
@@ -239,6 +229,10 @@ public class RecompressGraphics {
             String logFilename = "LOG " + removeFileExtension(inputFile) + ".txt";
 
             getGfxDataAsArray(inputFile);
+            if (gfxData.length == 0) {
+                // skip any empty files
+                continue;
+            }
             getDataGroups();
             combineGroups();
 
