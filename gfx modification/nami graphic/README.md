@@ -29,8 +29,8 @@ need to un-interleave the 2bpp bitplanes, and recompress.
 According to my notes, I had theorized this "fix" as late as June 2023 but
 didn't try it out for real until filling out this readme on October 21, 2024,
 after releasing v1.0 of the patch. This offered nothing new to the player and
-didn't warrant a whole new patch release on its own. However, it will be
-included in the next patch, if any.
+didn't warrant a whole new patch release on its own. It was included in patch
+version 1.1.
 
 # Special steps for generating a screenshot
 This is one case where I recommend just taking a screenshot of a tile viewer
