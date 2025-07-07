@@ -50,10 +50,11 @@ to the file select screen.
 To not go totally crazy checking the script, I needed a systematic way to track
 if pages were good, had rewrites/reformats that needed to be checked in-game, or
 needed rewrites/retranslations. What I came up with, was to take a clean JP
-script dump, and only keep the lines like `//[$15E401-0] -> [08 20 AF]`. A blank
-checklist (I used regex to make it) is included for your convenience.
+script dump, and only keep the lines like `//[$15E401-0] -> [08 20 AF]`. A
+[blank checklist](/script/blank%20script%20checklist.txt) (created with regex)
+is included for your convenience.
 
-The game's choices reach all around the script, so it's unfortunately infeasible
+The game's choices reach all around the script, so it's sadly not very feasible
 to test a script translation until it's fully filled in. So make sure that the
 raw dump is in a format you like before you start editing it.
 
@@ -65,13 +66,14 @@ the page in your checklist as good or as needing reformatting.
 Note that the modified ASM code for when to automatically linebreak is not
 perfect. Common edge cases I found include:
 1. Text overflows the right edge of the screen
-- Manually put in a `<LINE 00>` code before the long word.
+   - Manually put in a `<LINE 00>` code before the long word.
 2. Text overflows the bottom of the screen (too many lines)
-- Manually put in a `<CLEAR 25>` code at some point on the page that doesn't
-interrupt the flow of the story. Use your judgment.
+   - Manually put in a `<CLEAR 25>` code at some point on the page that doesn't
+     interrupt the flow of the story. Use your judgment.
 3. A word can fit into the right margin, but got an auto linebreak before it
-- I made another space encoding specifically to fix these. Change the space
-  (represented by an underscore here) before the short word(s) from `_` to `\_`.
+   - I made another space encoding specifically to fix these. Change the space
+     (represented by an underscore here for clarity) before the short word(s)
+     from `_` to `\_`.
 
 Is this system perfect? No, but my hope was that it cuts out a lot of manual
 formatting had I reused the original Japanese linebreaking logic.
@@ -92,8 +94,8 @@ with the `<NAME-SAN 20>` or `<NAME 21>` control code at the end of a line in the
 script. Of course, this assumes that the sentence still flows correctly if you
 do.
 
-In terms of occurrences for the `<HONORIFIC>` control code that I added, you
-should check the text both when honorifics are enabled or disabled. See the ASM
-hack for what byte to edit to toggle them on or off. Of course, if you plan to
-not give the option one way or another, you can test with just the option that
-you do plan to use.
+In terms of occurrences for the hard-coded "conditionally print honorific"
+control codes like `<SAN>`, `<KUN>`, and `<CHAN>` that I added, you should check
+the text both when honorifics are enabled or disabled. See the ASM hack for what
+byte to edit to toggle them on or off. Of course, if you plan to not give the
+option one way or another, you can test with just the option you do plan to use.

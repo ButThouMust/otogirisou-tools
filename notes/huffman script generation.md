@@ -83,7 +83,7 @@ hex address of the last non-zero byte in this range.
 
 This serves two purposes:
 - Ensure that the Huffman script was generated correctly.
-- Make the script playtesting process easier (more details below).
+- Make the [script playtesting process](/notes/script%20playtesting%20how-to.md) easier.
 
 One note: I felt that printing `<KERN LEFT>` in the redumped script greatly
 hindered readability (it gets used a lot!), so I coded the script dumper to not

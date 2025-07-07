@@ -2,6 +2,11 @@
 Resources and tools for generating a translation patch for 弟切草 Otogirisou for
 Super Famicom.
 
+If you would like to use this project as a basis for your own translation patch
+for the game, I recommend reading these two writeups I made:
+[generating the script in the game's expected format](/notes/huffman%20script%20generation.md),
+and [how to playtest the script](/notes/script%20playtesting%20how-to.md).
+
 # How to use
 The custom tools for this project are coded in Java and use batch files. You
 will need to install Java on your machine.
@@ -110,8 +115,10 @@ SHA-256: d85b6764a35f4dcee3ab5843df1c467ebdfe5f02236043a4e466e6975a3f70ca
   readme in there for more information.
 
 `tables`
-- Table files for the original Japanese game, the control codes used in the
-  translation, and the current patch version.
+- Table files for:
+  - the original Japanese game
+  - the control codes used in the translation
+  - the current patch version.
 
 `tools`
 - Already-existing programs that aid in the translation process. They are
