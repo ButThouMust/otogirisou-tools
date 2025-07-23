@@ -32,3 +32,6 @@ logs/**
 
 # Do not upload generated binary files related to the font
 font/*.bin
+
+# Do not upload Windows executables for external tools
+**/*.exe
