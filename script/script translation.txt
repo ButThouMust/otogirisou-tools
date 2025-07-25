@@ -34825,9 +34825,10 @@ Strangely, this phone was captivating.<END CHOICE 1C>
 //[$1BB6E4-1] -> [21 B7 DD]
 #EMBWRITE(1466)
 //電話にはデンワ。<END CHOICE 1C>
-A phone was in the phone.<END CHOICE 1C>
+// Japanese pun, デンワ -> 出んわ -> 出ないわ -> not picking it up
+We're not picking up the phony phone.<END CHOICE 1C>
 //だが人間、コワすぎると意志がヨワくなる。<LINE 00>
-But we humans, were too afraid and weak-willed.<LINE 00>
+But we terrified humans, were weak-willed.<LINE 00>
 
 
 //[$1BB703-3] -> [1B B8 DD]
@@ -34841,7 +34842,7 @@ I took the receiver.<LINE 00>
 //「もしもし!?」<LINE 00>
 “Hello?!”<LINE 00>
 //男の声がすぐに答えた<AUTO ADV 13>。<LINE 00>
-A man's voice immediately replied, <LINE 00>
+A man's voice immediately replied,<LINE 00>
 <STOP SFX 3B><$00><$13><STOP SFX 3B><$00><$14>
 // cut out the hum and tones
 //「ハイ、こちら110番」<LINE 00>
@@ -47297,7 +47298,8 @@ Nami stared at me.<LINE 00>
 //「川・・・<WAIT 16>なンて、なかったのか?」<LINE 00>
 “Wait...<WAIT 16> What, there wasn't a river?”<LINE 00>
 //「皮のバッグなら持ってるけど」<LINE 00>
-// rewrite
+// rewrite; Japanese pun, 川 "river" and 皮 "leather" are both かわ
+// only picked up on this when trying out the PS1 remake
 “If my bag was leather, I'd be carrying it out of here, yeah.”<LINE 00>
 //「・・・・・」<CLEAR 25>
 “...”<CLEAR 25>
