@@ -17240,7 +17240,7 @@ I set it back to 42°C.<LINE 00>
 //圧力計を見ると、ボイラーの内圧がかなり上がっている。<LINE 00>
 I looked at the pressure gauge, and the boiler's internal pressure was rising considerably.<LINE 00>
 //安全弁が壊れていた。<LINE 00>
-The safety value was broken.<LINE 00>
+The safety valve was broken.<LINE 00>
 //いや、壊れたのではなく誰かが壊したのだとしたら・・・。<CLEAR 25>
 No, actually, it wasn't broken, but if someone did break it...<WAIT 16><CLEAR 25>
 
