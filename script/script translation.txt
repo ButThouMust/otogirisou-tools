@@ -25002,9 +25002,13 @@ I saw flames spouting out of Nami's\ body.<LINE 00>
 <SFX STEREO 41><$00><$C8><$00><$00><$00><$7E><SFX VOLUME 3F><$00><$08><$00><$7E>
 //女の狂ったような笑い声が起こり、奈美の炎は、十倍くらいにふくれ上がって、
 //空を走り、屋敷の中へ吸いこまれた。
-I heard a woman's crazed laughing voice. Nami's flames swelled up tenfold and ran up to the sky before they were absorbed into the mansion.
+I heard a woman's crazed laughter as Nami's flames swelled up tenfold, shot across the sky, and were absorbed into the mansion.
 <SFX FADE OUT 3C><$00><$46><$00><$1C><CLEAR FADE OUT 27><$00><$03>
 // fade out crackling of fire
+
+// in the PS1 version, choosing to leave Nami behind would roll the credits here
+// but more importantly, it does not mark this ending route as viewed for pink
+// bookmark progress; take a guess as to how I found this out :P
 
 //[$1A88E5-1] -> [29 47 D4]
 <VFX 2C><$00><$95>
@@ -44062,9 +44066,8 @@ Suddenly, a storm began in the bathroom.<CLEAR 25>
 
 // screen clear because this screen takes up 10 lines
 //天気予報をよく聞いておくんだった。<LINE 00>
-I should have listened to the weather forecast more carefully.<LINE 00>
 //マサカ浴室内に台風が来るとは。<LINE 00>
-There was no way a typhoon came into here.<LINE 00>
+I know I listened to today's forecast, and there was no way a typhoon would come into here.<LINE 00>
 //「奈美！・・・奈美ッ!」<LINE 00>
 “Nami! ...Nami!”<LINE 00>
 //ぼくは声をかぎりに叫んだ。<CLEAR 25>
@@ -60042,7 +60045,7 @@ Nami said, “Oh, don't mind them.”<CLEAR 25>
 //「うちのイタズラ好きの家族たち」<LINE 00>
 “They're my family of pranksters.”<LINE 00>
 //奈美の家族が、丘の上で、ヨロイと、ミイラと、怪魚の仮面を脱ぐのが見えた。<LINE 00>
-I saw Nami's family on a hill. The armor, the mummy, and the monstrous fish took off their masks.<LINE 00>
+I saw the armor, the mummy, and the monstrous fish take off their masks on the hill.<LINE 00>
 //「な・・・奈美、アレは・・・!?」<LINE 00>
 “Na-... Nami, they're...?!”<LINE 00>
 //「ああ、<NAME-SAN 20>、愛してる・・・」<LINE 00>
@@ -60100,7 +60103,7 @@ That hand shook mine.<LINE 00>
 <SFX FADE OUT 40><$00><$01><$00><$07>
 // closed mystery
 //ハゲ頭の爺ちゃんだった。<LINE 00>
-It was an old man's bald head.<LINE 00>
+It belonged to an old bald man.<LINE 00>
 //ああ、こんなふうに出て来るのか・・・。<CLEAR 25>
 Ah, so this is how he's appearing...<WAIT 16><CLEAR 25>
 
