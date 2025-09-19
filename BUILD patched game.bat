@@ -74,7 +74,7 @@ tools\atlas.exe %uncompScriptROM% %scriptTranslationFile% > logs\log_atlas_uncom
 :: if testing a change to something other than the script), but you can enter
 :: it in as user input if you prefer.
 :askforinput1
-@set /P uncompScriptEndPos="Enter the hex offset of the end of the uncompressed script in 'rom/Otogirisou - EN compress.sfc': "
+@set /P uncompScriptEndPos="Enter the hex offset of the end of the uncompressed script in 'rom/Otogirisou - EN uncompress.sfc': "
 
 :: Be sure to delete the previous Huffman script so that the new script gets
 :: written into a completely fresh, blank file. Avoids instances where the
@@ -102,14 +102,7 @@ copy /y %huffScriptROM% %huffScriptROMOldVersion%
 del %huffScriptROM%
 
 copy /y %jpROM% %huffScriptROM%
-tools\asar.exe "asm\linebreaking, kerning, honorifics.asm" %huffScriptROM%
-tools\asar.exe "asm\insert graphics.asm" %huffScriptROM%
-tools\asar.exe "asm\otogirisou expand ROM + insert font + insert huff script.asm" %huffScriptROM%
-
-:: optional patch to modify the game's font shadowing routine to hopefully make
-:: text more readable when the background graphics is just solid white
-:: feel free to comment this line out if you so desire
-tools\asar.exe "asm\modify font shadowing.asm" %huffScriptROM%
+tools\asar.exe "asm\main.asm" %huffScriptROM%
 
 :: update the text for the file select and name entry screen (what characters,
 :: plus their positions on screen), as well as text for choice options
@@ -124,7 +117,6 @@ tools\atlas.exe %huffScriptROM% ".\script\update name entry, file select.txt" > 
 :: the redumped script will contain useful data for playtesting the translation
 :: write a sequence of 3 bytes three times at $02A627 (linear 0x12627) to view
 :: a specific screen of text from a new save file or picking "Restart"/"はじめ"
-
 
 :: Similarly, the batch file will prompt you again to change the end offset for
 :: the Huffman script in the ROM. Go to offset 0x4539B and scroll down until you

@@ -1,6 +1,4 @@
-asar 1.90
-check title "OTOGIRISOU           "
-lorom
+includefrom "main.asm"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Simple graphics changes; these assume that the compressed data to insert will

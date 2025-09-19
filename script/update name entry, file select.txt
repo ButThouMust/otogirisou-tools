@@ -8,8 +8,6 @@
 
 #SMA("LOROM00")
 
-#EMBTYPE("LOROM00",16,$0)
-
 // #############################################################################
 // PRINTING CONSTANTS FOR NAME ENTRY AND FILE SELECT SCREENS
 // #############################################################################
@@ -95,9 +93,9 @@ E_bold
 
 /////////////////
 
-// when printing digits on name entry screen, the game will skip 8 pixels to the
-// right in cases like " 35" instead of printing "035"; JP font's digits are 7
-// pixels wide except the '1' (5), and the default value here is <$08>
+// when printing digits on file select screen, the game will skip 8 pixels right
+// in cases like " 35" instead of printing "035"; JP font's digits are 7 pixels
+// wide except the '1' (5), and the default value here is <$08>
 // change as needed for inserted font and account for spacing
 #JMP($13A5D)
 <$06>
@@ -266,56 +264,12 @@ abc<$FF><$FF>
 <$62>
 
 // #############################################################################
-// NAME ENTRY SCREEN - NAME REPOSITIONING
-// #############################################################################
-
-// NOTE: I used to keep modifications for name repositioning in this section,
-// but because what I wanted to do involved ASM modifications, I moved them out
-// into an Asar file
-
-// details if you're interested:
-// default position for name is X = 0x1F + (name_length * 0xD) and Y = 0x28
-// the 1F is easy to change, but the 0xD requires ASM changes
-// - game constructs it as L<<3 + L<<2 + L = L*(8+4+1) = L*13
-// - specifically: LDA $1AA3; ASL; ASL; PHA; ASL; ADC $01,S; ADC $1AA3
-// #JMP($13368)
-// <$18>
-
-// #JMP($1336F)
-// <$2A>
-
-// also do this for the solid blue box highlighting a name character
-// #JMP($134C7)
-// <$28><$17>
-
-// to make the box 15 pixels wide instead of 13 pixels wide, change these two
-// values from 0005 to 0007 (X offsets for top right & bottom left 8x8 sprites)
-// #JMP($134CE)
-// <$07>
-
-// #JMP($134DB)
-// <$07>
-
-///////////////
-
-// If you want to use the full range of the 15 pixel limit for font heights, the
-// "erase font at X/Y on screen" subroutine won't erase the top few pixel rows
-// for characters that are 14 (top row) or 15 pixels (two 2 rows) tall.
-// Changing this byte from 0E (14) to 10 (16) will solve this issue.
-#JMP($0F682)
-<$10>
-
-// Similarly for font widths, the game uses a 32-bit bitmask value here for
-// how many (technically, which) columns get erased. By default, it is 0007FFFF,
-// which is to say it erases the left 13 pixel columns for a character (the FFFF
-// allows the "erase font" subroutine to work at an arbitrary X/Y position).
-// Changing the 0007 to 0000 lets it work for characters up to 15 pixels wide.
-#JMP($0F6FF)
-<$00><$00>
-
-// #############################################################################
 // NAME ENTRY MENU CONTENT
 // #############################################################################
+
+// NOTE: I used to keep modifications for name repositioning in a section here,
+// but because what I wanted to do involved ASM modifications, I moved them out
+// into an Asar file
 
 // 51 (10 rows of 5, plus 1) slots per page; force FFFF terminator for safety
 // NOTE: assumes that unused character slots are pre-filled with 00 bytes
@@ -486,74 +440,3 @@ z[]{}
 
 #W16($02885)
 -papa<$FF><$FF>
-
-// #############################################################################
-// PRINTING CONSTANTS FOR NOVEL/GAMEPLAY TEXT 
-// #############################################################################
-
-// change X coordinate for a new line of text, when not a choice option
-// default is 0x0C
-#JMP($018EE)
-<$0C>
-
-// change Y coordinate for a new screen of text
-// default is 0x10
-#JMP($018FB)
-<$11>
-
-// change the height of the first row of characters (?); 0x0E by default
-// set this to the height of the tallest character in your font
-// if you have 0xF tall characters with this value set to 0xE, the top pixel row
-// of any 0xF tall characters in the first row will get cut off
-#JMP($018AF)
-//<$0E>
-<$0F>
-
-// DEPRECATED, patch now uses a separate line breaking routine for novel text
-// change X coordinate of "right screen boundary" = where to auto line break
-// default is 0xF2 = 14 pixels from right
-// #JMP($01908)
-// <$F2>
-
-// change height of line break, measured from bottom of each char row
-// default is 0x17 = 0x0F + 0x08? (max char height + 8 pixels leading)
-// can fit more lines of text on screen by decreasing to, say, 0x13
-// choosing 0x13 allows 11 lines instead of the 9 possible with 0x17
-//   but adversely affects the "highlight current choice" coloring effect
-//   (bottom few pixels of chars like 'g', 'y', etc.) can appear as wrong color
-//   due to tile boundary misalignment
-// 0x14 is a good middle ground that allows 11 lines if you kern up by a tile
-//   but works fine for 10 lines and doesn't have the wrong color behavior
-#JMP($01922)
-<$14>
-
-// change the pixel spacing between characters; default is 02
-// something interesting you can do, if you set this to a value like -12 (FFF4),
-// and set "start of new line X coordinate" to a value like E8, you can make the
-// characters print from right to left on screen
-#JMP($0192F)
-<$01>
-
-// change X coordinate of where to print a choice letter
-#JMP($01FA1)
-<$12>
-
-// change X coordinate of where to print the text for a choice option
-#JMP($01FA7)
-<$20>
-#JMP($01ECB)
-<$20>
-
-// offset the "advance text" icon that shows up during WAITs and CHOICEs
-// may have to space up to match with baselines of English letters instead
-// of their descenders (tails for letters like 'y' or 'g')
-// default is [00 02] = (XX YY)
-#JMP($01C8B)
-<$00><$00>
-
-// you can sort of shift the "next page" icon up/down with "first row height"
-// but more refined control like with "advance text" would require ASM changes
-
-// #############################################################################
-// #############################################################################
-
