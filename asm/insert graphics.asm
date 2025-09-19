@@ -48,7 +48,7 @@ org !FileSelectNumTilesPtr
 ; circularly shift the palette values back one position
 ;   purpose: versus the stock palette, the palette that superfamiconv generated
 ;   for the tileset ended up saving a lot of space when compressing the tileset
-;   specifically, 557 (not fit) vs 415 (fits)
+; specifically, 557 (not fit) vs 415 (fits)
 org $07E9E0
     dw $0842, $3610, $D2F7
 
@@ -149,6 +149,7 @@ org $00BFC0
 
 !NumCreditsTilemaps = 14
 
+; important: these are ROM offsets, not CPU pointers
 OldPtr1 = $44282
 OldPtr2 = $44307
 OldPtr3 = $4436A
@@ -179,6 +180,7 @@ OldPtr14 = $44C3F
 !CreditsFile13 = "graphics/recompressed 13 producer director RLE TILEMAP 0x16 x 0x07.bin"
 !CreditsFile14 = "graphics/recompressed 14 (c) chunsoft RLE TILEMAP 0x16 x 0x07.bin"
 
+; (ab)use of plaintext replacement for defines
 !CreditsDimens1 = $17,$07
 !CreditsDimens2 = $14,$07
 !CreditsDimens3 = $16,$13
@@ -203,9 +205,9 @@ org $08AA0A
     incbin "graphics/recompressed 00 english credits TILES - no empty tile.bin"
     assert pc() <= !PaletteForEndFinPtr
 
+; for each tilemap, grab 4 metadata bytes from original ptr, set new tilemap's
+; width/height, and insert new tilemap's compressed data
 for i = 1..!NumCreditsTilemaps+1
-    ; grab 4 metadata bytes from original ptr, set new tilemap's width/height,
-    ; insert new tilemap's data
     NewCreditPointer!i:
         incbin "!JProm":(OldPtr!i)..(OldPtr!i+!NumMetadataBytesToCopy)
         db !{CreditsDimens!{i}}
@@ -213,7 +215,7 @@ for i = 1..!NumCreditsTilemaps+1
         assert pc() <= !PaletteForEndFinPtr
 endfor
 
-; If you NEED to repoint the palette data, here is some code to do that for you:
+; If you NEED to repoint the palette data, you can do so with these commands:
 ; NewCreditsPalettePointer:
 ;     incbin "!JProm":$44D48..$44D4F
 ; org $00C19C
@@ -273,40 +275,48 @@ endfor
 
 ; 終 to "END"
 
-; org $00C233
-; skip $9
-; db $8A
+!EndTilesetPtr = $08CD54
+!EndTilemapPtr = $08CFE0
 
-; quick reminder: change # tiles, and insert new tileset
+; org $00C233
+    ; skip $9
+    ; db $8A
+
+; change # tiles, and insert new tileset (size <= 646, 0x286)
 org $08CD50
     dw $0037
-org $08CD54
+org !EndTilesetPtr
     incbin "graphics/recompressed 15 END TILES - no empty tile.bin"
-    assert pc() <= $08CFDA
+    assert pc() <= !EndTilesetPtr+$286
 
-; change width and height, and insert new tilemap
+; change width and height, and insert new tilemap (size <= 162, 0xA2)
 org $08CFDE
     db $0C,$05
-org $08CFE0
+org !EndTilemapPtr
     incbin "graphics/recompressed 15 END tilemap 0x0C x 0x05.bin"
-    assert pc() <= $08D082
+    assert pc() <= !EndTilemapPtr+$A2
 
 ;;;;;;;;;;;;;;;;;;;;
 
 ; 完 to "FIN"
 
-; org $00C23E
-; skip $9
-; db $8A
+!FinTilesetPtr = $08D086
+!FinTilemapPtr = $08D2FE
 
+; org $00C23E
+    ; skip $9
+    ; db $8A
+
+; insert new tileset (size <= 626, 0x272)
 org $08D082
     dw $002E
-org $08D086
+org !FinTilesetPtr
     incbin "graphics/recompressed 16 FIN TILES - no empty tile.bin"
-    assert pc() <= $08D2F8
+    assert pc() <= !FinTilesetPtr+$272
 
+; change width and height, and insert new tilemap (size <= 157, 0x9D)
 org $08D2FC
     db $0B,$05
-org $08D2FE
+org !FinTilemapPtr
     incbin "graphics/recompressed 16 FIN tilemap 0x0B x 0x05.bin"
-    assert pc() <= $08D39B
+    assert pc() <= !FinTilemapPtr+$9D
