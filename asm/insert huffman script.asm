@@ -12,7 +12,7 @@ org $15E401
 OldScriptStart:
     check bankcross off
     fillbyte $00
-    fill $!OldFontEndROM-pc()+1
+    fill $!OldFontEndROM-!OldScriptStartROM+1
     check bankcross full
 
 ; insert the new script
