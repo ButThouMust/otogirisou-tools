@@ -1,17 +1,5 @@
 includefrom "main.asm"
 
-; pad the ROM from 1 MB to 1.5 MB, filling with 00 bytes
-org $2FFFFF
-    db $00
-
-; update ROM header to specify a 1.5 MB (2 MB) ROM instead of a 1 MB ROM
-org $00FFD7
-;   db $0a
-    db $0b
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 ; Take the music-related data block from 0x4539B ($08D39B) - 0xAE400 ($15AE400)
 ; and move it into the new 0.5 MB in order to make space for the English script.
 
@@ -27,7 +15,7 @@ org $00FFD7
 
 org !NewMusicBlockStart
     check bankcross off
-    incbin "rom/Otogirisou (Japan).sfc":!OldMusicBlockStartROM..!OldMusicBlockEndROM
+    incbin "!JProm":!OldMusicBlockStartROM..!OldMusicBlockEndROM
 
 ; fill the original space with 00 bytes
 org !OldMusicBlockStart

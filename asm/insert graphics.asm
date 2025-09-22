@@ -194,8 +194,6 @@ OldPtr14 = $44C3F
 !CreditsDimens13 = $16,$07
 !CreditsDimens14 = $16,$07
 
-!JProm = "rom/Otogirisou (Japan).sfc"
-
 ; replace tileset used for the credits, and update # tiles used
 org $08AA0A
     dw $02D9
