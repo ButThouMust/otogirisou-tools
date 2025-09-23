@@ -151,6 +151,6 @@ org $00E05D
 !ScrollingCodeListEnd = $060A7
 pullpc
 NewScrollingCodeList:
-    incbin "rom/Otogirisou (Japan).sfc":!ScrollingCodeListStart..!ScrollingCodeListEnd
+    incbin "!JProm":!ScrollingCodeListStart..!ScrollingCodeListEnd
     dw !KernLeftNum, !KernRightNum, !KernUpNum, !KernDownNum
     dw $FFFF
