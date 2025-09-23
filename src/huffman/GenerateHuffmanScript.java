@@ -997,24 +997,29 @@ public class GenerateHuffmanScript {
     // -------------------------------------------------------------------------
 
     public static void main(String args[]) {
-        if (args.length != 4) {
-            System.out.println("Sample usage: java GenerateHuffmanScript rom_name table_file script_start script_end");
+        // if (args.length != 4) {
+            // System.out.println("Sample usage: java GenerateHuffmanScript rom_name table_file script_start script_end");
+        if (args.length != 3) {
+            System.out.println("Sample usage: java GenerateHuffmanScript rom_name table_file script_start");
             return;
         }
 
         String romFilename = args[0];
         String tableFilename = args[1];
         scriptStart = Integer.parseInt(args[2], 16);
-        scriptEnd = Integer.parseInt(args[3], 16);
 
+        /*
+        scriptEnd = Integer.parseInt(args[3], 16);
         if (scriptStart >= scriptEnd) {
             System.out.println("Error - script end point must be after script start point");
             System.exit(1);
             return;
         }
+        */
 
         try {
             romFile = new RandomAccessFile(romFilename, "r");
+            scriptEnd = (int) romFile.length() - 1;
 
             readTableFile(tableFilename);
             getCtrlCodeArgTable();

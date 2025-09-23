@@ -73,8 +73,8 @@ tools\atlas.exe %uncompScriptROM% %scriptTranslationFile% > logs\log_atlas_uncom
 :: I prefer manually updating the script offset like above (don't need to change
 :: if testing a change to something other than the script), but you can enter
 :: it in as user input if you prefer.
-:askforinput1
-@set /P uncompScriptEndPos="Enter the hex offset of the end of the uncompressed script in 'rom/Otogirisou - EN uncompress.sfc': "
+:: :askforinput1
+:: @set /P uncompScriptEndPos="Enter the hex offset of the end of the uncompressed script in 'rom/Otogirisou - EN uncompress.sfc': "
 
 :: Be sure to delete the previous Huffman script so that the new script gets
 :: written into a completely fresh, blank file. Avoids instances where the
@@ -82,10 +82,11 @@ tools\atlas.exe %uncompScriptROM% %scriptTranslationFile% > logs\log_atlas_uncom
 :: script remain after the end of the new script.
 del ".\script\huffman script.bin"
 
-java -classpath %srcPath% huffman/GenerateHuffmanScript %uncompScriptROM% %translationTableFile% aeba0 %uncompScriptEndPos%
+:: java -classpath %srcPath% huffman/GenerateHuffmanScript %uncompScriptROM% %translationTableFile% aeba0 %uncompScriptEndPos%
+java -classpath %srcPath% huffman/GenerateHuffmanScript %uncompScriptROM% %translationTableFile% 100000
 
 :: if %errorlevel% neq 0 pause exit /b %errorlevel%
-@if %errorlevel% neq 0 @echo( & goto :askforinput1
+:: @if %errorlevel% neq 0 @echo( & goto :askforinput1
 
 del %uncompScriptROM%
 
