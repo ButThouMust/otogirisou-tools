@@ -94,6 +94,7 @@ PrintCurrHonorificCtrlCode:
 HonorificCheckOkay:
     ldx.w #$0000            ; set to write text to start of buffer at $5F
     jsr.w $a83f             ; run just the original "print curr. honorific" code
+SetToPrintHonorificText:
     jsr.w $adf5             ; signal that text to be printed is in $5F
 HonorificRTS:
     rts
@@ -120,9 +121,9 @@ HonorificFlagOn:
 
     ldx.w #$0000            ; set to write text to start of buffer at $5F
     jsr.w $a843             ; reuse <NAME-SAN 20>'s code for printing honorific
-    jsr.w $adf5             ; signal that text to be printed is in $5F
-HonorificRTS:
-    rts
+    bra SetToPrintHonorificText
+  ; jsr.w $adf5             ; signal that text to be printed is in $5F
+  ; rts
 
 ; for any other possible ASM hacks in bank 00
 ; pushpc
