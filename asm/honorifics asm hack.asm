@@ -91,7 +91,6 @@ PrintCurrHonorificCtrlCode:
     cmp.w !NoHonorific      ; not checking this here makes game print name twice
     beq   HonorificRTS
 
-                            ; note: this 10 byte block of code gets reused below
 HonorificCheckOkay:
     ldx.w #$0000            ; set to write text to start of buffer at $5F
     jsr.w $a83f             ; run just the original "print curr. honorific" code
@@ -118,13 +117,12 @@ HonorificFlagOn:
     beq   HonorificRTS
     cmp.w #$000C            ;   also check if index is within bounds for list
     bcs HonorificRTS
-    bra HonorificCheckOkay
 
-;     ldx.w #$0000            ; set to write text to start of buffer at $5F
-;     jsr.w $a843             ; reuse <NAME-SAN 20>'s code for printing honorific
-;     jsr.w $adf5             ; signal that text to be printed is in $5F
-; HonorificRTS:
-    ; rts
+    ldx.w #$0000            ; set to write text to start of buffer at $5F
+    jsr.w $a843             ; reuse <NAME-SAN 20>'s code for printing honorific
+    jsr.w $adf5             ; signal that text to be printed is in $5F
+HonorificRTS:
+    rts
 
 ; for any other possible ASM hacks in bank 00
 ; pushpc
