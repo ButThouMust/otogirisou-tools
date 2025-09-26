@@ -61,6 +61,7 @@ pushpc
 
 ; Reasoning for why I chose these particular slots: they are unused codes that
 ; normally would change the speed of the text. I felt they were safe to replace.
+; Moved into main.asm
 
 ; Important: I initially tried using the slots for 1001, 1002, and 1006. When I
 ;   tested these in game, they adversely affected the game's control flow:
@@ -70,10 +71,10 @@ pushpc
 ;     (Why 0012? $009F99 has uncomp. text [1E 10 12 00] = <SET X POS 1E><$0012>)
 
 !CtrlCodeASMPointers = $00F390
-!KernLeftNum = $0A
-!KernRightNum = $0B
-!KernUpNum = $0D
-!KernDownNum = $0E
+; !KernLeftNum = $0A
+; !KernRightNum = $0B
+; !KernUpNum = $0D
+; !KernDownNum = $0E
 
 org (!CtrlCodeASMPointers+2*!KernUpNum)
     dw KernUp
@@ -150,7 +151,9 @@ org $00E05D
 !ScrollingCodeListStart = $06095
 !ScrollingCodeListEnd = $060A7
 pullpc
+
 NewScrollingCodeList:
     incbin "!JProm":!ScrollingCodeListStart..!ScrollingCodeListEnd
     dw !KernLeftNum, !KernRightNum, !KernUpNum, !KernDownNum
+    dw !HonorificCtrlCodeNum
     dw $FFFF

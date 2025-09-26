@@ -138,7 +138,7 @@ org (!CtrlCodeASMPointers+2*$20)
 
 ; reasoning for position: overwrite an unused control code for altering the text
 ; printing speed
-!HonorificCtrlCodeNum = $0F
+; !HonorificCtrlCodeNum = $0F
 
 org (!CtrlCodeASMPointers+2*!HonorificCtrlCodeNum)
     dw PrintHonorific

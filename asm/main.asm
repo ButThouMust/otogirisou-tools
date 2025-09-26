@@ -15,6 +15,11 @@ MostRecentChar = $1A7D
 CharWidth = $1A83
 
 !JProm = "rom/Otogirisou (Japan).sfc"
+!KernLeftNum = $0A
+!KernRightNum = $0B
+!KernUpNum = $0D
+!KernDownNum = $0E
+!HonorificCtrlCodeNum = $0F
 
 ; these three need to come in this particular order
 incsrc "asm/kerning asm hack.asm"
