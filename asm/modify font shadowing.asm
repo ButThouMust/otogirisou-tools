@@ -80,3 +80,20 @@ org MainShadowing
 org $00A6E3
     ; jsr MainShadowing
     jsr AddShadowOnePixelDown
+
+; ------------------------------------------------------------------------------
+
+; If the rightmost column of shadow in a row of text is on the leftmost pixel
+; column in a tile, the game does not correctly DMA that tile of shadowing to
+; VRAM. Easy enough fix is to just increment # tiles to DMA in.
+
+org $00a43a
+; shift a whole bunch of code back 3 bytes
+  ; jsr $ce1d   ; remove a JSR that just goes to an RTS, unusually
+    incbin "!JProm":snestopc($a43d)..snestopc($a461)
+; fill in 4 bytes with either INC ; INC ; NOP ; NOP, or CLC ; ADC #$0002
+; INCs/NOPs take 2*4 = 8 cycles, CLC/ADC take 2 + 3 = 5 cycles
+  ; inc
+    clc
+    adc #$0002
+    assert pc() == $a462
