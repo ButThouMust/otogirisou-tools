@@ -79,20 +79,26 @@ pushpc
 ; so their control flow is unmodified.
 
 ; control flow for linebreaking in main gameplay mode
-org $00ABEA
-    lda.w MostRecentChar
+; get rid of the useless JSR/BNE with $00AC8F
+org $00abe7
+  ; jsr $00ac8f
+  ; bne $00abde
+  ; lda.w MostRecentChar
     jsr.w $ac15     ; check for character with auto WAIT or auto DELAY
-    jsr.w $ac79     ; write Y pos. to some sort of table - not of concern here
+    jsr.w $ac79     ; write Y pos. for choice arrows to table if needed
     jsr.w $a4db     ; read font data
 LineBreakControlFlow:
     ; jsr.w $a777   ; original Japanese-style linebreaking routine
     ; jsr.w $a611   ; write font data to buffer in bank 7F, to be DMA'd to VRAM
-    ; jsr.w $ac96   ; calculate X coordinate for next character; only 8-bit A!
+    ; jmp.w $ac96   ; calculate X coordinate for next character; only 8-bit A!
 
     jsr.w $a611             ; first, draw the character, assuming no overflow
     jsr.w CalcNewXPos16Bit  ; calculate next X position but with 16-bit A
-    jsr.w LineBreakNewLogic ; now check if need to linebreak for the next char
-    rts
+    jmp.w LineBreakNewLogic ; now check if need to linebreak for the next char
+
+assert pc() <= $00ac01
+    fillbyte $ff
+    fill $00ac01-pc()
 
 ;;;;;;;;;;;;;;;;;;;;
 
@@ -100,7 +106,7 @@ LineBreakControlFlow:
 ; just copy in the new control flow used for the main gameplay
 
 org $00E085         ; important: there is no check for auto waits/delays here
-    jsr.w $ac79     ; write Y pos. to some sort of table - not of concern here
+    jsr.w $ac79     ; write Y pos. for choice arrows to table if needed
     jsr.w $a4db     ; read font data
     ; jsr.w $a777   ; original Japanese-style linebreaking routine
     ; jsr.w $a611   ; write font data to buffer in bank 7F, to be DMA'd to VRAM
@@ -147,6 +153,7 @@ org $00992f
 ; when messing around with these values, I found that you can make the text
 ; print right-to-left if you make the spacing value negative (e.g. 0xFFF4 "-12")
 ; and the start of text on a line to the right edge of the screen (e.g. 0xE8)
+; note that you would also have to check X position against a left margin
 
 ; set height of the line break, measured from the bottom of each character row
 ; default is 0x17 = 0xF + 0x8? max char height + 8 pixels leading, up to 9 lines
