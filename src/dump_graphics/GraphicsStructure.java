@@ -38,7 +38,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
     public enum StructureType {
         TILE    (4, 3),
         TILEMAP (6, 7),
-        PALETTE (4, 4);
+        PALETTE (6, 4);
         private final int headerSize;
         private final int bytesToSkip;
 
@@ -415,32 +415,52 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
 
         // int size = gfxDataHeader[0] - 3;
         int position = getRAMOffset((int) romStream.getFilePointer());
-        int totalColors = romStream.readUnsignedByte();
-        int colorsUsed = romStream.readUnsignedByte();
+        int colorIndexSkipSize = gfxDataHeader[4];
+        int totalColors = gfxDataHeader[5];
+
+        int startIndex = 0x21;
+        if (!isIndepStruct()) {
+            startIndex = structureMetadata[0];
+        }
 
         // Note: You should determine color depth from the tile data instead.
         // int colorDepth = (int) (Math.log(totalColors) / Math.log(2));
         // String firstLineFormat = "$%06X has data for %d colors of a possible %d (%d bpp)";
         // String firstLine = String.format(firstLineFormat, position, colorsUsed, totalColors, colorDepth);
 
-        String firstLineFormat = "$%06X has data for %d colors of a possible %d\n\n";
-        String firstLine = String.format(firstLineFormat, position, colorsUsed, totalColors);
+        String firstLineFormat = "$%06X has data for %d colors\n\n";
+        String firstLine = String.format(firstLineFormat, position, totalColors);
         logFile.write(firstLine);
-        logFile.write("15-bit | 24-bit\n");
-        logFile.write("-------+-------");
+        logFile.write(" Index | 15-bit | 24-bit\n");
+        logFile.write("-------+--------+--------");
 
-        String loopLineFormat = " %04X  | %06X";
-        for (int i = 0; i < colorsUsed; i++) {
+        String loopLineFormat = "\n  %02X   |  %04X  | %06X";
+        String transparencyLine = String.format(loopLineFormat, startIndex - 1, 0, 0) + " (implied)";
+        logFile.write(transparencyLine);
+
+        int totalColorGroups = 0;
+        int currentCgramIndex = startIndex;
+        for (int i = 0; i < totalColors; i++) {
             int byte0 = romStream.readUnsignedByte();
-            int byte1 = romStream.readUnsignedByte() & 0x7F;
+            int byte1 = romStream.readUnsignedByte();
 
             int colorValue15 = (byte1 << 8) | byte0;
-            int colorValue24 = convertBGR15ToRGB24(colorValue15);
+            int colorValue24 = convertBGR15ToRGB24(colorValue15 & 0x7FFF);
 
             outputFile.write(byte0);
             outputFile.write(byte1);
 
-            logFile.write(String.format("\n" + loopLineFormat, colorValue15, colorValue24));
+            logFile.write(String.format(loopLineFormat, currentCgramIndex, colorValue15 & 0x7FFF, colorValue24));
+
+            currentCgramIndex++;
+            if ((colorValue15 & 0x8000) != 0 && (i+1 != totalColors)) {
+                totalColorGroups++;
+                currentCgramIndex = startIndex + totalColorGroups * colorIndexSkipSize;
+
+                transparencyLine = String.format(loopLineFormat, currentCgramIndex - 1, 0, 0) + " (implied)";
+                logFile.write("\n");
+                logFile.write(transparencyLine);
+            }
         }
         endOfData = getRAMOffset((int) (romStream.getFilePointer() - 1));
         outputFile.close();

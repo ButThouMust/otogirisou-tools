@@ -89,7 +89,7 @@ public class OtogirisouGraphicsDumper {
         indepStructsList.put(0x07997E, tilemap);
 
         indepStructsList.put(0x07C7FE, tile);
-        indepStructsList.put(0x07C84F, palette);
+        indepStructsList.put(0x07C84B, palette);
 
         indepStructsList.put(0x07DCF3, palette);
         indepStructsList.put(0x07DD1F, palette);
