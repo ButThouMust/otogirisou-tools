@@ -51,7 +51,7 @@ General case:
   type of structure. After the header, comes the actual data we care about.
   * TILE    header size is 4 bytes.
   * TILEMAP header size is 6 bytes.
-  * PALETTE header size is 4 bytes.
+  * PALETTE header size is 6 bytes.
 
 TILE    data is stored compressed with run-length encoding (RLE). However, the
   raw data you get from decompression is not quite in the standard format for
@@ -72,7 +72,7 @@ Apparently, this is similar to the RLE format used in many Konami NES/FC games.
 
 Read a byte N of data.
 While N is NOT 0x80 {
-    If 0x00 <= N < 0x80 {
+    If 0x00 <= N <= 0x7F {
         // MSB clear = run length compression case
         Read a byte B1 of data
         Repeat the byte B1 a total of (N + 1) times
@@ -139,7 +139,7 @@ decompressed data, and the target bit depth to pad to. For example, the credits
 graphics are 1bpp and get padded to 2bpp. More commonly, 3bpp graphics are all
 padded to 4bpp. For these, any empty bitplanes are padded with all [00] bytes.
 
-Some tilesets get padded to 8bpp, because they are used for Mode 7.
+Some tilesets get padded to 8bpp, because they get converted to Mode 7 format.
 Two of these, of which one is a graphic that I felt was necessary to translate,
 are unique in that the "container" you get from the raw decompression is a
 larger bit depth than the actual graphics data.
@@ -217,9 +217,9 @@ Read 3 bytes at 0x04298 for header pointer: [C9 E2 07] -> $07E2C9 (0x3E2C9).
     The guaranteed header data at 0x3E2C9 is [23 00 04].
     Byte 02 is [04], which ends in binary 100 -> PALETTE data.
     Because this is PALETTE data:
-    - The full header is 4 bytes at 0x3E2ED: [23 00 04 00].
+    - The full header is 4 bytes at 0x3E2C9: [23 00 04 00 10 0F].
     - Structure size is 7 bytes at 0x0428E: [ED E2 07 00 10 00 08]
-    Palette data is [23] - 3 bytes = 0x20 (32 bytes = 16 color values).
+    # palette values is 0F*2 = 0x1E bytes. Range 0x3E2CF-0x3E2EC.
 
 ################################################################################
 ################################################################################
@@ -303,6 +303,7 @@ uncomp_tilemap_size = [(byte3 & 0x1) + 1] * byte4 * byte5
 
 PALETTE structure data:
 - (Bytes 0, 1, 2: Pointer to header data)
+  Byte 2 contains bit flags in bits 5-7 (binary: 765-----)
 
 - Byte 3: Starting index in CGRAM to write color data into.
 
@@ -314,19 +315,24 @@ PALETTE structure data:
 
 ---
 
+Palettes are grouped together into distinct blocks, where the last color in a
+block has its MSB set. This is how the game knows how when to "skip down" to the
+next row of color indices in CGRAM.
+
 PALETTE header data:
-- Byte 0 = data block size including the other 3 header bytes.
-  So # colors here = (byte0 - 3) >> 1. The last color value has its MSB set.
+- Byte 0 = not 100% sure, but it happens to equal the size of the rest of the
+  data block, including the other 5 header bytes.
 
 - Byte 2 = Structure type indicator: [04].
 
 - Byte 1, 3 = ?? Typically, both are [00].
 
---- 
+- Byte 4 = How far to skip down from the start index of each color block.
+  For example, if the starting CGRAM index is 0x21 and if header byte 4 here is
+  0x10, it will read color values until it finds one with the MSB set. The next
+  CGRAM index then gets set to 0x21 + 0x10 = 0x31, and later 0x41, 0x51, etc.
 
-Unknown: The game typically does not write palette values into CGRAM as a single
-contiguous block. How does the game know how/when to "go down a row", and/or
-how many should go into one row of colors?
+- Byte 5 = Number colors total for the palette block.
 
 ################################################################################
 ################################################################################
@@ -348,20 +354,20 @@ because each block can have multiple structures inside.
 --------------------
 
 $03B910 - $03B991: Don't know what this is. An animation of some kind, perhaps?
-    Tile    header [06 00 00 20]       at $03B910
+    Tile    header [06 00 00 20]       @ $03B910
     Tile    data from $03B914 - $03B981 (0x1B914 - 0x1B981)
 
-    Palette header [0F 00 04 00]       at $03B982
+    Palette header [0F 00 04 00 10 05] @ $03B982
     Palette data from $03B986 - $03B991 (0x1B986 - 0x1B991)
 
 --------------------
 
 $079653 - $079A05: Graphics data for a seemingly unused picture of a knife.
     Pointers are unknown.
-    Tile    header [2C 00 00 20]       at $079653
+    Tile    header [2C 00 00 20]       @ $079653
     Tile    data from $079657 - $07997D (0x39657 - 0x3997D)
 
-    Tilemap header [00 08 02 01 0A 12] at $07997E
+    Tilemap header [00 08 02 01 0A 12] @ $07997E
     Tilemap data from $079984 - $079A05 (0x39984 - 0x39A05)
 
     To be precise, tilemap (W,H) = (0x0A, 0x12) with high bytes included.
@@ -401,19 +407,19 @@ $07C6B9 - $07C7FD: Block of 4bpp graphics for the digits 0 to 9. Unused?
     This data is uncompressed and is, as far as I can tell, the only thing you
     can directly see if you open the game in a tile editor.
 
-    Header data [42 01 00 0A 0C 00]   at $07C6B9.
+    Header data [42 01 00 0A 0C 00]    @ $07C6B9.
     Graphics data:    $07C6BF - $07C7FD (0x3C6BF - 0x3C7FD)
     Incidentally, 0x142 is the difference between $07C7FD and $07C6BB, after the
         two bytes [42 01]. Size marker? I don't know, this is unique.
 
 $07C7FE - $07C856: Tile/palette data for "advance text" and "next page" icons.
 
-    Tile    header [08 00 00 10]      at $07C7FE.
+    Tile    header [08 00 00 10]       @ $07C7FE.
     Tile    data from $07C802 - $07C84A (0x3C802 - 0x3C84A)
     Pointer split up at $0096B5 and $0096BA.
 
-    Palette header [0B 00 04 00]      at $07C84B
-    Palette data from $07C84F - $07C856 (0x3C84F - 0x3C856)
+    Palette header [0B 00 04 00 04 03] @ $07C84B
+    Palette data from $07C851 - $07C856 (0x3C851 - 0x3C856)
 
 --------------------
 
@@ -421,15 +427,25 @@ $07DCF3 - $07DD4C: Two groups of palette data. The second is for the animation
     where a tree is struck by lightning and splits in half. The first one is an
     unused variation using a grayscale palette instead of a red/yellow palette.
 
-    Palette header [2B 00 04 00]      at $07DCF3
-    Palette data from $07DCF7 - $07DD1E (0x3DCF7 - 0x3DD1E)
+    Palette header [2B 00 04 00 10 13] @ $07DCF3
+    Palette data from $07DCF9 - $07DD1E (0x3DCF9 - 0x3DD1E)
 
-    Palette header [2D 00 04 00]      at $07DD1F
-    Palette data from $07DD23 - $07DD4C (0x3DD23 - 0x3DD4C)
+    Palette header [2D 00 04 00 10 14] @ $07DD1F
+    Palette data from $07DD25 - $07DD4C (0x3DD25 - 0x3DD4C)
 
     Pointer for the latter is hidden in the data in $00D7BF: [1F DD 87].
     Code @ $00D6D2 accesses it: LDX #$D7BF ; JSR $DF53.         ^
     You can see the gray colors if you change the pointer [1F DD] to [F3 DC].
+
+    Interestingly, this pointer is in a partial palette structure, with the data
+    [1F DD 87 21]. The colors get written to CGRAM index 0x21.
+
+    The JSR $DF53 is for a function that processes palette data blocks in a way
+    that's mostly similar to the standard graphics system. Staring at it was how
+    I figured out the purpose of bytes 4 and 5 in the palette header format.
+    (Game also uses this subroutine at $00D5D3. Data for its palette structure
+    is at $00D5DC: [3E A5 83 21]. Colors also start at CGRAM index 0x21. The
+    data is used in three structure lists that involve the mansion in orange)
 
 --------------------
 
@@ -438,16 +454,16 @@ $07F38B - $07F57C: Three groups of palette data related to the bookmarks on the
     bookmarks' flashing effect. Each group has 8 blocks of 0xA colors.
 
     Yellow bookmark: $07F38B - see $02BE47, LDA.L $07F391,X
-    Palette header [A5 00 04 00]      at $07F38B
-    Palette data from $07F38F - $07F430 (0x3F38F - 0x3F430)
+    Palette header [A5 00 04 00 10 50] @ $07F38B
+    Palette data from $07F391 - $07F430 (0x3F391 - 0x3F430)
 
     Pink bookmark:   $07F431 - see $02BE4E, LDA.L $07F437,X
-    Palette header [A5 00 04 00]      at $07F431
-    Palette data from $07F435 - $07F4D6 (0x3F435 - 0x3F4D6)
+    Palette header [A5 00 04 00 10 50] @ $07F431
+    Palette data from $07F437 - $07F4D6 (0x3F437 - 0x3F4D6)
 
     Bookmark ribbon: $07F4D7 - see $02BE55, LDA.L $07F4DD,X
-    Palette header [A5 00 04 00]      at $07F4D7
-    Palette data from $07F4DB - $07F57C (0x3F4DB - 0x3F57C)
+    Palette header [A5 00 04 00 10 50] @ $07F4D7
+    Palette data from $07F4DD - $07F57C (0x3F4DD - 0x3F57C)
 
 --------------------
 
@@ -457,7 +473,7 @@ $0889E5 - $0889F9: Don't know for sure what this tilemap is for. Based on nearby
     Tilemap Studio, the resulting picture was a color gradient that increased in
     brightness from top (darker) to bottom (brighter).
 
-    Tilemap header [00 08 02 01 20 07] at $0889E5
+    Tilemap header [00 08 02 01 20 07] @ $0889E5
     Tilemap data from $0889EB - $0889F9 (0x409EB - 0x409F9).
     The tilemap dimensions are 0x20 * 0x07, with high bytes included.
     Perhaps note that all of the high bytes are [04], i.e. all palette 01.
