@@ -14,7 +14,7 @@ import static header_files.HelperMethods.*;
 
 public class GraphicsStructure implements Comparable<GraphicsStructure> {
 
-    private static final int INDEP_STRUCT = -1;
+    private static final int INDEP_DATA_BLOCK = -1;
 
     private RandomAccessFile romStream;
 
@@ -79,8 +79,8 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         return type.getBytesToSkip();
     }
 
-    public boolean isIndepStruct() {
-        return structureLocation == INDEP_STRUCT;
+    public boolean isIndepDataBlock() {
+        return structureLocation == INDEP_DATA_BLOCK;
     }
 
     // -------------------------------------------------------------------------
@@ -100,12 +100,12 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
     // consider coming up with a better way to handle this
     public GraphicsStructure(int ptrToData, StructureType type) throws IOException {
         if (!isValidRomOffset(ptrToData)) {
-            String format = "Invalid data location for independent structure - $%06X does not map to ROM";
+            String format = "Invalid data location for independent data block - $%06X does not map to ROM";
             throw new IOException(String.format(format, ptrToData));
         }
 
         romStream = new RandomAccessFile("rom/Otogirisou (Japan).sfc", "r");
-        structureLocation = INDEP_STRUCT;
+        structureLocation = INDEP_DATA_BLOCK;
         this.ptrToData = ptrToData;
         this.type = type;
         structureMetadata = new int[0];
@@ -211,9 +211,9 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         switch (type) {
             case TILE:
                 dumpRLEData();
-                if (!isIndepStruct()) {
-                    // doing this interleave & pad operation requires info from
-                    // structure's metadata; not possible for independent gfx data
+                if (!isIndepDataBlock()) {
+                    // this interleave & pad operation requires structure's
+                    // metadata; not possible for independent gfx data
                     generateSNESTileData(dataStartRAM);
                 }
                 break;
@@ -227,7 +227,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
                 break;
         }
 
-        if (isIndepStruct()) {
+        if (isIndepDataBlock()) {
             // for independent tile and tilemap data, just need to log the header
             if (type != StructureType.PALETTE) {
                 logFile = new BufferedWriter(new FileWriter(logFilename));
@@ -419,7 +419,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         int totalColors = gfxDataHeader[5];
 
         int startIndex = 0x21;
-        if (!isIndepStruct()) {
+        if (!isIndepDataBlock()) {
             startIndex = structureMetadata[0];
         }
 
@@ -467,7 +467,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
 
         // note: need to also output metadata if independent structure, so do
         // not close log file here
-        if (!isIndepStruct()) {
+        if (!isIndepDataBlock()) {
             logFile.flush();
             logFile.close();
         }
@@ -508,7 +508,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         int dataStartROM = dataPtrROM + type.headerSize;
         int dataStartCPUAddr = getRAMOffset(dataStartROM);
 
-        if (!isIndepStruct()) {
+        if (!isIndepDataBlock()) {
             String format1 = "$%06X: points to %-7s data at $%06X ($%06X)\n";
             output += String.format(format1, structureLocation, type.toString(), ptrToData, dataStartCPUAddr);
         }
@@ -522,15 +522,21 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         String rangeFormat = "Data range in ROM:   0x%05X to 0x%05X (size 0x%X)\n";
         output += String.format(rangeFormat, dataStartROM, dataEndROM, dataSize);
 
-        if (!isIndepStruct()) {
+        if (!isIndepDataBlock()) {
             String structDataFormat = String.format("Structure @ $%06X: %06X", structureLocation, ptrToData);
 
-            // for tile and tilemap structures, print the VRAM address like $xxxx.w
+            // for tile and tilemap structures, print VRAM address like $xxxx.w
             int startingIndex = 0;
             if (type != StructureType.PALETTE) {
                 int vramAddress = structureMetadata[0] | (structureMetadata[1] << 8);
                 structDataFormat += String.format(" $%04X.w", vramAddress);
-                startingIndex = 2;
+                startingIndex += 2;
+            }
+            // for tilemap structs, print default value to fill the tilemap with
+            if (type == StructureType.TILEMAP) {
+                int defaultMapEntry = structureMetadata[2] | (structureMetadata[3] << 8);
+                structDataFormat += String.format(" %04X", defaultMapEntry);
+                startingIndex += 2;
             }
 
             for (int i = startingIndex; i < type.bytesToSkip; i++) {
@@ -563,7 +569,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
                 String tilesetSizePrint = "# tiles = 0x%X; uncomp data is 0x%X bytes (%dbpp";
                 output += (String.format(tilesetSizePrint, numTiles, uncompDataSize, bitDepthEstimate));
 
-                if (!isIndepStruct()) {
+                if (!isIndepDataBlock()) {
                     // note: this calculation requires structure metadata
                     int paddedBitDepth = ((getTileBitDepthMinus1() >> 4) & 0x7) + 1;
                     output += String.format(" -> %dbpp", paddedBitDepth);
@@ -575,7 +581,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
                     output += ("\nNOTE: This is for \"type 01\" of tile data.");
                 }
 
-                if (!isIndepStruct()) {
+                if (!isIndepDataBlock()) {
                     int vramAddress = structureMetadata[0] | (structureMetadata[1] << 8);
                     String vramAddrFormat = "\nTiles are written to VRAM $%04X.w.";
                     output += String.format(vramAddrFormat, vramAddress);
@@ -583,10 +589,18 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
                     boolean createEmptyTile = (structureMetadata[2] & 0x1) == 0;
                     if (!createEmptyTile) {
                         // this case applies to tile data for IDs: 5B 5C 81 82 91 92 93 96 98 99 9A 9B 9C
-                        output += ("\nNOTE: Game does not generate an empty tile for this.");
+                        output += ("\nNOTE: Game does not generate an empty tile for this tileset.");
                     }
                 }
 
+                break;
+            }
+            case PALETTE: {
+                if (!isIndepDataBlock()) {
+                    int cgramIndex = structureMetadata[0];
+                    String indexFormat = "\nColors written to CGRAM starting at index 0x%02X";
+                    output += String.format(indexFormat, cgramIndex);
+                }
                 break;
             }
             case TILEMAP: {
@@ -603,14 +617,39 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
                 String tilemapSizePrint = "Tilemap W*H is 0x%02X*0x%02X%s -> 0x%X bytes\n";
                 output += String.format(tilemapSizePrint, tilemapWidth, tilemapHeight, (highBytesIncluded ? "*2" : ""), uncompDataSize);
 
-                if (!isIndepStruct()) {
+                if (!isIndepDataBlock()) {
                     String tilemapScreenPos = "Starts on screen @ (X, Y) = (0x%02X, 0x%02X)";
                     int tilemapX = (structureMetadata[6] & 0xF) | ((structureMetadata[5] << 2) & 0x30);
                     int tilemapY = ((structureMetadata[6] >> 4) & 0xF) | (structureMetadata[5] & 0x30);
                     output += String.format(tilemapScreenPos, tilemapX, tilemapY);
 
-                    int vramAddress = structureMetadata[0] | (structureMetadata[1] << 8);
+                    int baseMapEntryValue = structureMetadata[2] | (structureMetadata[3] << 8);
+                    int baseTileID = structureMetadata[4] | ((structureMetadata[5] & 0x3) << 8);
+                    boolean addBaseIdToBase = (structureMetadata[5] & 0x80) == 0;
+                    if (baseTileID != 0) {
+                        String baseIdFormat = "\nBase tile ID is 0x%03X (not 000)";
+                        output += String.format(baseIdFormat, baseTileID);
+                    }
+                    if (!addBaseIdToBase) {
+                        String noAddNotice = "\nGame does not add base tile ID 0x%03X to base tilemap value %04X";
+                        output += String.format(noAddNotice, baseTileID, baseMapEntryValue);
+                    }
+                    else {
+                        baseMapEntryValue += baseTileID;
+                    }
+                    boolean baseMapYFlip = (baseMapEntryValue & 0x8000) != 0;
+                    boolean baseMapXFlip = (baseMapEntryValue & 0x4000) != 0;
+                    boolean baseMapPriority = (baseMapEntryValue & 0x2000) != 0;
+                    int baseMapPalette = (baseMapEntryValue & 0x1C00) >> 0xA;
+                    int baseMapTileNum = baseMapEntryValue & 0x3FF;
+                    String baseEntryPrintout = "\nBase entry %04X -> tile %03X, palette %d%s%s%s";
+                    output += String.format(baseEntryPrintout, baseMapEntryValue, baseMapTileNum, baseMapPalette,
+                            baseMapXFlip ? ", X flip" : "",
+                            baseMapYFlip ? ", Y flip" : "",
+                            baseMapPriority ? ", priority ON" : "");
+
                     String vramAddressFormat = "\nTilemap data written to VRAM $%04X.w";
+                    int vramAddress = structureMetadata[0] | (structureMetadata[1] << 8);
                     output += String.format(vramAddressFormat, vramAddress);
                 }
 
@@ -624,14 +663,6 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
                     output += ("\nNOTE: This is for \"type 03\" of tilemap data.");
                 }
 
-                break;
-            }
-            case PALETTE: {
-                if (!isIndepStruct()) {
-                    int cgramIndex = structureMetadata[0];
-                    String indexFormat = "\nColors written to CGRAM starting at index 0x%02X";
-                    output += String.format(indexFormat, cgramIndex);
-                }
                 break;
             }
         }
