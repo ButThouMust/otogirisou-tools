@@ -158,7 +158,7 @@ Bits 9/8 and the low byte are for tile ID numbers (0x000 to 0x3FF).
 Bits C/B/A are the palette number.
 Bit D is priority bit, and bits F/E are Y/X flip respectively.
 
-Otogirisou uses two optimizations for storing tilemaps:
+Otogirisou uses a few optimizations for storing tilemaps:
 - Store the low bytes and high bytes in separate blocks.
   Purpose: take advantage of RLE compression format.
   For example, Otogirisou would encode the 2x2 tilemap [00FF 4001 8002 C003]
@@ -171,9 +171,17 @@ Otogirisou uses two optimizations for storing tilemaps:
   Purpose: avoid possibly several copies of RLE data like [7F 00] at the end.
   In this case, the game will run code to fill in all the high bytes with [00].
 
-Consequence: The decompressed tilemap will be either W*H bytes or W*H*2 bytes.
-If only W*H, you may assume the tilemap will use at most 256 (0x100) tiles, use
-palette 0, and will not use BG priority or Y/X flip.
+- Define the width and height of the tilemap, and X/Y tile offsets to draw the
+  tilemap to on screen. This is so the tilemap is only as large as it must be:
+  either W*H bytes or W*H*2 bytes. If only W*H, you may assume the tilemap will
+  use at most 256 (0x100) tiles, use palette 0, and will not use BG priority or
+  Y/X flip.
+
+- Define a default tilemap value that's used to fill in the empty spaces in the
+  tilemap and to be a "base" to add the decompressed tilemap data to. For
+  example, many tilemaps use palette 2 versus palettes 0 or 1 (text colors), and
+  you can use this default value to auto-fill a tilemap with all palette 2. This
+  means, for example, you don't have to compress the high bits.
 
 ################################################################################
 ################################################################################
@@ -244,7 +252,7 @@ TILE header data:
 Bytes 0 and 1 indicate the number of tiles (000 ID for empty not counted).
 Above example: header data at 0x3DD83 [42 00 00 30] -> 0x0042 tiles
 
-Byte 2: Structure type indicator byte (type 00 or 01). Any other purpose?
+Byte 2: Structure type indicator byte (type 00 or 01).
 
 Byte 3: Bits 4-6 (binary: -XXX----) are used to indicate the bit depth of the
         container you get from the raw decompression. Specifically, the bit depth
@@ -265,10 +273,23 @@ TILEMAP structure data:
 
 - Bytes 3, 4: VRAM word address to write the tilemap data into.
 
-- Bytes 5, 6, 7: ?? Might have something to do with a WRAM offset? Usually [00 08 00]
-  Exceptions: 0x3DFE in $B5C5; 0x0000 in Mode 7 ($C06D, $C085, $C0A7, $C0BF, $C161);
-              0x1170 in $C125; 0x2000 for credits tilemaps; 0x3880 in $C29F;
-              0x2334, 0x2398 for "the end" gfx; 0x19F7 in $C358
+- Bytes 5, 6: Tilemap value to use as a base for adding the decompressed tilemap
+  data to. Usually 0800 (uses palette 2, tile 000), but exceptions are:
+  - 1170 in $00C125, ID 0x5A (palette 4, tile 170)
+  - 3880 in $00C29F, ID 0x5B (palette 6, tile 080, set priority)
+  - 3DFE in $00B5C5, ID 0x76 (palette 7, tile 1C5, set priority)
+  - 19F7 in $00C358, ID 0x98 (palette 7, tile 1F7)
+  - 2000 in credits tilemaps (palette 0, tile 000, set priority)
+  - 2334, 2398 for "the end" (palette 0, tile 334 or 398, set priority)
+  - 0000 in Mode 7 (7A $00C06D, 80 $00C085, 7B/7C $00C0A7, 7D-7F $00C0BF)
+         and $00C161 credits (clear BG3 tilemap before credits)
+
+- Byte 7 and bits 0-1 of byte 8: Encode tile # to use for filling empty spaces
+  in the tilemap. Value for all tilemap structures is 000.
+
+- Bit 7 of byte 8: Bit flag for whether to NOT add the "pre-fill" value in bytes
+  7-8 to the base tilemap value in bytes 5-6. So add if 0, don't add if 1. In
+  all tilemap structures, this bit is 0, so the addition always happens.
 
 - Bytes 8, 9: Encodes the position of where to draw the the top left tile of the
   tilemap "on screen," or perhaps more precisely where in a background layer.
@@ -286,7 +307,7 @@ TILEMAP structure data:
 TILEMAP header data:
 - Bytes 0, 1: Not sure, usually [00 08].
 
-- Byte 2: Type indicator byte for normal or Mode 7 tilemap. Anything else?
+- Byte 2: Type indicator byte for normal or Mode 7 tilemap.
 
 - Byte 3 is a flag with 3 possible values:
   * 00 = high bytes not included, assumed to be all 00
@@ -303,15 +324,34 @@ uncomp_tilemap_size = [(byte3 & 0x1) + 1] * byte4 * byte5
 
 PALETTE structure data:
 - (Bytes 0, 1, 2: Pointer to header data)
-  Byte 2 contains bit flags in bits 5-7 (binary: 765-----)
+  Byte 2 contains bit flags in bits 5-7 (binary: 765-----). All lists' palette
+  structs have these bits clear, but there are two "partial structures" that do
+  have bit 7 set. Check the section about $07DCF3.
 
 - Byte 3: Starting index in CGRAM to write color data into.
 
-- Bytes 4, 5, 6: ?? Typically the sequence is [80 00 00]
-  Exceptions:
-  * [80 00 80] for $00C0A7, $00C33C, $00C34A
-  * [80 03 00] for $00B5EB
-  * [80 04 3B] for $00B601
+- Byte 4: ?? In all the structures present in the game, byte 4 is 0x80.
+
+- Bytes 5, 6: Could be a color value? Usually [00 00], but there are exceptions:
+  * [00 80] for $00C0A7, $00C33C, $00C34A
+    Relevant IDs:   7B, 7C ; 9B, 9C ; 99, 9A
+  * [03 00] for $00B5EB (leeches off [03 00] at start of $00B601 list)
+  * [04 3B] for $00B601 (leeches off [04 3B] at start of $00B617 list)
+    Relevant IDs: 59 (forest) and 00 (grass/forest)
+    It may be that these two don't need structure bytes 5 and 6?
+
+At $00B48A, bytes 5 and 6 get written to a buffer at $7E4000 alongside the three
+bit flags in byte 2, then header bytes 4/5, and the block of palette data.
+This data gets read at $00DED1, and may get overwritten with the value of $19D4
+(if $19D4 is not zero) upon execution. Might be related to graphics ctrl code?
+
+Bit 7 of byte 6 is a flag that means "set as target color to fade to".
+Bytes 5 and 6 might be a color value in and of themselves? The subroutine at
+$00DF47 for setting color fade targets writes the value in $1E (either $19D4 or
+header bytes 5 and 6 sans the bit flag). If that is the case, then usually it
+just writes 0000 (black). If 0003 and 3B04 above are indeed color values, then
+their equivalent RGB24 values would be 180000 (just about black, shade of red)
+and 21C673 (a pale green). However, I don't believe these show up in the game.
 
 ---
 
@@ -353,7 +393,10 @@ because each block can have multiple structures inside.
 
 --------------------
 
-$03B910 - $03B991: Don't know what this is. An animation of some kind, perhaps?
+$03B910 - $03B991: Don't know what this is. I think it might be for an animation
+    of water dripping from something? Palette data has 5 dark shades of blue.
+    Surrounding these blocks is the data for graphics IDs 07 and 08.
+
     Tile    header [06 00 00 20]       @ $03B910
     Tile    data from $03B914 - $03B981 (0x1B914 - 0x1B981)
 
