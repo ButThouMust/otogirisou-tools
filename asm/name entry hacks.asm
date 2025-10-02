@@ -90,8 +90,11 @@ org $01f6ff
 
 AddCharsToName = $02B334
 
+; need to update two branch lengths
+org $02b280
+    beq ++
 org $02b2a0
-    bra CodeAddCharValInA_ToName
+    bra +
 
 org $02b2c8
     lda [$10],y     ; read character value from name entry data
@@ -99,9 +102,8 @@ org $02b2c8
   ; beq $02b2da
   ; cmp.l $02afe6   ; check if handakuten, run code if yes
   ; beq $02b300
-CodeAddCharValInA_ToName:
-    jsr AddCharsToName
-    rts
++   jsr AddCharsToName
+++  rts
 
 ; free up space from $02B2CE-$02B333 (code), 0x66 bytes
 fillbyte $ff
