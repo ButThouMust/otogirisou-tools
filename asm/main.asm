@@ -23,6 +23,7 @@ incsrc "asm/improve linebreaking.asm"
 incsrc "asm/honorifics asm hack.asm"
 
 incsrc "asm/insert graphics.asm"
+incsrc "asm/update highlight box dimensions.asm"
 
 incsrc "asm/move sound data.asm"
 incsrc "asm/insert font.asm"

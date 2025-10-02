@@ -96,16 +96,6 @@ org $07A4E9
     ; db $40
     db $10
 
-; --------------------
-
-; use new dimensions for the rectangles that surround file select prompts
-; update which sprite IDs are used, and update a pointer to one of them
-org $02B7BD
-    incbin "graphics/new file select highlight rectangles.bin"
-    assert pc() <= $02B839
-org $02BC8D
-    dw $B7F7
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Restoring an unused graphic into the game
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
