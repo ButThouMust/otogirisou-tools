@@ -507,7 +507,7 @@ RAW LIST OF ASSEMBLY LOCATIONS
 
 ---UNUSED----
 
-These are equivalent to <NOP 1D>:
+These all point to the same RTS as <NOP 1D>:
 1001: $00A99E - gets run under the hood when printing text
 1002: $00A99E - gets run under the hood when printing text
 1006: $00A99E - gets run under the hood when printing the 1st option for choices
@@ -533,11 +533,16 @@ These point to the same assembly code as <CODE 09> and <CODE 0C>:
 101b: $009F39 - helper subroutine for <END CHOICE 1C>
 101e: $00A813 - set x position
 101f: $00A81C - set y position
-1023: $00E13F
-1024: $00E1DD
+
+1023: $00E13F - set up to run CODE 24, and set up a data block at $1A03-$1A46
+1024: $00E1DD - write 0xFE to $1BAD (what does this do? it seems to be copied
+                into $1BAB in subroutine at $00A498)
+
 1026: $00A7BB - another CLEAR code
-1028: $00AB3A
-1029: $00AB1A
+
+1028: $00AB3A - ASM code says might be "fade OUT text", uses duration input
+1029: $00AB1A - ASM code says might be "fade IN text",  uses duration input
+
 102d: $00AAC9
 1031: $00AA79 - based on $00AE77, this is like gfx code 30, but w/ horiz. mirror
 1044: $00A955
@@ -618,7 +623,7 @@ CLEAR codes
 1026: 00 00 - 0 args
 1027: 01 00 - 1 script value
 
-Unknown
+Might be "text fade out/in"
 1028: 01 00 - 1 script value
 1029: 01 00 - 1 script value
 
