@@ -76,7 +76,16 @@ pushpc
 ;;;;;;;;;;;;;;;;;;;;
 
 ; Aside: the file select and name entry screens work fine with the stock logic,
-; so their control flow is unmodified.
+; so their control flow is unmodified. However, documenting location and logic:
+; org $02b6af
+;     sta $1a7d       ; set most recent character
+;     jsl $009595     ; JSL to load font data
+;     jsl $00958d     ; JSL to check horizontal overflow
+;     jsl $00959d     ; JSL to write font data to bank 7F
+;     jsl $00957d     ; JSL to calculate text X position
+;     rts
+
+;;;;;;;;;;;;;;;;;;;;
 
 ; control flow for linebreaking in main gameplay mode
 ; get rid of the useless JSR/BNE with $00AC8F

@@ -1,9 +1,8 @@
 includefrom "main.asm"
 
-; Doing this here because Atlas has no "fill data block with value" function.
-; Go to where the game keeps the name entry screen's character data, and fill it
-; with [00] bytes (space characters) to make the Atlas script simpler.
-; Fill from $02A9E4 until $02AEC1.
+; Initialize the name entry screen's character data at $02A9E4-$02AEC1 with all
+; 00 bytes (space characters) to simplify the Atlas script for inserting the new
+; character data. (Doing here since Atlas has no "fill with value" function)
 
 !NameEntryDataStart = $02A9E4
 !NameEntryDataEnd = $02AEC1
@@ -65,12 +64,28 @@ org $02B4DB
 
 ; ;;;;;;;;;;;;;;;;;;;;
 
+; document how to change location of highlight box around a character in the grid
+; by default, for row R and column C: X = C*0x10 + 0x19, Y = R*0x10 + 0x8E
+; yes, the original code does this with two ADC instructions, for some reason
+org $02b4fb
+    adc #$008e
+    adc #$1a00
+
+; ;;;;;;;;;;;;;;;;;;;;
+
 ; I wanted to use the full range of the 15 pixel limit for font heights, but the
 ; "erase font at X/Y on screen" subroutine won't erase the top few pixel rows
 ; for characters that are 14 pixels (top row) or 15 pixels (top 2 rows) tall.
 ; Fix by changing this byte from 0E to 10.
 org $01f682
   ; db $0e
+    db $10
+
+; change the number of pixels down for the calculation of "how many tile rows to
+; erase the font data from?"; if you don't, pixel shadowing from the bottom row
+; of font data (e.g. 'y' or 'j') doesn't get erased and is barely visible
+org $01f6a0
+  ; db $0f
     db $10
 
 ; Also extend the width of how many pixel columns get erased. Game achieves this
