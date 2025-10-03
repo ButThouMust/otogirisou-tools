@@ -29,6 +29,7 @@ incsrc "asm/move sound data.asm"
 incsrc "asm/insert font.asm"
 
 incsrc "asm/name entry hacks.asm"
+incsrc "asm/set default name on name entry.asm"
 incsrc "asm/insert huffman script.asm"
 
 ; optional, feel free to leave out if you so desire

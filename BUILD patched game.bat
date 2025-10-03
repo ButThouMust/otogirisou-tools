@@ -62,33 +62,18 @@ tools\atlas.exe %uncompScriptROM% %scriptTranslationFile% > logs\log_atlas_uncom
 :: - Huffman tree structure "flattened out" in the correct format for the game
 :: - a 9 byte file containing the 3 start points for the story
 
-:: Important: Whenever you update %scriptTranslationFile%, you must open
-:: %uncompScriptROM% in a hex editor and get the hexadecimal offset for the end*
-:: of the file (if over 2 MB). The batch file will prompt you for this.
-:: *: If this file happens to be 2 MB, use the offset of the last non-zero byte.
-:: @echo Please update the address in the batch file for the end of the uncompressed script...
-:: @pause
-:: @set uncompScriptEndPos=2132dd
-
-:: I prefer manually updating the script offset like above (don't need to change
-:: if testing a change to something other than the script), but you can enter
-:: it in as user input if you prefer.
-:: :askforinput1
-:: @set /P uncompScriptEndPos="Enter the hex offset of the end of the uncompressed script in 'rom/Otogirisou - EN uncompress.sfc': "
-
 :: Be sure to delete the previous Huffman script so that the new script gets
 :: written into a completely fresh, blank file. Avoids instances where the
 :: new script is smaller than previous, and the remaining bytes from the old
 :: script remain after the end of the new script.
 del ".\script\huffman script.bin"
 
-:: java -classpath %srcPath% huffman/GenerateHuffmanScript %uncompScriptROM% %translationTableFile% aeba0 %uncompScriptEndPos%
 java -classpath %srcPath% huffman/GenerateHuffmanScript %uncompScriptROM% %translationTableFile% 100000
 
-:: if %errorlevel% neq 0 pause exit /b %errorlevel%
-:: @if %errorlevel% neq 0 @echo( & goto :askforinput1
-
 del %uncompScriptROM%
+
+:: generate binary data for default name for protagonist "Kouhei"
+tools\Atlas.exe ".\script\default name.bin" ".\script\default name - atlas file.txt"
 
 :: #############################################################################
 :: #############################################################################
@@ -98,7 +83,6 @@ del %uncompScriptROM%
 :: and insert assembly hacks for kerning and English linebreaking
 
 :: keep a copy of previous version
-:: copy /y %huffScriptROM% "Otogirisou - huff script test - Copy.sfc"
 copy /y %huffScriptROM% %huffScriptROMOldVersion%
 del %huffScriptROM%
 
