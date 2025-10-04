@@ -18,7 +18,7 @@ CharWidth = $1A83
 
 ; these four need to come in this particular order
 incsrc "asm/inject new ctrl codes into jump table.asm"
-incsrc "asm/kerning asm hack.asm"
+incsrc "asm/kerning ctrl code asm hack.asm"
 incsrc "asm/improve linebreaking.asm"
 incsrc "asm/honorifics asm hack.asm"
 
