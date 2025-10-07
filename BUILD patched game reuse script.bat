@@ -19,6 +19,9 @@ prompt $g
 
 tools\Atlas.exe ".\script\default name.bin" ".\script\default name - atlas file.txt"
 
+@javac src\GenerateKerningData.java
+java -classpath ".\src" GenerateKerningData
+
 :: keep a copy of previous patched version
 copy /y %huffScriptROM% %huffScriptROMOldVersion%
 del %huffScriptROM%

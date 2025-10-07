@@ -380,7 +380,7 @@ public class FontInserter {
 
             addCtrlCodesToGeneratedTbl();
             addCompoundPunctuation();
-            addKerningPairs();
+            // addKerningPairs();
             createListOfLinebreakChars();
 
             newTableFile.flush();

@@ -4,6 +4,7 @@ prompt $g
 @set srcPath=".\src"
 
 @javac .\src\huffman\*.java .\src\generate_font\*.java .\src\header_files\*.java
+@javac src\GenerateKerningData.java
 
 :: #############################################################################
 :: #############################################################################
@@ -74,6 +75,8 @@ del %uncompScriptROM%
 
 :: generate binary data for default name for protagonist "Kouhei"
 tools\Atlas.exe ".\script\default name.bin" ".\script\default name - atlas file.txt"
+
+java -classpath ".\src" GenerateKerningData
 
 :: #############################################################################
 :: #############################################################################
