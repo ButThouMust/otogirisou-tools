@@ -21,6 +21,7 @@ incsrc "asm/inject new ctrl codes into jump table.asm"
 incsrc "asm/kerning ctrl code asm hack.asm"
 incsrc "asm/improve linebreaking.asm"
 incsrc "asm/honorifics asm hack.asm"
+incsrc "asm/inject kerning into text routine.asm"
 
 incsrc "asm/insert graphics.asm"
 incsrc "asm/update highlight box dimensions.asm"

@@ -1,0 +1,143 @@
+The user BootlegPorygon in the RHDI Discord had introduced me to the concept of
+text kerning when the project was still in progress. They told me about two
+approaches for implementing it: bake the kerning directly into the script, or
+create an ASM hack to do it for you in the game code itself. I chose the first
+approach for the patches up through 1.1, but I made some notes about how to do
+the second approach as a sort of preparation for doing it in Kamaitachi.
+
+Here are some reasons for why I want to go to the effort:
+- Allow kerning for the protagonist's name, and for honorifics.
+- Keep the pervasive <KERN LEFT> control code from bloating up the script.
+- Overcome the limitations of using a table file with Atlas to do kerning.
+  (Consecutive kerning pairs like the "adj" in "adjust" would require a special
+  table entry for that triple, because it will otherwise only kern the "ad")
+- Force me to check every possible kerning pair, instead of adding them to the
+  list as I find them when playtesting.
+
+--------------------------------------------------------------------------------
+
+Kerning table format at high level:
+Let N be # of characters in your font, with characters [C_1, C_2, ..., C_N].
+Associate a block of data with N entries to each character.
+Each entry encodes a horizontal kerning distance K for the sequence [C_1][C_2].
+Order matters, i.e. kerning [C_1][C_2] may not be the same as for [C_2][C_1].
+
+Given the previously printed character C_1 and the current character to print
+C_2, go to the table for C_1 and get the [C_2]nd entry. Use this value to modify
+the current X position, typically going left.
+
+--------------------------------------------------------------------------------
+
+Implementation details to consider:
+
+--------------------
+
+The ASM hack needs to know where in the ROM the table for C_1 exists. The two
+options I thought of for getting the pointer to a kerning data block were:
+- Multiply char # by size of block and add to some base offset.
+- Make a pointer table.
+
+I think the pointer table would be the better choice, for a few reasons:
+- allows reusing blocks between accented characters like a/à/á/etc.
+- multiplication in ASM is computationally expensive (note: Chunsoft had already
+  implemented it somewhere for their original font decompression code)
+- no need for bank wrapping should there be enough characters to overflow a bank
+  were you to do the multiplication strategy
+
+Depending on # chars, pointers might have to be 24-bit, sadly.
+
+--------------------
+
+How much space to dedicate to each entry? What should the range of values be
+for each entry's kerning distance? How much can you try to bitpack stuff?
+
+Options for storage:
+- 1 entry/byte. Signed 8-bit value, range -128 to 127.
+  Very simple to code: read the byte, and that's it. However, wasteful on space,
+  since all kerning values in the font I use move at most 3 pixels left.
+
+- 2 entries/byte. Signed 4-bit value, range -8 to 7.
+  Still relatively simple to code: read byte, check parity of 2nd character,
+  and shift value into position or bitmask it out. You must manually check for
+  negative values and sign extend if necessary. Better space utilization.
+
+- "2.5" entries/byte (5 entries/2 bytes). Signed 3-bit values, range -4 to 3.
+  Encode them akin to three 5-bit color components for SNES palettes.
+  Difficult to code, and 1 bit of every 16-bit word (6.25%) gets wasted.
+
+- 4 entries/byte. Encode a NEGATIVE 2-bit value, range -3 to 0. Most compact
+  space (while still usable). Least flexible range, but easier to code than the
+  option for 2.5 entries/byte. Only allows kerning in one direction.
+
+I decided to go with the 4 entry/byte option, since I mainly want to kern left.
+
+--------------------
+
+Where should the tables of "kern left by K pixels" go in the ROM? How much space
+will they take altogether?
+
+*Where* they go is not difficult. I had to expand the ROM by another 0.5 MB to
+get the script to fit, and the tables can go there.
+
+If N characters are in your font, there are N^2 possible pairs of characters you
+have to check, since kerning "ad" does not necessarily have to kern the same as
+"ad". So if you assign k entries per byte, the table will take N * ceil(N/k),
+assuming that none of the characters share a kerning table.
+
+The 0xC7 characters in my font need 0x9AB1 pairs which fit into at most 0x26DE
+(0xC7 * 0xC8/4) bytes with the 4 entry/byte option above. Notice how the 4 entry
+per byte system makes the tables all fit into less than one LoROM bank.
+
+If you wanted to do this with the Japanese font's 0x658 characters, encoding the
+0x283E40 pairs would take 0xA0F90 bytes. Way too many pairs to check (over 2.5
+million), and it would've ballooned the ROM without some sort of compression.
+
+On the subject of compression, I suppose RLE would be an adequate choice here if
+you feel so inclined.
+
+--------------------
+
+Where to inject into the code? How to signal "don't do kerning at all" at the
+start of a line/page? How do you handle kerning if you find control codes that
+change the X/Y position?
+
+Look in control flow documented in the linebreaking ASM hack.
+
+Things that the function would need:
+- The character to print on screen
+- What character was most recently printed
+
+The character to print is easy (output of running $00ADE1) since Chunsoft has
+already set aside $1A7D for the most recent character value to print (but
+characters only, not control codes). However, it'd be better to take that value
+and move it to a 2-byte buffer in memory for like "previous character here" upon
+update, to allow easy access in kerning code.
+
+--------------------
+
+Should some control codes or characters explicitly prevent kerning?
+Auto kerning should be fine if you encounter:
+- Script jumps, "set flag"
+- text speed codes
+- print name or honorific (after $00ADE1 finds either, it will instead read from
+  a buffer of uncompressed text values)
+- auto advance, wait, delays
+- GFX/SFX/VFX codes
+
+Auto kerning should not proceed if you encounter:
+- Line, end choice
+  * Do not kern current character based on last character of previous line
+  * Possible sore point: how to prevent kerning after an *automatic* linebreak?
+- Text clears
+  * Do not kern current character based on last character of previous screen
+- Set X pos
+  * The X position is being set for a purpose; do not change it
+- Choices
+  * Do not kern based on text (if available) before the list of options
+- Space characters (encode into kerning tables)
+  - In particular, I chose 0000 as the default value for "do not kern now"
+- The choice letters (same, encode into kerning tables)
+
+Debatable as to whether auto kerning should happen:
+- Explicit KERN LEFT or KERN RIGHT codes in the script
+- Text Y position codes: set Y pos, kern up/down

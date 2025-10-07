@@ -15,6 +15,17 @@ org $00FAA5
 ; reasoning for this position: it is the start of a big block of FF bytes after
 ; a block of palette values from $00FA77 to $00FAA4
 
+; subtract from text X position (kern LEFT)
+KernLeft:
+    rep #$30
+    jsr GetScriptValue
+  ; rts
+    ; reverse subtraction because # pixels we want to shift left by is in A
+    ; which is to say ['~' is binary NOT]: addr - A = addr + ~A + 1
+    eor #$ffff
+    sec
+    bra AddXOffset
+
 ; add to text X position (kern RIGHT) 
 KernRight:
     rep #$30
@@ -25,15 +36,14 @@ AddXOffset:
     sta TextXPos
     rts
 
-; subtract from text X position (kern LEFT)
-KernLeft:
+; subtract from text Y position (kern UP)
+KernUp:
     rep #$30
     jsr GetScriptValue
-    ; reverse subtraction because # pixels we want to shift left by is in A
-    ; which is to say ['~' is binary NOT]: addr - A = addr + ~A + 1
+    ; same idea as kern left; do reverse subtraction on # pixels to shift up by
     eor #$ffff
     sec
-    bra AddXOffset
+    bra AddYOffset
 
 ; add to text Y position (kern DOWN)
 KernDown:
@@ -44,15 +54,6 @@ AddYOffset:
     adc TextYPos
     sta TextYPos
     rts
-
-; subtract from text Y position (kern UP)
-KernUp:
-    rep #$30
-    jsr GetScriptValue
-    ; same idea as kern left; do reverse subtraction on # pixels to shift up by
-    eor #$ffff
-    sec
-    bra AddYOffset
 
 pushpc
 
@@ -68,9 +69,9 @@ pushpc
 ; Purpose: When playtesting, I noticed that text would not kern when printing a
 ; choice but would kern once I picked it and had it print "normally."
 
-; Easy solution with the assumption that no choice options in the script will
-; use kern up/down/right. Replace WAIT 16 with KERN LEFT; choice options can
-; have WAIT codes that only trigger once the player selects them from the list.
+; Deprecated easy solution that assumes no choice options in the script will use
+; kern up/down/right. Replace WAIT 16 with KERN LEFT; choice options can have
+; WAIT codes that only trigger once the player selects them from the list.
 ; !CtrlCodeIdsToRunForChoiceText = $00ac01
 ; org !CtrlCodeIdsToRunForChoiceText+2*$8
     ; db !KernLeftNum
@@ -98,10 +99,12 @@ pushpc
 
 !ReadCtrlCodeArgs = $00a970
 
-; Copy in code starting at $00abb1
-org $00aba0
+; Copy in code starting at $00abaf
+org $00ab9e
+    bcc NewLinebreakingCtrlFlow
     lda $57     ; get ctrl code ID value
     and #$0fff
+    jsr CheckIfCtrlCodeShouldDisableKerning ; ADDED
     ldx FlagPrintingChoice
     beq CaseNotPrintingChoice
 
@@ -142,11 +145,14 @@ CtrlCodeIdsToRunForChoiceText:
     db !HonorificCtrlCodeNum
     db $ff
 
-assert pc() <= $00abe4
-    fillbyte $ff
-    fill $00abe4-pc()
+NewLinebreakingCtrlFlow = pc()
+
+; assert pc() <= $00abe4
+    ; fillbyte $ff
+    ; fill $00abe4-pc()
 
 ; clear out the original table's data
+assert pc() <= $00ac01
 org $00ac01
     fillbyte $ff
     fill $00ac15-pc()

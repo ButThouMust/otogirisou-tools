@@ -42,25 +42,29 @@ LineBreakNewLogic:
     rep #$30
     lda.w TextXPos                ; assume new X pos already pre-calculated
 
-    cmp.w !RightScreenEdge        ; if char would go past right edge of screen,
-    bcs PerformAutoLineBreak      ;   force a line break; keep from original
+; force line break if char would go past right edge of screen; keep from JP game
+    cmp.w !RightScreenEdge
+    bcs PerformAutoLineBreak
 
-    cmp.w !RightTextBound         ; if not past horizontal limit for text,
-    bcc DoNotLineBreak            ;   don't have to do anything
+; if not past horizontal limit for text, don't have to do anything
+    cmp.w !RightTextBound
+    bcc DoNotLineBreak
 
-    ldx.w #$0000                  ; otherwise, perform an automatic line break
-                                  ; at first opportunity (space, punctuation)
-
--   lda.w CharsCanAutoLineBreak,X ; get char value from list, advance list ptr
+; otherwise, do automatic line break at first opportunity (space, punctuation)
+    ldx.w #$0000
+-   lda.w CharsCanAutoLineBreak,X
     inx #2
-    cmp.w #$FFFF                  ; if no matches in whole list,
-    beq DoNotLineBreak            ;   print on current line
+    ; check list terminator, and current value in list
+    cmp.w #$FFFF
+    beq DoNotLineBreak
+    cmp.w MostRecentChar
+    bne -
 
-    cmp.w MostRecentChar          ; compare space/punct. value with script char
-    bne -                         ; if no match, check next value in list
-
-PerformAutoLineBreak:             ; if match (got punctuation or whitespace),
-    jsr.w LINE_00                 ;   print it on current line
+; if match (got punctuation or whitespace), print on current line
+; NEW: also disable kerning at the start of a line
+PerformAutoLineBreak:
+    jsr.w LINE_00
+    jsr.w DisableKerning
 DoNotLineBreak:
     rts
 
@@ -89,7 +93,9 @@ pushpc
 
 ; control flow for linebreaking in main gameplay mode
 ; get rid of the useless JSR/BNE with $00AC8F
-org $00abe7
+; org $00abe4
+org NewLinebreakingCtrlFlow
+    sta.w MostRecentChar
   ; jsr $00ac8f
   ; bne $00abde
   ; lda.w MostRecentChar
@@ -101,8 +107,9 @@ LineBreakControlFlow:
     ; jsr.w $a611   ; write font data to buffer in bank 7F, to be DMA'd to VRAM
     ; jmp.w $ac96   ; calculate X coordinate for next character; only 8-bit A!
 
+    jsr.w DoAutoKernLeft
     jsr.w $a611             ; first, draw the character, assuming no overflow
-    jsr.w CalcNewXPos16Bit  ; calculate next X position but with 16-bit A
+    jsr.w CalcNewXPos16Bit
     jmp.w LineBreakNewLogic ; now check if need to linebreak for the next char
 
 assert pc() <= $00ac01
@@ -114,7 +121,10 @@ assert pc() <= $00ac01
 ; control flow for linebreaking when reading previous pages by pressing X/Y
 ; just copy in the new control flow used for the main gameplay
 
-org $00E085         ; important: there is no check for auto waits/delays here
+org $00e080
+  ; jsr.w $ac8f     ; again, get rid of this useless control flow here
+  ; bne ToTheRtsBelow
+; important: there is no check for auto waits/delays here
     jsr.w $ac79     ; write Y pos. for choice arrows to table if needed
     jsr.w $a4db     ; read font data
     ; jsr.w $a777   ; original Japanese-style linebreaking routine
@@ -122,10 +132,13 @@ org $00E085         ; important: there is no check for auto waits/delays here
     ; jsr.w $ac96   ; calculate X coordinate for next character; only 8-bit A!
 
 ; important that this location uses $00A61C, not $00A611
+    jsr.w DoAutoKernLeft
     jsr.w $a61c             ; first, draw the character, assuming no overflow
-    jsr.w CalcNewXPos16Bit  ; calculate next X position but with 16-bit A
+    jsr.w CalcNewXPos16Bit
     jsr.w LineBreakNewLogic ; now check if need to linebreak for the next char
     rts
+
+assert pc() <= $00e095
 
 ;;;;;;;;;;;;;;;;;;;;
 

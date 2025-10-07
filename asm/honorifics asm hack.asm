@@ -131,7 +131,7 @@ PrintHonorific:
     bra HonorificCheckOkay
 
 ; for any other possible ASM hacks in bank 00
-; pushpc
+pushpc
 
 ; ------------------------------------------------------------------------------
 
@@ -210,3 +210,5 @@ PickHonorificForFileWithParticularEnding:
 ; save 0x93 bytes
 fillbyte $ff
 fill $01F90E-pc()
+
+; pullpc
