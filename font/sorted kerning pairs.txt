@@ -8188,7 +8188,7 @@
 29	1C	-1	I	<
 29	1D	0	I	=
 29	1E	0	I	>
-29	1F	-1	I	?
+29	1F	0	I	?
 29	20	-1	I	@
 29	21	0	I	A
 29	22	0	I	B
@@ -8348,7 +8348,7 @@
 29	BC	0	I	<AUTO ADV 13>!
 29	BD	0	I	'
 29	BE	0	I	<AUTO ADV 13>.
-29	BF	-1	I	<AUTO ADV 13>?
+29	BF	0	I	<AUTO ADV 13>?
 29	C0	0	I	A_bold
 29	C1	0	I	B_bold
 29	C2	0	I	C_bold
@@ -17323,7 +17323,7 @@
 57	09	-2	w	)
 57	0A	0	w	*
 57	0B	0	w	+
-57	0C	0	w	,
+57	0C	-1	w	,
 57	0D	0	w	-
 57	0E	-1	w	.
 57	0F	-1	w	/
