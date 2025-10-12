@@ -13122,7 +13122,7 @@
 41	BA	0	a	þ
 41	BB	-1	a	ÿ
 41	BC	0	a	<AUTO ADV 13>!
-41	BD	-2	a	'
+41	BD	-1	a	'
 41	BE	0	a	<AUTO ADV 13>.
 41	BF	-1	a	<AUTO ADV 13>?
 41	C0	0	a	A_bold
