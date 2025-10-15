@@ -46,6 +46,8 @@ public class RecompressGraphics {
     private static final int BIT_FLAG_LITERAL = 0x80;
     private static final int DATA_TERM_BYTE = 0x80;
 
+    private static final boolean IS_RUN = true;
+
     private static String removeFileExtension(String filename) {
         int periodIndex = filename.lastIndexOf('.');
         return periodIndex == -1 ? filename : filename.substring(0, periodIndex);
@@ -89,7 +91,7 @@ public class RecompressGraphics {
                 // if size maxed out, this is the end of the group; output it
                 numLits++;
                 if (numLits == MAX_CONSEC_LITERALS) {
-                    DataGroup lits = new DataGroup(false, numLits, pos - numLits);
+                    DataGroup lits = new DataGroup(!IS_RUN, numLits, pos - numLits);
                     dataGroups.add(lits);
                     numLits = 0;
                 }
@@ -98,13 +100,13 @@ public class RecompressGraphics {
             else {
                 // output any literals we have accumulated so far
                 if (numLits != 0) {
-                    DataGroup lits = new DataGroup(false, numLits, pos - numLits);
+                    DataGroup lits = new DataGroup(!IS_RUN, numLits, pos - numLits);
                     dataGroups.add(lits);
                     numLits = 0;
                 }
 
                 // we already know how long the run is, so output the group
-                DataGroup run = new DataGroup(true, runLength, pos);
+                DataGroup run = new DataGroup(IS_RUN, runLength, pos);
                 dataGroups.add(run);
             }
             // advance past run or literal
@@ -113,7 +115,7 @@ public class RecompressGraphics {
 
         // output any straggling literals we have at the end of the file 
         if (numLits > 0) {
-            DataGroup lits = new DataGroup(false, numLits, pos - numLits);
+            DataGroup lits = new DataGroup(!IS_RUN, numLits, pos - numLits);
             dataGroups.add(lits);
         }
     }
@@ -163,7 +165,7 @@ public class RecompressGraphics {
                     // manually create new sequence with the remaining bytes
                     int newLength = (lastCombinedDG.length + currDG.length) - MAX_CONSEC_LITERALS;
                     int newPosition = lastCombinedDG.position + MAX_CONSEC_LITERALS;
-                    DataGroup newGroup = new DataGroup(false, newLength, newPosition);
+                    DataGroup newGroup = new DataGroup(!IS_RUN, newLength, newPosition);
                     combinedDataGroups.add(newGroup);
 
                     // set length of previous sequence to be 0x7F
