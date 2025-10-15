@@ -497,13 +497,14 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         return structureLocation - other.structureLocation;
     }
 
-    // this used to print to a BufferedWriter, but I realized later that this is
-    // perfect for a toString() implementation
-    public String toString() {
-        String output = "";
+    // ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+
+    private String dataRangePrintout() {
         // print the type of structure, the pointer value, and where the data actually starts
         // addition to a RAM offset may overflow the bank like 00FFFF -> 010000
         // so have to first convert to ROM offset before addition, then back to RAM offset
+        String output = "";
         int dataPtrROM = getFileOffset(ptrToData);
         int dataStartROM = dataPtrROM + type.headerSize;
         int dataStartCPUAddr = getRAMOffset(dataStartROM);
@@ -521,6 +522,11 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         int dataSize = dataEndROM - dataStartROM + 1;
         String rangeFormat = "Data range in ROM:   0x%05X to 0x%05X (size 0x%X)\n";
         output += String.format(rangeFormat, dataStartROM, dataEndROM, dataSize);
+        return output;
+    }
+
+    private String structureDataPrintout() {
+        String output = "";
 
         if (!isIndepDataBlock()) {
             String structDataFormat = String.format("Structure @ $%06X: %06X", structureLocation, ptrToData);
@@ -545,124 +551,165 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
             output += structDataFormat + "\n";
         }
 
+        return output;
+    }
+
+    private String headerDataPrintout() {
         String printHeader = String.format("Header    @ $%06X:", ptrToData);
-        for (int i = 0; i < type.headerSize; i++) {
+        int startingHeaderOffset = 0;
+        if (type != StructureType.PALETTE) {
+            int headerBytes01 = gfxDataHeader[0] | (gfxDataHeader[1] << 8);
+            printHeader += String.format(" %04X", headerBytes01);
+            startingHeaderOffset = 2;
+        }
+        for (int i = startingHeaderOffset; i < type.headerSize; i++) {
             // for tilemaps, put a bar before the bytes indicating tilemap size
             if (type == StructureType.TILEMAP && i == type.headerSize - 2) {
                 printHeader += " |";
             }
             printHeader += String.format(" %02X", gfxDataHeader[i]);
         }
-        output += printHeader;
+        return printHeader;
+    }
+
+    private String tileInfoPrintout() {
+        String output = "";
+        // metadata bytes 00 and 01 contain # of tiles
+        int numTiles = gfxDataHeader[0] | (gfxDataHeader[1] << 8);
+        // to convert bytes/tile to bits/pixel, divide by 8 because
+        // 8 bits/byte and 64 pixels/tile
+        int bitDepthEstimate = (uncompDataSize / numTiles) / 8;
+
+        output += "\n";
+        String tilesetSizePrint = "# tiles = 0x%X; uncomp data is 0x%X bytes (%dbpp";
+        output += (String.format(tilesetSizePrint, numTiles, uncompDataSize, bitDepthEstimate));
+
+        if (!isIndepDataBlock()) {
+            // note: this calculation requires structure metadata
+            int paddedBitDepth = ((getTileBitDepthMinus1() >> 4) & 0x7) + 1;
+            output += String.format(" -> %dbpp", paddedBitDepth);
+        }
+        output += ")";
+
+        // check if tile data is for "type 01" instead of "type 00"
+        if ((gfxDataHeader[2] & 0x7) == 0x1) {
+            output += ("\nNOTE: This is for \"type 01\" of tile data.");
+        }
+
+        if (!isIndepDataBlock()) {
+            int vramAddress = structureMetadata[0] | (structureMetadata[1] << 8);
+            String vramAddrFormat = "\nTiles are written to VRAM $%04X.w.";
+            output += String.format(vramAddrFormat, vramAddress);
+
+            boolean createEmptyTile = (structureMetadata[2] & 0x1) == 0;
+            if (!createEmptyTile) {
+                // this case applies to tile data for IDs: 5B 5C 81 82 91 92 93 96 98 99 9A 9B 9C
+                output += ("\nNOTE: Game does not generate an empty tile for this tileset.");
+            }
+        }
+        return output;
+    }
+
+    private String tilemapInfoPrintout() {
+        String output = "";
+        int tilemapWidth = gfxDataHeader[4];
+        int tilemapHeight = gfxDataHeader[5];
+        // boolean highBytesIncluded = tilemapWidth * tilemapHeight != uncompDataSize;
+        int tilemapSizeFlag = gfxDataHeader[3];
+        boolean highBytesIncluded = tilemapSizeFlag == 0x01;
+
+        output += "\n";
+        String highBytesPrint = "High bytes of entries are %s\n";
+        output += (String.format(highBytesPrint, highBytesIncluded ? "included" : "ALL [00]"));
+
+        String tilemapSizePrint = "Tilemap W*H is 0x%02X*0x%02X%s -> 0x%X bytes\n";
+        output += String.format(tilemapSizePrint, tilemapWidth, tilemapHeight, (highBytesIncluded ? "*2" : ""), uncompDataSize);
+
+        if (!isIndepDataBlock()) {
+            String tilemapScreenPos = "Starts on screen @ (X, Y) = (0x%02X, 0x%02X)";
+            int tilemapX = (structureMetadata[6] & 0xF) | ((structureMetadata[5] << 2) & 0x30);
+            int tilemapY = ((structureMetadata[6] >> 4) & 0xF) | (structureMetadata[5] & 0x30);
+            output += String.format(tilemapScreenPos, tilemapX, tilemapY);
+
+            int baseMapEntryValue = structureMetadata[2] | (structureMetadata[3] << 8);
+            int baseTileID = structureMetadata[4] | ((structureMetadata[5] & 0x3) << 8);
+            boolean addBaseIdToBase = (structureMetadata[5] & 0x80) == 0;
+            if (baseTileID != 0) {
+                String baseIdFormat = "\nBase tile ID is 0x%03X (not 000)";
+                output += String.format(baseIdFormat, baseTileID);
+            }
+            if (!addBaseIdToBase) {
+                String noAddNotice = "\nGame does not add base tile ID 0x%03X to base tilemap value %04X";
+                output += String.format(noAddNotice, baseTileID, baseMapEntryValue);
+            }
+            else {
+                baseMapEntryValue += baseTileID;
+            }
+            boolean baseMapYFlip = (baseMapEntryValue & 0x8000) != 0;
+            boolean baseMapXFlip = (baseMapEntryValue & 0x4000) != 0;
+            boolean baseMapPriority = (baseMapEntryValue & 0x2000) != 0;
+            int baseMapPalette = (baseMapEntryValue & 0x1C00) >> 0xA;
+            int baseMapTileNum = baseMapEntryValue & 0x3FF;
+            String baseEntryPrintout = "\nBase entry %04X -> tile %03X, palette %d%s%s%s";
+            output += String.format(baseEntryPrintout, baseMapEntryValue, baseMapTileNum, baseMapPalette,
+                    baseMapXFlip ? ", X flip" : "",
+                    baseMapYFlip ? ", Y flip" : "",
+                    baseMapPriority ? ", priority ON" : "");
+
+            String vramAddressFormat = "\nTilemap data written to VRAM $%04X.w";
+            int vramAddress = structureMetadata[0] | (structureMetadata[1] << 8);
+            output += String.format(vramAddressFormat, vramAddress);
+        }
+
+        int numBytesToTransferToVram = gfxDataHeader[0] | (gfxDataHeader[1] << 8);
+        output += String.format("\n# bytes to write to VRAM: 0x%X", numBytesToTransferToVram);
+        if (numBytesToTransferToVram != 0x800) {
+            output += " (not the typical value of 0x800)";
+        }
+
+        // check a value to see if for Mode 7 graphics
+        if (tilemapSizeFlag == 0x80) {
+            output += ("\nNOTE: This tilemap is for Mode 7 graphics!");
+        }
+
+        // check if tilemap data is for "type 03" instead of "type 02"
+        if ((gfxDataHeader[2] & 0x7) == 0x3) {
+            output += ("\nNOTE: This is for \"type 03\" of tilemap data.");
+        }
+
+        return output;
+    }
+
+    private String paletteInfoPrintout() {
+        String output = "";
+        if (!isIndepDataBlock()) {
+            int cgramIndex = structureMetadata[0];
+            String indexFormat = "\nColors written to CGRAM starting at index 0x%02X";
+            output = String.format(indexFormat, cgramIndex);
+        }
+        return output;
+    }
+
+    // this used to print to a BufferedWriter, but I realized later that this is
+    // perfect for a toString() implementation
+    public String toString() {
+        String output = dataRangePrintout();
+        output += structureDataPrintout();
+        output += headerDataPrintout();
 
         // add special text that better describes data for each structure type
         // - add more to this as you find out more stuff about data format
         switch (type) {
             case TILE: {
-                // metadata bytes 00 and 01 contain # of tiles
-                int numTiles = gfxDataHeader[0] | (gfxDataHeader[1] << 8);
-                // to convert bytes/tile to bits/pixel, divide by 8 because
-                // 8 bits/byte and 64 pixels/tile
-                int bitDepthEstimate = (uncompDataSize / numTiles) / 8;
-
-                output += "\n";
-                String tilesetSizePrint = "# tiles = 0x%X; uncomp data is 0x%X bytes (%dbpp";
-                output += (String.format(tilesetSizePrint, numTiles, uncompDataSize, bitDepthEstimate));
-
-                if (!isIndepDataBlock()) {
-                    // note: this calculation requires structure metadata
-                    int paddedBitDepth = ((getTileBitDepthMinus1() >> 4) & 0x7) + 1;
-                    output += String.format(" -> %dbpp", paddedBitDepth);
-                }
-                output += ")";
-
-                // check if tile data is for "type 01" instead of "type 00"
-                if ((gfxDataHeader[2] & 0x7) == 0x1) {
-                    output += ("\nNOTE: This is for \"type 01\" of tile data.");
-                }
-
-                if (!isIndepDataBlock()) {
-                    int vramAddress = structureMetadata[0] | (structureMetadata[1] << 8);
-                    String vramAddrFormat = "\nTiles are written to VRAM $%04X.w.";
-                    output += String.format(vramAddrFormat, vramAddress);
-
-                    boolean createEmptyTile = (structureMetadata[2] & 0x1) == 0;
-                    if (!createEmptyTile) {
-                        // this case applies to tile data for IDs: 5B 5C 81 82 91 92 93 96 98 99 9A 9B 9C
-                        output += ("\nNOTE: Game does not generate an empty tile for this tileset.");
-                    }
-                }
-
+                output += tileInfoPrintout();
                 break;
             }
             case PALETTE: {
-                if (!isIndepDataBlock()) {
-                    int cgramIndex = structureMetadata[0];
-                    String indexFormat = "\nColors written to CGRAM starting at index 0x%02X";
-                    output += String.format(indexFormat, cgramIndex);
-                }
+                output += paletteInfoPrintout();
                 break;
             }
             case TILEMAP: {
-                int tilemapWidth = gfxDataHeader[4];
-                int tilemapHeight = gfxDataHeader[5];
-                // boolean highBytesIncluded = tilemapWidth * tilemapHeight != uncompDataSize;
-                int tilemapSizeFlag = gfxDataHeader[3];
-                boolean highBytesIncluded = tilemapSizeFlag == 0x01;
-
-                output += "\n";
-                String highBytesPrint = "High bytes of entries are %s\n";
-                output += (String.format(highBytesPrint, highBytesIncluded ? "included" : "ALL [00]"));
-
-                String tilemapSizePrint = "Tilemap W*H is 0x%02X*0x%02X%s -> 0x%X bytes\n";
-                output += String.format(tilemapSizePrint, tilemapWidth, tilemapHeight, (highBytesIncluded ? "*2" : ""), uncompDataSize);
-
-                if (!isIndepDataBlock()) {
-                    String tilemapScreenPos = "Starts on screen @ (X, Y) = (0x%02X, 0x%02X)";
-                    int tilemapX = (structureMetadata[6] & 0xF) | ((structureMetadata[5] << 2) & 0x30);
-                    int tilemapY = ((structureMetadata[6] >> 4) & 0xF) | (structureMetadata[5] & 0x30);
-                    output += String.format(tilemapScreenPos, tilemapX, tilemapY);
-
-                    int baseMapEntryValue = structureMetadata[2] | (structureMetadata[3] << 8);
-                    int baseTileID = structureMetadata[4] | ((structureMetadata[5] & 0x3) << 8);
-                    boolean addBaseIdToBase = (structureMetadata[5] & 0x80) == 0;
-                    if (baseTileID != 0) {
-                        String baseIdFormat = "\nBase tile ID is 0x%03X (not 000)";
-                        output += String.format(baseIdFormat, baseTileID);
-                    }
-                    if (!addBaseIdToBase) {
-                        String noAddNotice = "\nGame does not add base tile ID 0x%03X to base tilemap value %04X";
-                        output += String.format(noAddNotice, baseTileID, baseMapEntryValue);
-                    }
-                    else {
-                        baseMapEntryValue += baseTileID;
-                    }
-                    boolean baseMapYFlip = (baseMapEntryValue & 0x8000) != 0;
-                    boolean baseMapXFlip = (baseMapEntryValue & 0x4000) != 0;
-                    boolean baseMapPriority = (baseMapEntryValue & 0x2000) != 0;
-                    int baseMapPalette = (baseMapEntryValue & 0x1C00) >> 0xA;
-                    int baseMapTileNum = baseMapEntryValue & 0x3FF;
-                    String baseEntryPrintout = "\nBase entry %04X -> tile %03X, palette %d%s%s%s";
-                    output += String.format(baseEntryPrintout, baseMapEntryValue, baseMapTileNum, baseMapPalette,
-                            baseMapXFlip ? ", X flip" : "",
-                            baseMapYFlip ? ", Y flip" : "",
-                            baseMapPriority ? ", priority ON" : "");
-
-                    String vramAddressFormat = "\nTilemap data written to VRAM $%04X.w";
-                    int vramAddress = structureMetadata[0] | (structureMetadata[1] << 8);
-                    output += String.format(vramAddressFormat, vramAddress);
-                }
-
-                // check a value to see if for Mode 7 graphics
-                if (tilemapSizeFlag == 0x80) {
-                    output += ("\nNOTE: This tilemap is for Mode 7 graphics!");
-                }
-
-                // check if tilemap data is for "type 03" instead of "type 02"
-                if ((gfxDataHeader[2] & 0x7) == 0x3) {
-                    output += ("\nNOTE: This is for \"type 03\" of tilemap data.");
-                }
-
+                output += tilemapInfoPrintout();
                 break;
             }
         }
