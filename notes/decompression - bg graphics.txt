@@ -266,6 +266,11 @@ bit depth against byte 3. In this case, the graphics decompress to 0x840 bytes.
 32 bytes/tile * 8 bits/byte * (1 tile/64 pixels) = 4 bits/pixel = 4bpp
 So the formula is: bit_depth = decomp_size_bytes / num_tiles / 8
 
+*: For some reason, two of the Mode 7 tilesets decompress to a 5bpp "container,"
+as I decided to call it. The tileset for ID 0x7A has 4bpp graphics data, and the
+one for IDs 0x7B and 0x7C has 2bpp graphics data. The empty bitplanes are filled
+with all 00 bytes, and both tilesets get padded to 8bpp.
+
 ------------------------------
 
 TILEMAP structure data:
@@ -278,16 +283,16 @@ TILEMAP structure data:
   - 1170 in $00C125, ID 0x5A (palette 4, tile 170)
   - 3880 in $00C29F, ID 0x5B (palette 6, tile 080, set priority)
   - 3DFE in $00B5C5, ID 0x76 (palette 7, tile 1C5, set priority)
-  - 19F7 in $00C358, ID 0x98 (palette 7, tile 1F7)
+  - 19F7 in $00C358, ID 0x98 (palette 6, tile 1F7)
   - 2000 in credits tilemaps (palette 0, tile 000, set priority)
   - 2334, 2398 for "the end" (palette 0, tile 334 or 398, set priority)
   - 0000 in Mode 7 (7A $00C06D, 80 $00C085, 7B/7C $00C0A7, 7D-7F $00C0BF)
          and $00C161 credits (clear BG3 tilemap before credits)
 
-- Byte 7 and bits 0-1 of byte 8: Encode tile # to use for filling empty spaces
-  in the tilemap. Value for all tilemap structures is 000.
+- Byte 7 and bits 0-1 of byte 8: Encode tile # (10 bit value) to use to pre-fill
+  empty spaces in the tilemap. Value for all tilemap structures is 000.
 
-- Bit 7 of byte 8: Bit flag for whether to NOT add the "pre-fill" value in bytes
+- Bit 7 of byte 8: Bit flag for whether to NOT add the pre-fill tile ID in bytes
   7-8 to the base tilemap value in bytes 5-6. So add if 0, don't add if 1. In
   all tilemap structures, this bit is 0, so the addition always happens.
 
@@ -305,12 +310,21 @@ TILEMAP structure data:
 ---
 
 TILEMAP header data:
-- Bytes 0, 1: Not sure, usually [00 08].
+- Bytes 0, 1: The size of how much tilemap data to send to VRAM? Most tilemaps
+  have [00 08], but there are six exceptions, all related to Mode 7 tilemaps:
+   Tilemap | Data  | ID(s)
+  ---------+-------+----------  I happened to notice that all these values are
+   $07C477 | 06 01 | 7A         equal to (W*H + 2), where W and H are the width
+   $07AA2E | DE 00 | 7B,7C      and height of the tilemap. What are the other
+   $07AB50 | C2 03 | 7D,7E,7F   two bytes? The purpose is an educated guess, but
+   $07AE19 | E2 01 | 7D,7E,7F   I think the corresponding ASM would be at around
+   $079C7F | 62 00 | 80         $00B0B2 ($00B0D1-$00B0D7) and $00B131.
+   $079CE5 | 5D 00 | 80
 
 - Byte 2: Type indicator byte for normal or Mode 7 tilemap.
 
 - Byte 3 is a flag with 3 possible values:
-  * 00 = high bytes not included, assumed to be all 00
+  * 00 = low bytes only; all high bytes assumed to be 00
   * 01 = high bytes with low bytes (each set is in its own W*H byte block)
   * 80 = similar to 00 case, but indicates the tilemap is for Mode 7 graphics
 
@@ -319,6 +333,12 @@ TILEMAP header data:
 
 As a consequence, formula for target size of uncompressed tilemap data:
 uncomp_tilemap_size = [(byte3 & 0x1) + 1] * byte4 * byte5
+
+---
+
+It is also worth mentioning that $00E00C contains a special tilemap block. Its
+sole purpose is to initialize blocks of 0x800 bytes (0x400 words) in VRAM with
+all 00 bytes, not counting the base tilemap value to add to.
 
 ------------------------------
 
@@ -387,7 +407,7 @@ Not having associated structures means you cannot, in isolation, know:
 - Palettes: where in CGRAM to start writing color data
 
 For context, the graphics are all from $02DA00 - $08D39A (0x13A00 - 0x4539A),
-except for one at $00E00C. Six blocks are not covered with structures.
+except for the tilemap at $00E00C. Six blocks are not covered with structures.
 I ultimately opted to hard code this list of pointers into my graphics dumper
 because each block can have multiple structures inside.
 
@@ -510,16 +530,52 @@ $07F38B - $07F57C: Three groups of palette data related to the bookmarks on the
 
 --------------------
 
-$0889E5 - $0889F9: Don't know for sure what this tilemap is for. Based on nearby
-    data blocks in the ROM, it may be related to ID 0x96: tile data in $07FE3E,
-    and palette data in $088850. When I tried combining the three in YY-CHR and
-    Tilemap Studio, the resulting picture was a color gradient that increased in
-    brightness from top (darker) to bottom (brighter).
+$0889E5 - $0889F9: Tilemap for a color gradient related to ID 0x96 (mansion roof
+    with small flames), namely tile data in $07FE3E and palette data in $088850.
 
     Tilemap header [00 08 02 01 20 07] @ $0889E5
     Tilemap data from $0889EB - $0889F9 (0x409EB - 0x409F9).
     The tilemap dimensions are 0x20 * 0x07, with high bytes included.
-    Perhaps note that all of the high bytes are [04], i.e. all palette 01.
+
+    Below are some notes I took while investigating this tilemap some more:
+
+    Perhaps worth noting that all high bytes are [04], i.e. all palette 1.
+    Also, only 5 unique tile IDs are used in the tilemap: 3F, 40, 12, 41, 42.
+
+    I tried combining the aforementioned tile and palette data in YY-CHR, and
+    combined the colored-in tileset with this tilemap in Tilemap Studio. The
+    resulting picture was interestingly a color gradient. That it wasn't a total
+    mess of pixels was quite encouraging. The five tiles all use colors 1, 2,
+    and 3 for a particular palette index.
+
+    Assuming that the [04] high bytes get added to a base tilemap value of 0800
+    (add 2 to palette index) like most other tilemaps, this would correspond to
+    using palette 3, which the palette data at $088850 does indeed fill with
+    very dark shades of blue: 000021, 000018, 000010 (RGB24 color values).
+
+--------
+
+In some attempts to have the game load the tilemap, I first tried changing the
+tilemap structure at $00C2F9. In the Japanese game, this structure decompresses
+the tilemap at $00E00C and sends it to VRAM $1000.w (tilemap address for BG1)
+with the base value 0800 (see note above). So just initialize the BG1 tilemap.
+
+Edit data: org $00C2F9 ; dl $0889E5
+- This caused some graphical glitches for a few frames because the game was not
+  yet using the correct tileset (loading order: tilemap -> palette -> tileset),
+  but it would soon display a strip of visibly dark blue sky above the mansion.
+- Issue: the mansion collapse sequence makes the blue sky shift down with it.
+  I suppose this was why the gradient's tilemap went unused.
+
+Next I tried editing the list's last structure at $00C324. It writes the same
+tilemap at $00E00C to VRAM $1400.w in the Japanese game.
+Edit data: org $00C324 ; dl $0889E5 ; dw $1000
+- This overcame the incorrect tileset glitch frames but not the collapse issue.
+- I didn't test the transition where the "camera" pans up to the starry sky.
+
+That is about the full extent of what I tried with this, since I didn't want to
+make an ASM hack just for this. If you're feeling adventurous, try looking in
+the ASM code for the collapse (GFX ID 0x97) from $00E6CB to $00E742.
 
 ################################################################################
 ################################################################################
