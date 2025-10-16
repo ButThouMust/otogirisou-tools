@@ -301,26 +301,26 @@ Check: do some of the different visual codes only affect certain graphic layers?
 - suggested new name: IMAGE CUT H-MIRROR 2F
 
 1030=<CODE 30> (0x02A7E = $00AA7E)
-- 2 values; fade in a new background image; first two bytes could be duration
-  (it's usually just 0001); last two bytes are image selector
-- suggested new name: IMAGE FADE IN 30
+- 2 values; fade in a new background image, don't print text until fade is done;
+  first value is duration (usually just 0001); last value is image ID
+- suggested new name: IMAGE FADE IN BLOCK 30
 
 1032=<CODE 32> (0x029E3 = $00AAE3)
-- 2 values; also used for fading in a new background image
+- 2 values; basically like 1030 but allows text to print during the fade
 - suggested new name: IMAGE FADE IN 32
 
 1033=<CODE 33> (0x029DE = $00A9DE)
 - 2 values, only appears once in the entire script, after 179A81-5
-- suggested new name: GFX 33 // better name available?
+- appears to be like 1032, but mirroring the whole tilemap horizontally
+- suggested new name: IMAGE FADE IN H-MIRROR 33
 
 1034=<CODE 34> (0x02A85 = $00AA85)
-- 1 value; this fades out the non-text graphics to black; input is a duration?
-- suggested new name: FADE IMAGE BLACK 34
+- 1 value; fade out the non-text graphics to black, do not allow printing text
+- suggested new name: IMAGE FADE OUT BLOCK 34
 
 1035=<CODE 35> (0x02A1C = $00AA1C)
-- 1 value; fade out the current background image and load in a new one; allow
-  text to appear on screen during the fade out + fade in transitions
-- suggested new name: IMAGE FADE IN 35
+- 1 value; fade out current background image (allow printing text during fade)
+- suggested new name: IMAGE FADE OUT 35
 
 1036=<CODE 36> (0x02A25 = $00AA25)
 - 2 values; fade out the current background image and load in a new one, but do
