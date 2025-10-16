@@ -53,6 +53,11 @@ public class GenerateHuffmanScript {
     private static HashMap<Integer, String> encodings;
 
     /**
+     * Given a table file hex value, obtain the number of times it appears in the script as a control code input.
+     */
+    private static HashMap<Integer, Integer> ctrlCodeInputCounts;
+
+    /**
      * Given a table file hex value, obtain the number of times it appears in the script.
      */
     private static HashMap<Integer, Integer> charCounts;
@@ -64,6 +69,7 @@ public class GenerateHuffmanScript {
             tableHexValues = new ArrayList<>(NUM_ENCODINGS);
             encodings = new HashMap<>(NUM_ENCODINGS);
             charCounts = new HashMap<>(NUM_ENCODINGS);
+            ctrlCodeInputCounts = new HashMap<>(NUM_ENCODINGS);
 
             // basic format of a table file line is "[hex value]=[character]\n"
             String line;
@@ -88,6 +94,7 @@ public class GenerateHuffmanScript {
                 else {
                     encodings.put(value, split[1]);
                 }
+                ctrlCodeInputCounts.put(value, 0);
                 charCounts.put(value, 0);
             }
 
@@ -105,7 +112,7 @@ public class GenerateHuffmanScript {
      * with a count of 1.
      * @param data the hex encoding for a character or control code
      */
-    private static void incrementCount(int data) {
+    private static void incrementCount(int data, boolean isCtrlCodeInput) {
         data = data & 0x1FFF;
         Integer count = charCounts.getOrDefault(data, 0);
         if (charCounts.get(data) == null) {
@@ -113,6 +120,11 @@ public class GenerateHuffmanScript {
             tableHexValues.add(data);
         }
         charCounts.put(data, count + 1);
+
+        if (isCtrlCodeInput) {
+            count = ctrlCodeInputCounts.getOrDefault(data, 0);
+            ctrlCodeInputCounts.put(data, count + 1);
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -221,7 +233,7 @@ public class GenerateHuffmanScript {
         while (romFile.getFilePointer() < scriptEnd) {
             // get a character and increment its # of occurrences
             int charEncoding = readCharacter();
-            incrementCount(charEncoding);
+            incrementCount(charEncoding, false);
 
             // if got a control code, have to count its non-pointer arguments
             // take note of the uncompressed pointers' positions and values
@@ -231,10 +243,10 @@ public class GenerateHuffmanScript {
                     // both choice codes use three args and a variable number of
                     // pointers, which is based on the first arg
                     int arg0 = readCharacter();
-                    incrementCount(arg0);
+                    incrementCount(arg0, true);
 
-                    incrementCount(readCharacter());
-                    incrementCount(readCharacter());
+                    incrementCount(readCharacter(), true);
+                    incrementCount(readCharacter(), true);
 
                     int numChoicePtrs = (arg0 & 0x7) - 1;
                     for (int i = 0; i < numChoicePtrs; i++) {
@@ -257,7 +269,7 @@ public class GenerateHuffmanScript {
                     for (int i = 0; i < argCount; i++) {
                         switch (argType & 0x1) {
                             case CHAR_ARG:
-                                incrementCount(readCharacter());
+                                incrementCount(readCharacter(), true);
                                 break;
                             case PTR_ARG:
                                 int location = (int) romFile.getFilePointer();
@@ -294,12 +306,19 @@ public class GenerateHuffmanScript {
         String charCountsFile = "script/analysis/char counts for '" + romName + "'.txt";
         BufferedWriter charCountsOutput = new BufferedWriter(new FileWriter(charCountsFile));
 
+        String tableHeader = "       | number | number |        |\n" +
+                             " value | inputs | chars  | total  | encoding\n" +
+                             "-------+--------+--------+--------+----------\n";
+        charCountsOutput.write(tableHeader);
+
         Collections.sort(tableHexValues);
-        String format = "%6d of char 0x%04X = '%s'";
+        String format = " %04X  | %6d | %6d | %6d | %s\n";
         for (Integer tblValue : tableHexValues) {
-            String outputLine = String.format(format, charCounts.get(tblValue), tblValue, encodings.get(tblValue));
+            int numCodeInputs = ctrlCodeInputCounts.get(tblValue);
+            int total = charCounts.get(tblValue);
+            int numChars = total - numCodeInputs;
+            String outputLine = String.format(format, tblValue, numCodeInputs, numChars, total, encodings.get(tblValue));
             charCountsOutput.write(outputLine);
-            charCountsOutput.newLine();
         }
 
         charCountsOutput.flush();
