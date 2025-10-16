@@ -18974,7 +18974,7 @@ Nami resolutely said, “I, want to meet Naomi, and learn why she's hiding from 
 //[$1987BF-3] -> [FB 3D CC]
 //「姉さんが奈美にしたことを忘れたのか。
 //おれたち何度も殺されかかったんだぞ」<LINE 00>
-I said, “I don't really agree. Have you forgetten what she's done to you? How many times did she almost kill\ us?”<LINE 00>
+I said, “I don't really agree. Have you forgotten what she's done to you? How many times did she almost kill\ us?”<LINE 00>
 //「きっと何かわけがあるのよ。お姉さんはいい人だわ!」<LINE 00>
 “I'm sure she had a reason. Naomi is a good person!”<LINE 00>
 //ぼくはなお反対した。<LINE 00>
