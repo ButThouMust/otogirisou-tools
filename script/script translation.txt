@@ -50710,7 +50710,7 @@ Overcome with shock, I shouted.<LINE 00>
 //[$1DD9CC-1] -> [61 CE EE]
 <FULL MUTE 43>
 //奈美はびっくりしたようにぼくを見た。<LINE 00>
-Started, Nami looked at me.<LINE 00>
+Startled, Nami looked at me.<LINE 00>
 //「どうしたの<KOUHEI-SAN 20>!?」<LINE 00>
 “What's the matter, <KOUHEI-SAN 20>?!”<LINE 00>
 //「この顔、おれの親父なんだ」<LINE 00>
