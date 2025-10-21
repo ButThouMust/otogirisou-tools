@@ -140,7 +140,9 @@ ReadArgsForCtrlCodeInChoice:
 CtrlCodeIdsToRunForChoiceText:
 ; include JP game's list, then codes you want to include
 ; this new list just happens to fit in space before the "print character" ASM
-    db $1c,$1b,$20,$21,$00,$1e,$1f,$17,$16
+    db $1c,$1b,$20,$21,$00,$1e,$1f,$17
+; optional: keep in or leave out WAIT 16 as noted above
+  ; db $16
     db !KernLeftNum, !KernRightNum, !KernUpNum, !KernDownNum
     db !HonorificCtrlCodeNum
     db $ff
