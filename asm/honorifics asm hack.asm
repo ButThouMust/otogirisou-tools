@@ -89,7 +89,7 @@ org $00a83a
 
     cpy #$000c              ; if outside range, print NOTHING, not default "san"
     bcs HonorificRTS
-    cpy #$0002
+    cpy !NoHonorific
     beq HonorificRTS
 
     jsr.w $adf5             ; signal that text to be printed is in $5F
