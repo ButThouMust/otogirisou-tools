@@ -107,7 +107,7 @@ CheckIfCtrlCodeShouldDisableKerning:
 
 ListCodesThatDisableKerning:
     ; LINE, CHOICEs, END CHOICE, CLEARs
-    db $00,$19,$1a,$1b,$1c,$25,$26
+    db $00,$19,$1a,$1b,$1c,$25,$26,$27
     ; SET X POS, SET Y POS
     db $1e,$1f
     ; optional? manually kerning in the script
