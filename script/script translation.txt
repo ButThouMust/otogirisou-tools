@@ -34825,7 +34825,7 @@ Nami said, “Oh, how romantic...!”<LINE 00>
 //「飲も、飲も、飲も!」<LINE 00>
 “Let's drink, drink, drink!”<LINE 00>
 //ぼくはどんなときでも、酒さえ見ればうれしくなるタチらしい。<CLEAR 25>
-It doesn't matter what time of day, seeing alcohol always makes me happy.<CLEAR 25>
+It doesn't matter what time of day,\ seeing alcohol always makes me happy.<CLEAR 25>
 
 //[$1BB319-1] -> [C9 98 DD]
 //「疲れたときには、コレがいちばん」<LINE 00>
@@ -47918,9 +47918,10 @@ I didn't want to scare Nami, so I\ was gonna go in without hesitation.<END CHOIC
 //#EMBWRITE(2092)
 //雨にぬれ、黒光りする重そうな門扉は、
 //手で押すと抵抗もなくカンタンに開いた。<LINE 00>
-Wet from the rain, the heavy gate doors had a black luster. When I pushed them, they opened without resistance.<CLEAR 25>
-
-// insert clear code to avoid screen overflow from 1801
+Wet from the rain, the heavy gate doors had a black luster. When I pushed them, they opened without resistance.
+// might need to insert clear code to avoid screen overflow from 1-8-0-1
+//<CLEAR 25>
+<LINE 00>
 //「失礼しまあす!」<LINE 00>
 “Excuse us!”<LINE 00>
 //二人で洋館へ礼儀正しく頭を下げてから、門内へ一歩、踏み入れた。<CLEAR 25>
@@ -47999,7 +48000,7 @@ I took Nami's hand and started walking.<LINE 00>
 //[$1DA52A-1] -> [51 29 ED]
 #EMBWRITE(2097)
 //「あのネコ、きっとピーマン100個食べたんだ」<END CHOICE 1C>
-“That cat, must have eaten 100 green peppers.”<END CHOICE 1C>
+“That cat, must have eaten 100\ green peppers.”<END CHOICE 1C>
 //「ま、まさかそんな!?」<LINE 00>
 “N-, no way?!”<LINE 00>
 <JMP 03>
@@ -48106,7 +48107,7 @@ We jumped back from the water tank.<CLEAR 25>
 //ぼくらはしばし立ちつくした。<LINE 00>
 For a moment, we stood stock still.<LINE 00>
 //光線の加減か何かだろうか。<LINE 00>
-Was it because of the rays of light or something?<LINE 00>
+Was it because of the rays of light\ or something?<LINE 00>
 //二人が同時におなじ錯覚を見るなんて。<CLEAR 25>
 How did we both see the same optical illusion at the same time?<CLEAR 25>
 
@@ -48218,7 +48219,7 @@ I rushed to apologize.<LINE 00>
 //その人は少しも反応しない。<LINE 00>
 That person didn't react at all.<LINE 00>
 //「眠ってるのかしら」<CLEAR 25>
-Nami asked, “Are they sleeping?”<CLEAR 25>
+Nami asked, “Are they asleep?”<CLEAR 25>
 
 //[$1DA932-0] -> [90 49 ED]
 <SFX FADE OUT 40><$00><$05><$00><$25><DELAY 17><$00><$1E><STOP SFX 3B><$00><$17>
@@ -48276,7 +48277,7 @@ They often say things like, nobody knows what the future holds, or you can't gra
 //生まれて初めて出会った真の闇の中で、ぼくは石になってしまっている。<LINE 00>
 In the first true darkness I encountered in my life, I've turned to stone.<LINE 00>
 //「あッ」<CLEAR 25>
-“Oh.”<CLEAR 25>
+“Ah-.”<CLEAR 25>
 
 //[$1DAA44-5] -> [25 52 ED]
 //何かが触れた。女の髪だ。<LINE 00>
@@ -49240,11 +49241,11 @@ I involuntarily shouted.<LINE 00>
 <SFX 39><$00><$0F><SFX 39><$00><$17>
 // "find the mummy"; ambient voice sound
 //目つきの悪い白髪の老人がいる。<LINE 00>
-There was a white-haired old man with an evil look in his eyes.<LINE 00>
+There was a white-haired old man\ with an evil look in his eyes.<LINE 00>
 //ぼくは思わず身がまえた。<LINE 00>
 I instinctively took a fighting pose.<LINE 00>
 //すると老人も殺気立って身がまえる。<LINE 00>
-Then, the man seethed with anger and did the same.<LINE 00>
+Then, the man seethed with anger\ and did the same.<LINE 00>
 //「来い、くそ!」<LINE 00>
 //ぼくはわめいた。<CLEAR 25>
 I shouted, “C'mere, damn it!”<CLEAR 25>
@@ -49470,9 +49471,9 @@ Then:<LINE 00>
 //[$1DBD38-3] -> [C3 E9 ED]
 #EMBWRITE(2144)
 //いまの双子は、ユーレイだったのか・・・<DELAY 17><$00><$05>
-Were those twins, ghosts...<AUTO ADV 13>?<DELAY 17><$00><$05><LINE 00>
+Were those twins, ghosts...<AUTO ADV 13>?<DELAY 17><$00><$05>
 //ぼくは寒気を感じた。<END CHOICE 1C>
-I got a chill.<END CHOICE 1C>
+ I got a\ chill.<END CHOICE 1C>
 <JMP 03>
 #EMBSET(1964)
 
@@ -49767,7 +49768,7 @@ Nami started saying something strange.<LINE 00>
 //「ねえ、でもこれ、どうして二つずつあるのかしら」<LINE 00>
 “But, why do you think there are two of each?”<LINE 00>
 //ミルクのみ人形、ままごとセットなど、そういえばすべて二つずつある。<CLEAR 25>
-Milk-drinking dolls, playing house sets, and, come to think of it, everything here, came in pairs.<CLEAR 25>
+Milk-drinking dolls, playing house sets, and, come to think of it, everything\ here, came in pairs.<CLEAR 25>
 
 //[$1DC270-2] -> [82 13 EE]
 //「女の子がふたりいたんだろ」<LINE 00>
@@ -49891,9 +49892,9 @@ She finally went back to her ordinary expression.<CLEAR 25>
 Cracks formed on that pillar in front\ of\ us.<LINE 00>
 //上へ上へとあがっていく。<LINE 00>
 //そして、ぼくの目の高さほどのところへ、新しい背くらべのシルシを作った。<LINE 00>
-They were going up and up, until they made new height marks that were at my eye level.<LINE 00>
+They were going up and up, until they made new height marks that were at\ my eye level.<LINE 00>
 //新しいキズは、奈美の背丈とぴったり同じだった。<CLEAR 25>
-The new marks, were exactly as tall as Nami.<CLEAR 25>
+The new marks, were exactly as tall\ as Nami.<CLEAR 25>
 
 //[$1DC4FF-1] -> [F9 27 EE]
 <SFX 39><$00><$10>
@@ -50105,7 +50106,7 @@ Nami looked at me blankly.<CLEAR 25>
 //「お母さんや、お姉さんと・・・<WAIT 16>
 “With Mother and Naomi...<WAIT 16>
 //私は残るから、<KOUHEI-SAN 20>には手出しをしないでって」<CLEAR 25>
- I'll stay in this mansion, so don't interfere,<LINE 00><KOUHEI-SAN 20>.”<CLEAR 25>
+ I'll stay in\ this mansion, so don't interfere with me, <KOUHEI-SAN 20>.”<CLEAR 25>
 
 //[$1DC902-6] -> [16 48 EE]
 //「奈美、それはおれがやる」<LINE 00>
@@ -50151,7 +50152,7 @@ I awkwardly hugged her.<END CHOICE 1C>
 //[$1DC9C9-7] -> [4F 4E EE]
 #EMBWRITE(2170)
 //ぼくはすかさず身をかわした。<END CHOICE 1C>
-Without a moment's delay, I dodged her.<END CHOICE 1C>
+I dodged her at once.<END CHOICE 1C>
 <SFX TEXT DELAY 3D><$00><$8F>
 // a thud
 <JMP 03>
@@ -50730,7 +50731,7 @@ Nami nodded.<CLEAR 25>
 //「奈美・・・」<LINE 00>
 “Nami...”<LINE 00>
 //抱きしめてその冷たさにハッとした。<LINE 00>
-I embraced her and was surprised with her coldness.<LINE 00>
+I embraced her, but was surprised\ by\ her coldness.<LINE 00>
 //「な、ナ!?」<LINE 00>
 “Na-, Na-?!”<LINE 00>
 //この女はナオミだ。<LINE 00>
@@ -51430,7 +51431,7 @@ I couldn't contain my anger.<LINE 00>
 //キミは妹がこんな姿にされても平気なのか！
  Do you not care that this happened to your younger sister!
 //　ユ、ユーレイには、人間感情がないのかッ」<CLEAR 25>
- Do you have no emotions as a ghost?!”<CLEAR 25>
+ Do you have\ no emotions as a ghost?!”<CLEAR 25>
 
 //[$1DE267-3] -> [3B 13 EF]
 //ナオミは悲しそうにぼくを見た。<LINE 00>
@@ -51649,7 +51650,7 @@ Tears fell from my eyes.<CLEAR 25>
 //かすれ声で奈美がいった。<LINE 00>
 She spoke in a hoarse voice.<LINE 00>
 //「ねえ、<KOUHEI-SAN 20>、ひとりで逃げて」<CLEAR 25>
-“<KOUHEI-SAN 20>, run away by yourself.”<CLEAR 25>
+“<KOUHEI-SAN 20>, run away on your own.”<CLEAR 25>
 
 //[$1DE733-7] -> [9F 39 EF]
 <JMP 03>
@@ -52107,7 +52108,7 @@ Then, a sharp pain went through my\ feet.<LINE 00>
 //「ああッ!」<LINE 00>
 “Aaaaah!”<LINE 00>
 //ぼくのヒザから下が、母のミイラと同じように骨だけになっていく。<LINE 00>
-I was turning into just bones below my waist, just like the mummy.<LINE 00>
+I was turning into just bones below\ my waist, just like the mummy.<LINE 00>
 //どんどんぼくの肉が消えていく。<CLEAR 25>
 My skin was steadily disappearing.<CLEAR 25>
 
@@ -52127,7 +52128,7 @@ Suddenly, wedding bells rang.<LINE 00>
 //異様なまぶしさが部屋に満ちている。<LINE 00>
 A strange radiance filled the room.<LINE 00>
 //「骨になって、結ばれようってことか」<LINE 00>
-“Does this mean we'll be united once I become just bones?”<LINE 00>
+“Does this mean we'll be united once\ I become just bones?”<LINE 00>
 //ただ復讐だけではなかったんだ。<LINE 00>
 This wasn't just some ordinary revenge.<LINE 00>
 //奈美の母は、それほどまで深くぼくの父を愛していたのだ。<LINE 00>
@@ -52502,16 +52503,25 @@ Nami replied, “Lilacs have a symbolism, too<AUTO ADV 13>.
 //・<DELAY 17><$00><$02>
 //・<DELAY 17><$00><$02>
 //<AUTO ADV 13>」<LINE 00>
+
+// The pain<DELAY 17><$00><$02>
+// of<DELAY 17><$00><$03>
+// first love...<AUTO ADV 13>”
  The pain<DELAY 17><$00><$02>
  of<DELAY 17><$00><$03>
- first love...<AUTO ADV 13>”
+ first<DELAY 17><$00><$03>
+ love<DELAY 17><$00><$02>
+.<DELAY 17><$00><$02>
+.<DELAY 17><$00><$02>
+.<DELAY 17><$00><$02>
+<AUTO ADV 13>”
 <LINE 00>
 //<DELAY 17><$00><$4E>
 // similar to previous ending here, change last delay's duration so that credits
 // appear on cue with music; fade-out starts on last phrase of song's "intro"
 // NOTE: to time accurately, you must start from the screen where the burned out
 // mansion is visible; music is timed to take the gfx fade out into account
-<DELAY 17><$00><$34>
+<DELAY 17><$00><$28>
 <SET FLAG 22><$01><$52><$00><$01>
 <VFX 2C><$00><$5D><NOP 1D>
 // a slow fade to the forest, and roll the credits
