@@ -203,6 +203,7 @@ org $00e033
 ; if got ctrl code, keep code ID = low byte of encoding
   ; sbc #$1000  ; original code, takes advantage of BCC check failing -> C set
     and #$0fff
+    jsr CheckIfCtrlCodeShouldDisableKerning ; ADDED
     pha
 
 ; if printing a choice, you must handle any jump codes and do all line breaks
