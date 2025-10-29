@@ -52563,7 +52563,7 @@ I got a little choked up.<CLEAR 25>
 
 //[$1DF999-0] -> [C8 CC EF]
 //今日の目的は決めてあった。<LINE 00>
-I decided on my goal today.<LINE 00>
+I decided on my goal for today.<LINE 00>
 <SFX VOLUME 3F><$00><$05><$00><$27><VFX 2C><$00><$8C>
 // fade out the driving sfx; car slows down
 //今夜、ぼくは奈美を、<WAIT 16>ぼ・・・<DELAY 17><$00><$02>ぼくの
@@ -52613,7 +52613,7 @@ That didn't come out well since my throat was dry.<LINE 00>
 Now, bringing Nami to that mansion,<DELAY 17><$00><$01> was going as planned...<WAIT 16><LINE 00>
 //去年の夏、ゴルフ場のバイトでこっちへ一人で来たとき、
 //偶然に見つけた広大な無人屋敷だ。<CLEAR 25>
-It was that mansion with no one inside, which I coincidentally discovered last summer, when I went alone to my part time job at a golf course.<CLEAR 25>
+It was that huge mansion with no one inside, which I coincidentally discovered last summer, when I went alone to my part time job at a golf course.<CLEAR 25>
 
 //[$1DFB1C-2] -> [E2 D8 EF]
 //電気もつく。水道も出る。ベッドやソファやシャワールームも使える。
@@ -52667,7 +52667,7 @@ This time, the engine suddenly started, and the car began to move.<LINE 00>
 “Oh... wait, huh?”<LINE 00>
 //くそ。いったい何て車だ。<LINE 00>
 //エンスト中に走り出すなんて。<CLEAR 25>
-Damn it, what the heck was with this car? How did it start when I was stalling the engine?<CLEAR 25>
+Damn it, what the hell was with this car? How did it start when I was stalling the engine?<CLEAR 25>
 
 //[$1DFC75-7] -> [AF E3 EF]
 //だがここで、もっとおかしなことが起こった。<LINE 00>
@@ -52694,12 +52694,14 @@ Did my desire make me subconsciously imagine that?<LINE 00>
 //「ねえ、何だったの?」<LINE 00>
 “Hey, what was it?”<LINE 00>
 //「いや、ちょっとね。・・・夕焼けがあんまりキレイだからさ」<LINE 00>
-“No, um...<WAIT 16> The sunset was pretty, that's all.”<LINE 00>
+“No, um...<WAIT 16> The sunset was really pretty, that's all.”<LINE 00>
 //ぼくはテキ当にごまかした。<LINE 00>
 I lied carelessly.<LINE 00>
 //「ああ、ほんとだあ・・・。きれい・・・!」<LINE 00>
 “Ahh, so it is...<WAIT 16> ...It's beautiful!”<LINE 00>
 //スナオな奈美は夕映えの中の風景をながめた。<CLEAR 25>
+// while 素直 is describing Nami and not the act of gazing at the view, not sure
+// of a good way to fit it into the sentence e.g. "honest Nami"
 Nami earnestly gazed at the view in the sunset's glow.<CLEAR 25>
 
 //[$1DFD5A-4] -> [D4 EA EF]
@@ -52771,7 +52773,8 @@ Since I've already become the master storyteller for “Otogirisou,<AUTO ADV 13>
 //[$1DFE74-2] -> [A2 F3 EF]
 #EMBWRITE(1745)
 //ぼくは伝説にかこつけて、奈美を口説きやすいムードにもっていくつもりだ。<LINE 00>
-Using the legend as a pretext, I planned to calmly recite it to her.<LINE 00>
+// to get Nami into a mood where she's easy to court/win over
+I'm gonna use it as an excuse to make Nami easier to win over.<LINE 00>
 
 
 //[$1DFE95-5] -> [AD F4 EF]
@@ -52805,8 +52808,11 @@ I casually put my arm around Nami's shoulder.<LINE 00>
 //「ほんとかなあ・・・」<LINE 00>
 “Really, huh...”<LINE 00>
 //学識となると、ぼくの信用度は低い。<LINE 00>
-// 学識= scholarship or scientific attainments
-I'm not very confident when I get<LINE 00>pedantic like that.<LINE 00>
+// I found the native definition of 学識 to be more useful than Jisho.org:
+// 学問と見識 -> [the learning of new things through going to school, becoming
+// older, reading books, etc.] and [deeply seeing through things, grasping their
+// essence/true nature, superior judgment]
+I'm not very confident when it comes to knowing stuff like that.<LINE 00>
 //「待ってれば、弟だってスグ出てくる」<CLEAR 25>
 “If you wait, the younger brother will come along shortly.”<CLEAR 25>
 
@@ -52818,7 +52824,7 @@ I held Nami's shoulder a little harder.<LINE 00>
 //「ホントだ・・・」<LINE 00>
 “Really...”<LINE 00>
 //「だがこの弟はよこしまな性格で、兄の恋人を横取りしようとしていた。
-“But the evil younger brother tried\ to steal away his brother's lover.
+“But the evil younger brother was trying to steal away his brother's lover.
 //だが、兄はそれを知らなかった」<LINE 00>
  However, the older brother didn't know that.”<LINE 00>
 //「まあ・・・」<LINE 00>
@@ -52834,12 +52840,14 @@ They were the perfect stage effects.<LINE 00>
 
 //[$1E8003-3] -> [1B 00 F4]
 //「兄弟は薬屋だった。代々つたわる秘伝の薬を売りものにしていた。
-“The brothers made medicines for\ a living. They sold a secret medicine\ that had been passed down for generations.
+// the brothers worked as apothecaries, and sold a medicine with a secret recipe
+// that had been passed down for generations
+“The brothers made medicines for\ a living, in particular one with a secret recipe that had been passed down for generations.
 //・・・ところが、弟は、その秘伝を<DELAY 17><$00><$02>
 //商売ガタキに売ってしまったんだ。
- However, the younger brother sold the secret recipe<DELAY 17><$00><$02> to a business rival.
+ However, the younger brother sold the recipe<DELAY 17><$00><$02> to a business rival.
 //そして、その金で、兄の恋人におくりものをして言い寄った・・・」<LINE 00>
- Then, with that money, he bought a present to court his brother's lover...”<LINE 00>
+ And he spent that money on a present to court his brother's lover...”<LINE 00>
 //「まあ、イケナイひと・・・」<LINE 00>
 “Oh, what an awful person...”<CLEAR 25>
 
@@ -52870,7 +52878,7 @@ Enraged, the older brother brandished a sword, rushed in, and slashed at them.
 //・・・一人を斬ったが、一人は逃がした」<LINE 00>
  He slashed one of them, but let the other go.”<LINE 00>
 //「まあ、・・・どっちを斬ったの!」<LINE 00>
-“Oh...<AUTO ADV 13>!<DELAY 17><$00><$02> Which one did he cut!”<LINE 00>
+“Oh...<AUTO ADV 13>!<DELAY 17><$00><$02> Which one was it!”<LINE 00>
 //「闇の中だ。それは斬った本人にもわからない」<LINE 00>
 “It was dark, so he himself didn't know.”<LINE 00>
 //「・・・・・」<CLEAR 25>
@@ -52933,7 +52941,7 @@ I changed my mind and suddenly became serious.<END CHOICE 1C>
 #EMBWRITE(2215)
 //この日のためにギョーザを食わずにガマンしてきたぼくは、
 //愛のスーパーアクションに出た。<END CHOICE 1C>
-Having endured not eating gyoza for today, I used my super action of love.<END CHOICE 1C>
+I've endured not eating gyoza to prepare for today, and I used my super action of love.<END CHOICE 1C>
 <CLEAR 25>
 
 
@@ -52984,7 +52992,7 @@ Nami said, “Hey...”<LINE 00>
 //・・・なんだ。えらく期待とはちがうコトバだ。<LINE 00>
 ...What. That was nowhere near what I expected her to say.<LINE 00>
 //しかしそういえば、いつの間にかぶきみな景色の中を走っている。<CLEAR 25>
-But now that she mentioned it, we\ hadn't realized we'd driven into some eerie scenery.<CLEAR 25>
+But now that she mentioned it, I hadn't realized we'd driven into some eerie scenery.<CLEAR 25>
 
 //[$1E8343-0] -> [18 1A F4]
 <CODE 45><$00><$94><CODE 46><$00><$94>
@@ -53015,9 +53023,9 @@ Just now, I accidentally spoke in the Kansai dialect.<END CHOICE 1C>
 //「キサマ、何サマのつもりだ。<AUTO ADV 13>交番へ来い!<AUTO ADV 13>」<LINE 00>
 // "sic" on having the control code *after* the period
 // in game, this makes no difference since you only see this in a choice list
-“You think you're SO important<AUTO ADV 13>. Come with me to a police box<AUTO ADV 13>!”<LINE 00>
+“You think you're SO important. Come with me to a police box!”<LINE 00>
 //強引なボクは強引になる。<END CHOICE 1C>
-I became overbearing.<END CHOICE 1C>
+I got even more overbearing.<END CHOICE 1C>
 
 
 //[$1E83A8-1] -> [41 1D F4]
@@ -53090,7 +53098,7 @@ Nami was also flushed.<CLEAR 25>
 //深い関係におちることが多いという。<LINE 00>
 Psychology books say couples who have identical first-hand experiences with fear often deepen their relationship.<LINE 00>
 //いまのぼくらも、<WAIT 16>ソレなのだろうか？<LINE 00>
-Will that happen to us now?<LINE 00>
+Will that<WAIT 16> happen to us now?<LINE 00>
 //「ねえ・・・」<LINE 00>
 “Hey...”<LINE 00>
 //奈美が甘い声でいった。<LINE 00>
@@ -53108,7 +53116,7 @@ Without hesitating, I stepped on the brake.
 <STOP SFX 3B><$00><$27><STOP SFX 3B><$00><$29><VFX 2C><$00><$8B>
 // cut out the driving and sfx; the forest scrolls by faster
 //「うわ、ブレーキがきかない!」<LINE 00>
-“Gah, the brake isn't responding!”<LINE 00>
+“Gah, the brakes aren't working!”<LINE 00>
 <SFX 39><$00><$00>
 // "invitation to fear"
 //まわりの景色が矢のように過ぎる。<LINE 00>
@@ -53156,7 +53164,7 @@ Then I thought:<WAIT 16><LINE 00>
 #EMBWRITE(2224)
 //せめて、500gのステーキを食っておくんだった。<END CHOICE 1C>
 // fun fact, the 'g' is the only lowercase English letter in the Japanese script
-I at least wanted a 500 gram steak.<END CHOICE 1C>
+I at least wanted to eat a 500 gram steak first.<END CHOICE 1C>
 <CLEAR 25>
 
 //[$1E8632-4] -> [94 31 F4]
@@ -53194,7 +53202,7 @@ For an instant in my fear of death, I\ saw an unfamiliar couple exchange their\ 
 //車はやわらかなものにでも包まれたように止まった。<LINE 00>
 The car stopped as if it was wrapped in something soft.<LINE 00>
 //奈美は頬を染めている。<LINE 00>
-Nami was blushing.<LINE 00>
+Nami's cheeks were red.<LINE 00>
 //では、奈美も<DELAY 17><$00><$02>イマの死の直前の幻覚をかいま見たのだろうか。<LINE 00>
 Then, did she<DELAY 17><$00><$02> also catch a glimpse of that near-death illusion?<LINE 00>
 //「<KOUHEI-SAN 20>・・・」<LINE 00>
@@ -53220,7 +53228,7 @@ The tall Japanese cedar split right in\ half.<LINE 00>
 //こんなのを見たのは初めてだ・・・というふりをしよう。<LINE 00>
 I'd never seen anything like this...<WAIT 16> Or, I pretended to say that like I hadn't.<LINE 00>
 //「ああ・・・」奈美があえいだ。<LINE 00>
-Nami gasped, “Aaaah...”<LINE 00>
+Nami panted, “Aaaah...”<LINE 00>
 //「奈美・・・?」<LINE 00>
 “Nami...?”<LINE 00>
 //そのまま身もだえしてぼくを見る。<CLEAR 25>
@@ -53250,7 +53258,7 @@ A hazy feeling welled up from the bottom of my body. What kind of...?<CLEAR 25>
 We breathed in sync with each other.<LINE 00>
 //人っ子ひとりいない山中で、ぼくらは<DELAY 17><$00><$03>
 //たった二人、車という小さな密室の中にいる。<LINE 00>
-Without another soul on the mountain, it was<DELAY 17><$00><$03> just the two of us, in my car that was like a small locked room.<LINE 00>
+Without another soul on the mountain, it was<DELAY 17><$00><$03> just the two of us in my car, that was like a small locked room.<LINE 00>
 //「奈美・・・」<LINE 00>
 “Nami...”<LINE 00>
 //「ああ、もうダメ・・・!」<CLEAR 25>
@@ -53261,7 +53269,7 @@ Without another soul on the mountain, it was<DELAY 17><$00><$03> just the two of
 // fade in forest; rain vfx
 //せっかくの、アトもう少しというところで、
 //奈美は車の外へ飛び出してしまった。<LINE 00>
-Disappointingly, Nami got out of the\ car after not saying much.<LINE 00>
+Given a little more time, I would've had the perfect opportunity, but Nami got out of the car.<LINE 00>
 //「奈美・・・」<LINE 00>
 “Nami...”<LINE 00>
 <SFX 39><$00><$58>
@@ -53299,7 +53307,7 @@ I noticed an old man far away, spinning an electric fan.<END CHOICE 1C>
 //弟切草のなかに何人かの黒子がいるのに気づいた。<END CHOICE 1C>
 // two different definitions for 黒子: either "mole" as in on someone's face,
 // or "stage assistant"; I think the second is more correct here
-In the otogirisou, I noticed several stage assistants dressed in black.<END CHOICE 1C>
+I noticed several stage assistants dressed in black amongst the otogirisou.<END CHOICE 1C>
 <JMP 03>
 #EMBSET(1372)
 
@@ -53348,7 +53356,7 @@ Nami was surprised herself.<LINE 00>
 //　そんなこと、ちっともいうつもりはなかったのに」<LINE 00>
 “Strange...<WAIT 16> What's with me? I don't think I've, ever said anything like that before.”<LINE 00>
 //冗談のようではない。<LINE 00>
-It wasn't a joking matter.<LINE 00>
+It was like she was cracking a joke.<LINE 00>
 //「私、お姉さんなんていないのに、どうして・・・?」<CLEAR 25>
 “I don't, have an older sister, so why...?”<CLEAR 25>
 
@@ -53371,7 +53379,7 @@ Nami sometimes had the power of foresight.<CLEAR 25>
 //[$1E8A1B-5] -> [DD 50 F4]
 //奈美は、ぼくがひそかに予定しているあの屋敷の存在を見抜いた上で、
 //早く行きたいなんて<DELAY 17><$00><$02>いっているのだろうか。<LINE 00>
-I wonder if, after Nami found out about that mansion I wanted to keep as a secret from her, she wanted to<DELAY 17><$00><$02> get there soon?<LINE 00>
+I wonder if, after Nami found out about that mansion I had secret plans for, she wanted to<DELAY 17><$00><$02> get there soon?<LINE 00>
 //うひひ・・・<DELAY 17><$00><$03>奈美もぼくと同じ気持なのだとしたら。<CLEAR 25>
 Hehe...<DELAY 17><$00><$03> What if she and I thought the same thing.<CLEAR 25>
 
@@ -53453,9 +53461,9 @@ Spellbound, Nami also sighed.<CLEAR 25>
 //無人の館。<LINE 00>
 The uninhabited mansion.<LINE 00>
 //ときおり迷いこんだ恋人たちが、無断借用して寝泊りすることがあっても、
-Occasionally, lovers who lost their\ way would borrow the house and stay the night without permission.<LINE 00>
+// Occasionally, lovers who lost their\ way would borrow the house and stay the night without permission.<LINE 00>
 //これまで誰にもとがめられたことがないという屋敷だ。<CLEAR 25>
-They say it's the mansion that, so\ far, nobody had condemned.<CLEAR 25>
+They say it's the mansion that, so\ far, nobody had condemned, despite the occasional lovers who'd lose their way, borrow the house, and stay the night without permission.<CLEAR 25>
 
 //[$1E8B7F-3] -> [FB 5B F4]
 //去年見つけておいた、ぼくらのための、とっときの隠れ家だった。<LINE 00>
@@ -53537,6 +53545,8 @@ I immediately chased after her and shouted:<LINE 00>
 //[$1E8CAC-1] -> [61 65 F4]
 #EMBWRITE(2232)
 //「奈美、神の声だ、走れエロス!」<END CHOICE 1C>
+// this is similar to 走れメロス "Run, Melos!", which had been touched upon at
+// another point in the script
 “Nami, I hear the voice of the gods! Run, Eros!”<END CHOICE 1C>
 
 
@@ -53556,7 +53566,7 @@ We entered the gates.<LINE 00>
 <SFX FADE OUT 3C><$00><$14><$00><$04><SFX FADE IN 3A><$00><$14><$00><$29><SFX FADE IN 3A><$00><$64><$00><$1F>
 // fade out the music; rain sfx; a low wind blows
 //敷地内も見渡す限りの弟切草だ。<CLEAR 25>
-We looked all over the mansion premises, and it was otogirisou as far as the\ eye could see.<CLEAR 25>
+Looking over the mansion premises, it was also otogirisou as far as the eye could see.<CLEAR 25>
 
 //[$1E8CEF-2] -> [7A 67 F4]
 //「あ・・・」<LINE 00>
@@ -53589,7 +53599,9 @@ Nami came, too.<LINE 00>
 It was a small placard-shaped sign.<CLEAR 25>
 
 //[$1E8D7E-1] -> [F1 6B F4]
-　　　　　　　　　　　　　　　　　　　<LINE 00>
+// convert 0000 spaces to typical spaces
+//　　　　　　　　　　　　　　　　　　　<LINE 00>
+                   <LINE 00>
 //　　　お二人様ようこそ<LINE 00>
 // (118 - 12) / 2 = 53 = 0x35
 <KERN RIGHT><$00><$35>Welcome, Couples<LINE 00>
@@ -53609,7 +53621,7 @@ I said, “But it wasn't me...”<CLEAR 25>
 
 //[$1E8DF6-6] -> [B6 6F F4]
 //ふと甘美な香りが鼻をついた。<LINE 00>
-Suddenly, a sweet scent reached my nose.<LINE 00>
+Then, a sweet scent reached my nose.<LINE 00>
 //振り返ると、奈美がハダカで立っている<SFX 39><$00><$10>。<LINE 00>
 I looked back, and Nami was standing naked<SFX 39><$00><$10>.<LINE 00>
 <STOP SFX 3B><$00><$04>
@@ -53619,7 +53631,7 @@ I looked back, and Nami was standing naked<SFX 39><$00><$10>.<LINE 00>
 //ぼくはあせった。<LINE 00>
 I panicked.<LINE 00>
 //「こッ、こんなトコロデカ?!」<LINE 00>
-“In, in a place like this?!”<LINE 00>
+“Y-, you're doing that out here?!”<LINE 00>
 //「<KOUHEI-SAN 20>・・・<DELAY 17><$00><$05>誰と話してるの?」<CLEAR 25>
 “<KOUHEI-SAN 20>...<DELAY 17><$00><$05> Who are you talking to?”<CLEAR 25>
 
@@ -53631,7 +53643,7 @@ Nami was behind me.<LINE 00>
 //もちろん服装はちゃんとしている。<LINE 00>
 Of course, her clothes were as they should be.<LINE 00>
 //いつも通りの上品な知性だ。<LINE 00>
-She was her usually elegant and intelligent self.<LINE 00>
+She was her usual self, elegant and intelligent.<LINE 00>
 //ヒック。ぼくは思わずシャックリした。<LINE 00>
 *hic*<WAIT 16> I involuntarily hiccupped.<LINE 00>
 //ハダカの奈美は消えていた。<LINE 00>
@@ -53649,7 +53661,7 @@ Looks like Nami saw nothing.<LINE 00>
 What the heck was that just now?<LINE 00>
 //ああ、それにしても、
 //ぼくはこんなマボロシを見るホドに恋してしまっているノダ・・・。<LINE 00>
-Ahh, at any rate, I'm in love with this illusion I saw...<WAIT 16><LINE 00>
+Ahh, at any rate, I love her so much, I'm seeing illusions like this...<WAIT 16><LINE 00>
 //「<KOUHEI-SAN 20>」<LINE 00>
 “<KOUHEI-SAN 20>.”<LINE 00>
 //「ヒック」<LINE 00>
@@ -53688,7 +53700,7 @@ But, I thought she wanted to change clothes in a dressing room.<END CHOICE 1C>
 // ??? rewrite
 There were various things I wanted to say, but I decided to use “Namii<AUTO ADV 13>” as her bed name.<END CHOICE 1C>
 //そして、ぼくらは屋敷の玄関へ向かった。<LINE 00>
-Then, we turned towards the mansion's entrance.<LINE 00>
+Then, we headed for the mansion's entrance.<LINE 00>
 
 //[$1E8F89-0] -> [48 7C F4]
 #EMBWRITE(0905)
@@ -53823,7 +53835,7 @@ Um, if it was going to be like this, I won't let this chance get away.<CLEAR 25>
 //「な、奈美」<LINE 00>
 “Na-, Nami.”<LINE 00>
 //ぼくは目を閉じた奈美の肩に手を回した。<LINE 00>
-With her eyes closed, I put my arm around her shoulder.<LINE 00>
+With her eyes closed, I put my arms around her shoulders.<LINE 00>
 <STOP SFX 3B><$00><$19><STOP SFX 3B><$00><$03><SFX 39><$00><$64><IMAGE FADE OUT BLOCK 34><$00><$01>
 // cut out the heartbeat and music; open door; fade image to black
 //するといきなり扉がひとりでに開いた。<LINE 00>
@@ -53846,7 +53858,7 @@ When the door opened, I distinctly heard a woman panting somewhere.
 //「どうする!」<LINE 00>
 “What should we do!”<LINE 00>
 //「は・・・入ろ。とにかく」<LINE 00>
-“Let's... at least go in.”<LINE 00>
+“Let's...<WAIT 16> at least go in.”<LINE 00>
 //ぼくらはへっぴり腰で中に入った。<LINE 00>
 We timidly went inside.<LINE 00>
 <STOP SFX 3B><$00><$29><SFX 39><$00><$65><SFX 39><$00><$1D><IMAGE FADE IN BLOCK 36><$00><$01><$00><$42>
@@ -53990,7 +54002,7 @@ It was different than Nami's.<LINE 00>
 //ぼくはハッと見回した。<LINE 00>
 //物かげへ消える女が見えた<SFX 39><$00><$10>。<LINE 00>
 // mysterious discovery
-I looked around out of surprise, and saw a woman <SFX 39><$00><$10>disappear into the<LINE 00>shadows.<LINE 00>
+Surprised, I looked around, and saw a woman <SFX 39><$00><$10>disappear into the shadows.<LINE 00>
 //「わッ・・・」<CLEAR 25>
 “Wha-...”<CLEAR 25>
 
@@ -53998,11 +54010,11 @@ I looked around out of surprise, and saw a woman <SFX 39><$00><$10>disappear int
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$43>
 // fade in couch
 //「何?」<LINE 00>
-“What?”<LINE 00>
+“What is it?”<LINE 00>
 //奈美が閉じていた目をあけた。<LINE 00>
 Nami opened her eyes.<LINE 00>
 //「いや」<LINE 00>
-“No.”<LINE 00>
+“No, it's nothing.”<LINE 00>
 //ぼくはごまかした。<LINE 00>
 I dodged the question.<LINE 00>
 //女は<DELAY 17><$00><$03>たしかに裸だった・・・。<LINE 00>
@@ -54083,7 +54095,9 @@ She was calm and cheerful.<LINE 00>
 //「ばか<AUTO ADV 13>！　おれを一人にするな<AUTO ADV 13>」<LINE 00>
 “Hey, don't leave me all alone<AUTO ADV 13>!”<LINE 00>
 //ぼくはコワイので奈美のスカートをつまんだ。<END CHOICE 1C>
-Afraid, I held Nami's skirt.<END CHOICE 1C>
+// つまむ means to pinch or hold between one's fingers; searching for "pinching
+// someone's clothes" gave me a whole bunch of results about sexual assault laws
+Afraid, I held on to Nami's skirt with my fingers.<END CHOICE 1C>
 <JMP 03>
 #EMBSET(0946)
 
@@ -54144,13 +54158,13 @@ Nami snatched them.<LINE 00>
 //「え?<DELAY 17><$00><$05>・・・だって」<LINE 00>
 “Huh<AUTO ADV 13>?<DELAY 17><$00><$05> ...What?”<LINE 00>
 //「これ、私の!」<CLEAR 25>
-“These are, mine!”<CLEAR 25>
+“These, are mine!”<CLEAR 25>
 
 //[$1E9749-4] -> [4C BA F4]
 <SFX 39><$00><$13>
 // ambient low hum
 //「どッ<DELAY 17><$00><$05>・・・どういうこと?」<LINE 00>
-“Wh-...<DELAY 17><$00><$05> what do you mean?”<LINE 00>
+“Wh-...<DELAY 17><$00><$05> what does this mean?”<LINE 00>
 //「わからない、・・・私、わからない!」<LINE 00>
 “I don't know...<DELAY 17><$00><$02> I, don't know!”<LINE 00>
 //奈美は泣きだしそうだった。<LINE 00>
@@ -54177,13 +54191,13 @@ Nami gently moved her hand to her bottom and checked.<LINE 00>
 
 //[$1E97EB-2] -> [5A BF F4]
 //とんだ人さわがせだ。<LINE 00>
-That really alarmed me.<LINE 00>
+What an unexpected false alarm.<LINE 00>
 //だが・・・<LINE 00>
 But...<LINE 00>
 //「奈美<DELAY 17><$00><$05>・・・じゃ、<SFX 39><$00><$14>
 //奈美がいま手に持ってるソレは誰のパンティ?」<LINE 00>
 // creepy tones
-“Then,<DELAY 17><$00><$05> Nami...<SFX 39><$00><$14> whose panties are the ones you're holding now?”<LINE 00>
+“Then,<DELAY 17><$00><$05> Nami...<SFX 39><$00><$14> whose panties ARE the ones you're holding now?”<LINE 00>
 //「きゃッ・・・!」<LINE 00>
 “Kyaa...!”<LINE 00>
 //奈美は放り出した。<LINE 00>
@@ -54205,7 +54219,7 @@ The lace had a strawberry design.<LINE 00>
 //ぼくはイチゴ模様のそれをひねくった。<LINE 00>
 I fiddled with the strawberry pattern.<LINE 00>
 //「イヤ、<KOUHEI-SAN 20>！　そんなの早く捨てて!」<LINE 00>
-“No, <KOUHEI-SAN 20>! Throw them away already!”<LINE 00>
+“Ew, <KOUHEI-SAN 20>! Come on, throw them away!”<LINE 00>
 //「そうしよう」<LINE 00>
 “Okay, I will.”<LINE 00>
 //ぼくはそれをポケットへしまった。<CLEAR 25>
@@ -54217,7 +54231,7 @@ I put them in my pocket.<CLEAR 25>
 //このとき、ぼくらは気づいた。<LINE 00>
 This time, we noticed it.<LINE 00>
 //ホールの鎧が消えているのだ<SFX 39><$00><$13>。<LINE 00>
-The armor in the hall was gone<SFX 39><$00><$13>.<LINE 00>
+The armor in the foyer was gone<SFX 39><$00><$13>.<LINE 00>
 // ambient low hum
 //「ねえ、・・・ヨ、ヨロイ、<DELAY 17><$00><$03>あそこにあったよね?」<LINE 00>
 “Hey... Th-, the armor,<DELAY 17><$00><$03> was over there, right?”<LINE 00>
@@ -54383,7 +54397,7 @@ I suddenly became timid.<END CHOICE 1C>
 //「ナ、ナミィ・・・<AUTO ADV 13>」<LINE 00>
 “Na-, Nami...<AUTO ADV 13>”<LINE 00>
 //ぼくは奈美に唇を重ねた。<END CHOICE 1C>
-I brought my lips up to her.<END CHOICE 1C>
+I brought my lips to hers.<END CHOICE 1C>
 
 
 //[$1E9B70-0] -> [80 DB F4]
@@ -54459,7 +54473,7 @@ I was holding, half of a feathered pillow.<LINE 00>
 //「そんなもの持って、なにさわいでんの?」<LINE 00>
 “Why are you making a fuss about that thing you're holding?”<LINE 00>
 //羽毛はバラリとはじけて散った。<CLEAR 25>
-Feathers began to scatter about.<CLEAR 25>
+Feathers burst out of it and scattered about.<CLEAR 25>
 
 //[$1E9CE0-0] -> [00 E7 F4]
 //「<KOUHEI-SAN 20>、それより、そのむこう向きの車椅子」<LINE 00>
@@ -54541,7 +54555,7 @@ Then:<LINE 00>
 #EMBWRITE(2258)
 //「おいてかないで!<AUTO ADV 13>」<LINE 00>
 //と思わず叫んだ。<END CHOICE 1C>
-I instinctively screamed, “Don't leave me!”<END CHOICE 1C>
+I couldn't help but scream, “Don't leave me!”<END CHOICE 1C>
 <JMP 03>
 #EMBSET(0974)
 
@@ -54809,13 +54823,13 @@ I called out to her with her love\ name.<END CHOICE 1C>
 //「ねえ」<LINE 00>
 “Hey.”<LINE 00>
 //奈美はなじるような口調だった。<LINE 00>
-Nami spoke like she was scolding me.<LINE 00>
+Nami spoke in an almost scolding tone.<LINE 00>
 //「どうして、あんなことしたの?」<LINE 00>
 “Why did you, do that?”<LINE 00>
 //「え・・・」<LINE 00>
 “Huh...”<LINE 00>
 //ぼくはヒヤリと奈美を見た。<CLEAR 25>
-With a sudden sense of dread, I looked at Nami.<CLEAR 25>
+With a sudden sense of dread, I looked at her.<CLEAR 25>
 
 //[$1EA22F-5] -> [7D 11 F5]
 //「あ、あんなことって・・・?」<LINE 00>
@@ -54835,7 +54849,7 @@ Nami shyly cast her eyes down.<LINE 00>
 <SFX 39><$00><$10>
 // another mysterious discovery
 //今の暗ヤミの中で、奈美に何かしたヤツがいるのだ。<CLEAR 25>
-Somebody did something to Nami in the shadows.<CLEAR 25>
+Somebody did something to Nami in the dark.<CLEAR 25>
 
 //[$1EA29B-7] -> [DF 14 F5]
 //男だ・・・!！<LINE 00>
@@ -54843,7 +54857,7 @@ A man...!!<LINE 00>
 //ぼくはそいつの気配を感じた。<LINE 00>
 I felt that person's presence.<LINE 00>
 //いまの暗ヤミで、そいつが、奈美に、何かした・・・！<LINE 00>
-In the shadows now, that guy did<LINE 00>something, to Nami...!<LINE 00>
+In the dark now, that guy did something, to Nami...!<LINE 00>
 <STOP SFX 3B><$00><$13>
 // cut out hum
 //「調べようッ!」<LINE 00>
@@ -54892,6 +54906,7 @@ I wondered what I'd do if she hadn't said that.<END CHOICE 1C>
 //[$1EA39D-6] -> [EE 1C F5]
 #EMBWRITE(2268)
 //歩きだしたとたん、もう自分のツッパリを後悔していた。<END CHOICE 1C>
+// rewrite translation for ツッパリ
 Just as I started walking, I regretted my own insistence.<END CHOICE 1C>
 <JMP 03>
 #EMBSET(0433)
@@ -54950,7 +54965,7 @@ But,<WAIT 16> the mummy was gone.<CLEAR 25>
 //ぼくは車椅子にさわってみた。<LINE 00>
 I tried touching the wheelchair.<LINE 00>
 //「まだあたたかい。たったいままでいたんだ・・・!」<LINE 00>
-“It's still warm. It was here until only just now...!”<LINE 00>
+“It's still warm. It was here until just now...!”<LINE 00>
 //奈美はホッと恐怖を浮かべた。<LINE 00>
 Nami looked relieved but terrified.<LINE 00>
 //「でも、<KOUHEI-SAN 20>、ミイラなのよ!・・・<DELAY 17><$00><$05>
@@ -54960,7 +54975,7 @@ Nami looked relieved but terrified.<LINE 00>
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$16>
 // fade back to lamp
 //どういうことだ？<LINE 00>
-What did she mean by that?<LINE 00>
+What did this mean?<LINE 00>
 //では、あのミイラは、生きていたのか？<CLEAR 25>
 Then, was that mummy, alive?<CLEAR 25>
 
@@ -54989,7 +55004,7 @@ Nami and I spontaneously embraced each other.<LINE 00>
 //こ・・・これは何かの妖力だ。<LINE 00>
 Th-... this was some magical power.<LINE 00>
 //ぼくたちはあやつられはじめている。<LINE 00>
-We were beginning to be manipulated.<LINE 00>
+We were starting to be manipulated.<LINE 00>
 //「<KOUHEI-SAN 20>・・・」<LINE 00>
 “<KOUHEI-SAN 20>...”<LINE 00>
 //「奈美・・・」<CLEAR 25>
@@ -55049,7 +55064,7 @@ I thought it was dangerous upstairs.<END CHOICE 1C>
 //[$1EA653-3] -> [9B 32 F5]
 #EMBWRITE(2269)
 //抱き合うのなら別の部屋にしようと思った。<END CHOICE 1C>
-I thought, if we hugged, we'd do\ it in another room.<END CHOICE 1C>
+I thought, if we're going to hug, we'd do it in another room.<END CHOICE 1C>
 
 
 //[$1EA666-5] -> [35 33 F5]
@@ -55101,11 +55116,11 @@ But for some reason, I didn't want to leave like this.<LINE 00>
 //「<KOUHEI-SAN 20>・・・」<LINE 00>
 “<KOUHEI-SAN 20>...”<LINE 00>
 //奈美が指をからませてくる。<LINE 00>
-Nami clasped her hands together.<LINE 00>
+Interlocking our fingers, Nami took my hand.<LINE 00>
 //「奈美・・・」<LINE 00>
 “Nami...”<LINE 00>
 //ぼくはそれを握り返した。<CLEAR 25>
-I turned back to the mansion.<CLEAR 25>
+I grasped her hand back.<CLEAR 25>
 
 //[$1EA74A-7] -> [57 3A F5]
 //「ねえ、どうする?」<LINE 00>
@@ -55212,7 +55227,7 @@ A sudden strobe light shined in the darkness, and there was the sound\ of an ins
 //奈美は目を丸くしていった。<LINE 00>
 Nami's eyes widened.<LINE 00>
 //「まさか！ネコが写真をとったわけじゃ・・・」<CLEAR 25>
-“No way! A cat couldn't have taken the photo...”<CLEAR 25>
+“No way! A cat couldn't possibly have taken the photo...”<CLEAR 25>
 
 //[$1EA913-5] -> [9D 48 F5]
 //暗闇に目がなれると、一枚のインスタント写真が落ちている。<LINE 00>
@@ -55328,7 +55343,7 @@ My heart got strangely fired up.<LINE 00>
 //「きゃ、火!」<LINE 00>
 “Kya, a fire!”<LINE 00>
 //パジャマが本当に燃え上がった。<LINE 00>
-The pajamas had burst into flames.<LINE 00>
+The pajamas really had burst into flames.<LINE 00>
 //「あッ、ああ・・・!」<LINE 00>
 “A-, aahh...!”<LINE 00>
 //奈美がとっさに花瓶の花を抜いて、中の水をぶっかけた<AUTO ADV 13>。<LINE 00>
@@ -55445,7 +55460,7 @@ I exclaimed, “A phone...!”<LINE 00>
 //フランス料理にワインといきたいわ」<LINE 00>
 “Good idea. But before that, I want to call a good chef and have French food and wine.”<LINE 00>
 //育ちがいいということがちがう。<CLEAR 25>
-// "saying she was brought up well is wrong/incorrect"?
+// "saying she was brought up well is wrong/incorrect/strange"?
 Was it right to say she was brought up well?<CLEAR 25>
 
 //[$1EAD75-1] -> [A9 6B F5]
@@ -55662,7 +55677,7 @@ Nami was looking at my shirt.<LINE 00>
 //鏡で見ると、エリにくっきりとルージュがついている。<LINE 00>
 I looked in a mirror, and my collar had a distinct rouge spot.<LINE 00>
 //「どこでついたんだろ。さっきまではなかったのに・・・」<LINE 00>
-“Where did that come from? That wasn't there until now...”<LINE 00>
+“Where did that come from? That wasn't there earlier...”<LINE 00>
 //「そこ！・・・キスマークまで!」<LINE 00>
 “There! ...They even kissed you!”<LINE 00>
 //「ええ?!」<LINE 00>
@@ -55766,7 +55781,7 @@ I shouted:<WAIT 16><LINE 00>
 <SFX 39><$00><$65><IMAGE FADE IN BLOCK 36><$00><$01><$00><$45>
 // close door; fade in hallway with doors
 //「んだば、二階の総点検!」<END CHOICE 1C>
-// 総点検= a general inspection, but I think that sounds too stiff here
+// 総点検 is a general inspection, but I think that sounds too stiff here
 “Then, let's check the whole second floor!”<END CHOICE 1C>
 <SFX FADE OUT 3C><$00><$14><$00><$17><JMP 03>
 #EMBSET(1061)
@@ -56049,7 +56064,7 @@ I tightly grasped a nearby bottle of Western liquor as a makeshift weapon, and w
 “It's fine to wait.”<LINE 00>
 //振り返っていったのは、もしも奈美が奈美でなく、いまの鬼女だったら、
 //この洋酒瓶が役に立つと思ったからだ。<LINE 00>
-I turned around and thought, if it wasn't Nami but that witch, this bottle of liquor would be useful.<LINE 00>
+I turned around and said that, because I thought, if it wasn't Nami but that witch, this bottle of liquor would be useful.<LINE 00>
 //「気をつけてね、<KOUHEI-SAN 20>」<LINE 00>
 “Be careful, <KOUHEI-SAN 20>.”<LINE 00>
 //後ろから声をかける奈美は、やっぱりいつも通りのキレイでやさしい奈美だ。<CLEAR 25>
@@ -56138,7 +56153,7 @@ We turned on the lights, and there\ was a parrot.<LINE 00>
 //オウムは窓から逃げ去ってしまった。<LINE 00>
 The parrot flew out through a window.<LINE 00>
 //「くそ・・・!」<LINE 00>
-“Damn...!”<LINE 00>
+“Damn it...!”<LINE 00>
 //「誰がマドあけたのかしら?」<CLEAR 25>
 “Who do you think opened it?”<CLEAR 25>
 
@@ -56148,7 +56163,7 @@ The parrot flew out through a window.<LINE 00>
 //「え?」<LINE 00>
 “Huh?”<LINE 00>
 //「いままでのヘンな音、全部アイツがやってたんじゃないのか?」<LINE 00>
-“That strange sound until now. It was all that thing's doing, right?”<LINE 00>
+“The strange sounds until now were all that thing's doing, right?”<LINE 00>
 //「それは新説ね・・・<DELAY 17><$00><$05>でも、待って」<LINE 00>
 “That's a new theory...<DELAY 17><$00><$05> But, wait.”<LINE 00>
 //奈美はクンクンとやって顔をしかめた。<LINE 00>
@@ -56165,7 +56180,7 @@ We noticed a bucket of putrid water on a shelf.<LINE 00>
 “It's this.”<LINE 00>
 //「あ、おい、気をつけろ。
 //ひっくり返してそいつを頭からあびたらシャワーさがすことになるぞ」<LINE 00>
-“H-, hey, careful. If you knock that over and get it on your head, we'll have to look for a shower.”
+“H-, hey, careful. If you knock that over and get it on us, we'll have to look for a shower.”
 <SFX 39><$00><$7C><DELAY 17><$00><$0A><CLEAR 25>
 // a splash
 
@@ -56177,12 +56192,12 @@ Dropping the bucket, we got completely covered in that putrid water.<LINE 00>
 //「うへ！・・・クセェ!」<LINE 00>
 “Yuck! ...It stinks!”<LINE 00>
 //「ヒドイ！・・・早く洗いたい!」<CLEAR 25>
-“This is awful! ...I want to take a shower as soon as possible!”<CLEAR 25>
+“This is awful! ...I want to take a shower right now!”<CLEAR 25>
 
 //[$1EBA5F-2] -> [FA D2 F5]
 <CODE 45><$00><$65><CODE 46><$00><$65>
 //ぼくはあわてていった。<LINE 00>
-I panicked.<LINE 00>
+I quickly said:<WAIT 16><LINE 00>
 <CHOICE 1A><$02><$0C><$00><$00><$01><$6E>
 #EMBSET(2300)
 #EMBSET(2301)
@@ -56238,7 +56253,7 @@ Nami went in first.<CLEAR 25>
 <SFX 39><$00><$42>
 // dripping water
 //洗面所へ入ると、ぷんと香水の匂いがする。<LINE 00>
-We went inside, and there was the strong smell of perfume.<LINE 00>
+Inside, there was the strong smell of perfume.<LINE 00>
 //「いい香り・・・」<CLEAR 25>
 “It smells nice...”<CLEAR 25>
 
@@ -56313,7 +56328,7 @@ I opened the door to the bathroom.<LINE 00>
 <SFX 39><$00><$42>
 // water dripping
 //さすがにお屋敷の浴室というものはちがう。<LINE 00>
-As expected, the bathrooms in a mansion were different.<LINE 00>
+As expected, the bathrooms in a mansion were different than normal houses.<LINE 00>
 //カラの浴槽は大きく、
 //湯を張ったら二人でひと泳ぎでもふた泳ぎでもできそうな広さだ。<CLEAR 25>
 The empty tub looked large enough for two people to be able to swim in once or twice.<CLEAR 25>
@@ -56446,7 +56461,7 @@ I became a diligent man.<END CHOICE 1C>
 //[$1EBEA0-7] -> [07 F5 F5] - moved down
 #EMBWRITE(2306)
 //奈美と二人で新婚映画の主役気分だ。<END CHOICE 1C>
-// 新婚映画= "newlywed movie", I'll just go with "romance movie"
+// 新婚映画 -> "newlywed movie", I'll just go with "romance movie"
 It felt like Nami and I were the two leading parts in a romance movie.<END CHOICE 1C>
 //<JMP 03>
 //#EMBSET(2309)
@@ -56573,7 +56588,7 @@ I went down a secret underground staircase and came face-to-face\ with the boile
 <SFX FADE IN 3A><$00><$3C><$00><$3C>
 // fade in boiler sounds
 //円筒ボイラーは巨体をふるわせ、怒ったように蒸気を吐き散らしている。<CLEAR 25>
-The huge cylindrical boiler shook, and expelled steam as if it was angry.<CLEAR 25>
+The huge cylindrical boiler shook, and was expelling steam as if it was angry.<CLEAR 25>
 
 //[$1EC133-2] -> [9A 09 F6]
 //圧力計の針は危険レベルへ迫ろうとしていた。<LINE 00>
@@ -56581,10 +56596,10 @@ The needle on the pressure gauge was approaching a dangerous level.<LINE 00>
 <SFX 39><$00><$33>
 // a steam gauge sounds off
 //湯温計は100度以上。安全弁も蒸気弁も壊れているようだ。<LINE 00>
-The temperature gauge was at least 100°C. It looked like a safety valve and steam valve were broken.<LINE 00>
+The temperature gauge was over 100°C. It looked like a safety valve and steam valve were broken.<LINE 00>
 //このままではボイラーはバクハツする。今までにないことだが、まずマチガイない。
 //ぼくはアセった。<CLEAR 25>
-At this rate, the boiler will explode. It hadn't yet, but I was sure it will. I panicked.<CLEAR 25>
+At this rate, the boiler will explode. It hadn't yet, but I knew it will. I panicked.<CLEAR 25>
 
 //[$1EC19D-6] -> [EE 0C F6]
 //必死であちこち操作してみる。<LINE 00>
@@ -56592,7 +56607,7 @@ I frantically adjusted things here and there.<LINE 00>
 <DELAY 17><$00><$07><SFX VOLUME 42><$00><$32><$00><$00><$00><$33>
 // the steam sounds die out
 //・・・ぼくは腕がいい。温度だけは何とか適温に戻った。<LINE 00>
-...I'm good at this. I managed to return just the water temperature to normal.<LINE 00>
+...I'm good at this. I managed to get just the water temperature back to normal.<LINE 00>
 //だが圧力は戻らないことはわかっている。<LINE 00>
 But I knew the pressure didn't.<LINE 00>
 //ぼくは安全弁が異様な怪力で壊されているのを発見した。<LINE 00>
@@ -56623,7 +56638,7 @@ I started to run.<CLEAR 25>
 //ああ、奈美！<LINE 00>
 Aahh, Nami!<LINE 00>
 //ぼくはまだ見たこともない奈美の裸身を思った。<LINE 00>
-I thought of her naked body, which I hadn't seen before.<LINE 00>
+I thought of her naked body, which I still hadn't seen before.<LINE 00>
 //「くそ、ホントにまだいっぺんも見てないもンな!」<LINE 00>
 “Damn it, will I really not get to see\ it even once!”<LINE 00>
 //奈美はいま、ぼくが適温に戻したシャワーを浴びている。<LINE 00>
@@ -56721,7 +56736,7 @@ We went into the hot water together.<LINE 00>
 // creepy voice
 Something was wrong<SFX 39><$00><$15>.<LINE 00>
 //直感的にぼくにはわかった。<LINE 00>
-I intuitively knew.<LINE 00>
+I knew by intuition.<LINE 00>
 //奈美ではない・・・！<LINE 00>
 This wasn't Nami...!<LINE 00>
 //「だ・・・誰だ!」<CLEAR 25>
@@ -56791,7 +56806,7 @@ I remembered that woman's touch, and called out to her.<END CHOICE 1C>
 //「うわ?!」<LINE 00>
 “Wha-?!”<LINE 00>
 //天罰か。<CLEAR 25>
-Divine punishment?<CLEAR 25>
+Was this divine punishment?<CLEAR 25>
 
 //[$1EC5C6-2] -> [32 2E F6]
 <JMP 03>
@@ -56801,7 +56816,7 @@ Divine punishment?<CLEAR 25>
 //[$1EC5CA-2] -> [52 2E F6]
 #EMBWRITE(2315)
 //次はオトコが出て来ないかと待った。<END CHOICE 1C>
-I waited to see if a man would come next.<END CHOICE 1C>
+I waited to see if a man would appear next.<END CHOICE 1C>
 <STOP SFX 3B><$00><$42><JMP 03>
 #EMBSET(1526)
 
@@ -56839,7 +56854,7 @@ I knew she wasn't really Nami.<LINE 00>
 //しかしぼくには、ニセの奈美だっていいじゃないかという気もおきる。<LINE 00>
 But, I felt even this imitation Nami could be fine, too.<LINE 00>
 //「<KOUHEI-SAN 20>・・・<DELAY 17><$00><$05>来て・・・!」<LINE 00>
-“<KOUHEI-SAN 20>...<DELAY 17><$00><$05> Come...!”<LINE 00>
+“<KOUHEI-SAN 20>...<DELAY 17><$00><$05> Come here...!”<LINE 00>
 //女がさそった。<LINE 00>
 The woman tempted me.<LINE 00>
 //「くそ。ああ・・・!」<LINE 00>
@@ -56849,7 +56864,7 @@ My body started listening to what that woman said.<CLEAR 25>
 
 //[$1EC6B1-5] -> [8D 35 F6]
 //ぼくの足が動きだす。ああ・・・マ、マズイ<LINE 00>
-My feet started moving. Aahh... I didn't like this one bit<AUTO ADV 13>.<LINE 00>
+My feet started to move. Aahh... I didn't like this one bit<AUTO ADV 13>.<LINE 00>
 <SFX 39><$00><$2F>
 // continuous splashing; wading through water?
 //「そうよ、・・・<KOUHEI-SAN 20>、早く・・・」<CLEAR 25>
@@ -56925,7 +56940,7 @@ I suddenly felt cold, and sneezed loudly.<END CHOICE 1C>
 //「女なんかいらない。助けて!」<LINE 00>
 “I don't need her. Help!”<LINE 00>
 //後ろの女に負けてしまいそうなので叫んだ。<END CHOICE 1C>
-Since it looked like I was losing to her, I shouted.<END CHOICE 1C>
+Since it looked like I was losing to the woman behind me, I shouted.<END CHOICE 1C>
 <JMP 03>
 #EMBSET(1966)
 
@@ -57057,7 +57072,7 @@ I ran up behind the armor, lifted a chair above my head, and swung it down as ha
 
 //[$1ECA3F-3] -> [FB 51 F6]
 //ヨロイはあっけなくガラガラと崩れてバラバラになった。<LINE 00>
-The armor unsatisfyingly rattled and crumbled into pieces.<LINE 00>
+The armor unsatisfyingly crashed to the floor and crumbled into pieces.<LINE 00>
 //中には誰も入っていない。<LINE 00>
 Nobody was inside it.<LINE 00>
 //カラの鎧だったのだ・・・?！<LINE 00>
@@ -57075,10 +57090,10 @@ Right away, I laughed cheerfully.<CLEAR 25>
 //「ヨロイはカラだ。透明人間でも入ってたのかな?」<LINE 00>
 “The armor was empty. Was an invisible person or something inside it?”<LINE 00>
 //「<KOUHEI-SAN 20>・・・」<LINE 00>
+“<KOUHEI-SAN 20>...”<LINE 00>
 //奈美はカスレ声でいった。<LINE 00>
-Nami hoarsely said, “<KOUHEI-SAN 20>...”<LINE 00>
 //すすり泣いてぼくの手を求めてくる。<LINE 00>
-Sobbing, she asked for my hand.<LINE 00>
+Sobbing, she hoarsely said my name and asked for my hand.<LINE 00>
 //ぼくは強く握り返してやった。<CLEAR 25>
 I strongly grasped hers back.<CLEAR 25>
 
@@ -57164,6 +57179,7 @@ It was the armor.<LINE 00>
 //も、もう出ないと思ったのに・・・！<LINE 00>
 I didn't think it would've showed up again...!<LINE 00>
 //まるでシットに狂った恋の敗惨者のように、鎧はぼくに斬りかかってくる。<CLEAR 25>
+// "sic" on 敗惨者, should be 惨敗者
 As if mad with jealousy over a lost\ love, the armor came slashing at me.<CLEAR 25>
 
 //[$1ECC01-4] -> [0C 60 F6]
@@ -57196,7 +57212,7 @@ I faced the armor with that sword.<CLEAR 25>
 <SFX 39><$00><$8B>
 // the swords clang together
 //鎧に一瞬の隙が生じた。<LINE 00>
-I got the armor to let its guard down for an instant.
+The armor let its guard down for an instant.
 //ぼくは思いきりその腹を横なぎにした。<LINE 00>
 // 横薙ぎ= "sweeping sideways"
  I slashed into it as hard as I could.<LINE 00>
@@ -57210,7 +57226,7 @@ The armor clumsily fell down.<LINE 00>
 // fade in hallway
 //いきおいにのったぼくは鎧へ馬のりになり、
 //剣をかざしてとどめを刺そうとした。<CLEAR 25>
-I forced myself on top of the armor as if riding a horse. I held the sword above my head and tried to deal the finishing blow.<CLEAR 25>
+I forced myself on top of the armor as if riding a horse. I held the sword above my head and was about to deal the finishing blow.<CLEAR 25>
 
 //[$1ECCD0-1] -> [81 66 F6]
 <STOP SFX 3B><$00><$03><DELAY 17><$00><$0A>
@@ -57229,7 +57245,7 @@ An unexpected face appeared under the face plate.<LINE 00>
 //「ンな、奈美!?」<LINE 00>
 “Na-, Nami?!”<LINE 00>
 //ボクは思わずウラ声になった。<CLEAR 25>
-// 裏声= a falsetto
+// 裏声 is a falsetto
 My voice cracked as I said that.<CLEAR 25>
 
 //[$1ECD41-5] -> [0D 6A F6]
@@ -57256,7 +57272,7 @@ I hurriedly ripped the armor off, but Nami wasn't wearing anything.<LINE 00>
 //こういうストーリーなら、いい。<LINE 00>
 If only the story would stay like this.<LINE 00>
 //しかしぼくは、急いでバッグを取ってきた。<CLEAR 25>
-But, I hurried and got her bag.<CLEAR 25>
+But, I hurried to get her bag.<CLEAR 25>
 
 //[$1ECDF0-2] -> [82 6F F6]
 //奈美はやっと失神からさめた。<LINE 00>
@@ -57266,7 +57282,7 @@ Nami finally woke up.<LINE 00>
 //奈美は赤くなって従った。<LINE 00>
 She blushed and put them on.<LINE 00>
 //「私、ヨロイなんか着て何してたの・・・?」<LINE 00>
-“I, what was I doing as the armor...?”<LINE 00>
+“I, what was I doing with the armor on...?”<LINE 00>
 //「その話はあとだ」<LINE 00>
 //ぼくはいった。<CLEAR 25>
 I said, “I'll tell you later.”<CLEAR 25>
@@ -57283,7 +57299,7 @@ I shuddered looking around,
 // the wind blows; fade out hum and tones
 //あたりには風が吹くばかりで、
 //もう一人の奈美はおろか動くものの気配すらない。<CLEAR 25>
- but didn't see anything moving besides the blowing wind, much less another Nami.<CLEAR 25>
+ but didn't sense anything moving besides the blowing wind, much less another Nami.<CLEAR 25>
 
 //[$1ECE9B-7] -> [DF 74 F6]
 //「逃げよう、奈美」<LINE 00>
@@ -57402,7 +57418,7 @@ Nami said with a suddenly pale face, “I'll, I'll find out myself!”<CLEAR 25>
 //[$1ED11B-5] -> [DD 88 F6]
 //「だって、知りたいもの！　私がこのお屋敷にどう関わっていたのか。
 //どんな力が私をここまで引きよせたのか!」<LINE 00>
-“But, I want to know! Did this mansion influence me somehow? What kind of power drew me towards here!”<LINE 00>
+“But, I want to know! What connection do I have to this mansion? What kind of power drew me towards here!”<LINE 00>
 //「奈美!」<LINE 00>
 “Nami!”<LINE 00>
 //「イヤ!」<CLEAR 25>
@@ -57552,6 +57568,7 @@ The hitodama was perverted.<CLEAR 25>
 //[$1ED369-1] -> [49 9B F6]
 //すり寄り、頬ずりし、エリもとからシャツの下へもぐりこんで袖からぬけたり、
 //スカートの中へ入りこんでヒップへ回ったりする。<LINE 00>
+// 擦り寄る means to get close to; I think it's obvious enough from context
 It rubbed against her cheek, slipped into her shirt through the collar, came out the sleeve, went into her skirt, and spun around her hips.<LINE 00>
 //こ、これはまた新しいストーリーてんかいだ。<LINE 00>
 Th-, this was another new story<LINE 00>development.<LINE 00>
@@ -57628,7 +57645,7 @@ The eyes disappeared.<LINE 00>
 <IMAGE FADE IN BLOCK 30><$00><$01><$00><$45><SFX 39><$00><$13>
 // fade back in hallway; ambient low hum
 //気がつくと奈美までが消えていた。<LINE 00>
-Before I knew it, Nami was gone.<LINE 00>
+When I came to, Nami was gone.<LINE 00>
 //「奈美！・・・マタ居なくなっちゃったのかあ！奈美ィッ!」<LINE 00>
 “Nami! ...She's gone again! Namii!”<LINE 00>
 <SFX FADE OUT 40><$00><$08><$00><$56><DELAY 17><$00><$05>
@@ -57793,7 +57810,7 @@ Nami loudly shouted back.<LINE 00>
 //「私はここで、生まれて<DELAY 17><$00><$03>育った！
 //・・・ナオミっていう姉さんがいた！　ここで<DELAY 17><$00><$03>
 //お母さんと三人で暮してたのよ!」<LINE 00>
-“I, was born<DELAY 17><$00><$03> and raised here! ...Naomi was my older sister! We lived here with our mother!”<LINE 00>
+“I, was born<DELAY 17><$00><$03> and raised here! ...Naomi was my older sister! We lived here<DELAY 17><$00><$03> with our mother!”<LINE 00>
 //「しっかりするんだ奈美！　じゃあ、いまの東京のお父さんとお母さんは何だ?」<CLEAR 25>
 “Calm down, Nami! Then, what about your father and mother in Tokyo?”<CLEAR 25>
 
@@ -57878,7 +57895,7 @@ Time passed.
 //奈美はぬれた目を上げた。<LINE 00>
 Nami lifted her tear-stained eyes.<LINE 00>
 //「ねえ、ほんとうに、何があってもスキ?」<LINE 00>
-“Hey, do you really love me no matter what happens?”<LINE 00>
+“Hey, do you really love me, no matter what happens?”<LINE 00>
 //「ばかだな<DELAY 17><$00><$05>・・・きまってるじゃないか」<LINE 00>
 “Don't be stupid...<DELAY 17><$00><$05> Isn't it obvious?”<LINE 00>
 //「私が誰でも<DELAY 17><$00><$05>・・・過去に何があっても、
@@ -57923,8 +57940,7 @@ I hugged Nami hard enough that I could break two or three bones.<END CHOICE 1C>
 //[$1EDAFB-1] -> [D9 D7 F6]
 #EMBWRITE(2345)
 //やさしく奈美の骨をなでてやった。<END CHOICE 1C>
-// rewrite
-I gently stroked Nami's bones.<END CHOICE 1C>
+I gently rubbed Nami's bones.<END CHOICE 1C>
 <JMP 03>
 #EMBSET(1596)
 
@@ -57983,7 +57999,7 @@ Once again, I lost sight of her.<LINE 00>
 //もういい加減にしてくれ。<LINE 00>
 I've had enough of this.<LINE 00>
 //もう見失うのはイヤだ。<CLEAR 25>
-Losing sight of her was bad enough.<CLEAR 25>
+I don't want to lose sight of her again.<CLEAR 25>
 
 //[$1EDC1E-6] -> [F6 E0 F6]
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$0E>
@@ -57999,7 +58015,7 @@ This time:<LINE 00>
 //[$1EDC36-7] -> [B7 E1 F6]
 #EMBWRITE(2347)
 //奈美に目印をつけておこう。<END CHOICE 1C>
-I'd mark Nami with something.<END CHOICE 1C>
+I'll mark Nami with something.<END CHOICE 1C>
 <JMP 03>
 #EMBSET(1246)
 
@@ -58007,7 +58023,7 @@ I'd mark Nami with something.<END CHOICE 1C>
 //[$1EDC48-1] -> [41 E2 F6]
 #EMBWRITE(2348)
 //逃げ出す前に行き先を聞いておこう。<END CHOICE 1C>
-I'd ask where she was going before we escaped.<END CHOICE 1C>
+I'll ask where she's going before we escape.<END CHOICE 1C>
 <JMP 03>
 #EMBSET(1603)
 
@@ -58115,7 +58131,6 @@ Passionate, I rushed out.<END CHOICE 1C>
 //「・・・・・・・・」<LINE 00>
 “...”<LINE 00>
 //ベッドの奈美に気を残しつつ飛び出した。<END CHOICE 1C>
-// rewrite
 Saving my energy for Nami in bed, I rushed out.<END CHOICE 1C>
 <JMP 03>
 #EMBSET(1611)
@@ -58152,12 +58167,12 @@ The blood having drained from her\ face, she held them out to me.<CLEAR 25>
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$4A>
 // fade in cover of maternity book
 //母子手帳だった。<LINE 00>
-It was a maternity health record book.<LINE 00>
+It was a maternity health book.<LINE 00>
 //それに奈美の名があった<SFX 39><$00><$10><SFX 39><$00><$13>。<LINE 00>
 The name “Nami<AUTO ADV 13>” was inside<SFX 39><$00><$10><SFX 39><$00><$13>.<LINE 00>
 // mysterious discovery; ambient low hum
 //「やっぱり私の母子手帳なのよ！　私ここで生まれたのよ!」<CLEAR 25>
-“Just as I thought, this was my mother's maternity health record book for me! I was born here!”<CLEAR 25>
+“Just as I thought, this was my mother's maternity health book for me! I was born here!”<CLEAR 25>
 
 //[$1EDE9E-7] -> [F7 F4 F6]
 //「あはは」<LINE 00>
@@ -58205,7 +58220,7 @@ But, the year was wrong.<LINE 00>
 //・・・ねえ、これ、どういうことなの!」<LINE 00>
 “The walls spoke. They spoke into my heart. What does it mean? ...Hey, what does this mean!”<LINE 00>
 //奈美は狂ったように飛びだした
-Looking upset, Nami rushed out the door
+Looking like she'd gone mad, Nami rushed out the door
 <SFX 39><$00><$68><STOP SFX 3B><$00><$13><STOP SFX 3B><$00><$17>
 //。<LINE 00>
 .<LINE 00>
@@ -58247,7 +58262,7 @@ Once again, I forgot to ask where she was going.<END CHOICE 1C>
 //[$1EE064-5] -> [25 03 F7]
 #EMBWRITE(2352)
 //奈美をなだめるためには、ここで愛の力をたしかめ合うしかない。<END CHOICE 1C>
-To calm Nami down, I now had no choice but to test the power of love here.<END CHOICE 1C>
+To calm Nami down, I had no choice but to confirm the power of love here.<END CHOICE 1C>
 
 //[$1EE07F-0] -> [F8 03 F7]
 #EMBWRITE(1262)
@@ -58364,7 +58379,7 @@ Heartbroken, she screamed.<LINE 00>
 This was no joking matter anymore.<LINE 00>
 //奈美を見ているのがつらい。<LINE 00>
 //このままでは本当に発狂しそうだ。<LINE 00>
-It hurt seeing Nami, who looked like she'd really go crazy at this rate.<LINE 00>
+It hurt seeing Nami, who looked like she really would go crazy at this rate.<LINE 00>
 //ぼくはなんだか涙が出てきた。<CLEAR 25>
 I was crying a little, too.<CLEAR 25>
 
@@ -58412,7 +58427,7 @@ The more I looked at her, the more she resembled Nami.<LINE 00>
 //そのナオミの隣へ、もう一人の女が現われた。<LINE 00>
 Next to Naomi, another woman appeared.<LINE 00>
 //「誰・・・!」<LINE 00>
-“Who...!”<LINE 00>
+“Who's...!”<LINE 00>
 <SFX FADE OUT 40><$00><$08><$00><$56>
 // a low wind blows
 //美しい中年女だった。<CLEAR 25>
@@ -58520,7 +58535,7 @@ I hugged her tight.<LINE 00>
 <SFX 39><$00><$56>
 // a low wind
 //「何だ」<LINE 00>
-“What?”<LINE 00>
+“What is it?”<LINE 00>
 //「カベ！・・・カベなのよォ!」<LINE 00>
 “The wall! ...The wall!”<LINE 00>
 //「カベ!?」<LINE 00>
@@ -58565,7 +58580,7 @@ The mansion shook again, like it was alive<AUTO ADV 13>.
 //「奈美、やっぱり屋敷にあやつられているんだ。負けるな。
 //自分の心をシッカリと持て!」<CLEAR 25>
 // don't lose, and keep a firm grip on your mind?
-“Nami, just as I thought, the mansion is manipulating you. Don't let it take over your mind!”<CLEAR 25>
+“I knew it, the mansion is manipulating you, Nami. Don't let it take over your mind!”<CLEAR 25>
 
 //[$1EE6D6-2] -> [B2 36 F7]
 //ぼくは奈美を抱く腕に力をこめた。<LINE 00>
@@ -59048,7 +59063,7 @@ I turned around, and a beautiful woman I didn't recognize was standing there.
 //「あ<DELAY 17><$00><$03>・・・」<LINE 00>
 “Ah<DELAY 17><$00><$03>...”<LINE 00>
 //ズキン、とぼくの体内に快感が走る。<LINE 00>
-A throb of pleasure ran through my\ body.<LINE 00>
+My body throbbed with pleasure.<LINE 00>
 //「スキよ・・・」<LINE 00>
 //女が悩ましくぼくにささやきかけた。<LINE 00>
 The woman seductively whispered to me, “I love you...”<LINE 00>
@@ -59251,6 +59266,8 @@ That was a convenient explanation.<CLEAR 25>
 //「もっとおかしなことがある。奈美、君はいつ二十才になった?」<LINE 00>
 “There's something even stranger. Nami, when did you turn 20?”<LINE 00>
 //「三日前、誕生パーティーをやったばかりよ」<LINE 00>
+// I like how she sort of dodges the question to prevent nailing down a specific
+// day for when the game takes place; party doesn't need to be the day of itself
 “I just had my birthday party, three days ago.”<LINE 00>
 //「だろ？　君とナオミは同じ日の生まれだ。すると、こういうことになる。
 //日記には<DELAY 17><$00><$03>“成人した”<DELAY 17><$00><$03>
@@ -59337,11 +59354,11 @@ The man in the photo looked like me.<CLEAR 25>
 //[$1EF7DE-0] -> [F0 BE F7]
 //「女としては、ヨロイの彼より<KOUHEI-SAN 20>を選ぶわ・・・<DELAY 17><$00><$05>
 //きっとお母さんだって同じ気持ちよ」<LINE 00>
-“She, chose you over him...<DELAY 17><$00><$05> I'm sure Mother felt the same.”<LINE 00>
+“Women, would choose you over an armor for a boyfriend...<DELAY 17><$00><$05> I'm sure Mother felt the same, <KOUHEI-SAN 20>.”<LINE 00>
 //何と、殺されたヨロイ男<DELAY 17><$00><$03>のかわりに、ナオミと母、
 //二人の女がぼくの気をひこうとしているというのだ。<LINE 00>
 // "in place of the killed man in the armor"
-To my surprise, she was saying<DELAY 17><$00><$03> Naomi and their mother were both trying\ to attract my attention, in the place of the man in the armor.<LINE 00>
+To my surprise, she was saying<DELAY 17><$00><$03> Naomi and their mother were both trying\ to attract my attention, as a substitute for the man in the armor.<LINE 00>
 //「だったら奈美にもいえることだぞ」<LINE 00>
 //ぼくはいった。<CLEAR 25>
 I said, “So I can say the same of you, Nami.”<CLEAR 25>
@@ -59362,7 +59379,7 @@ Either they turned into the armor and monstrous fish,<DELAY 17><$00><$03> became
 //「あ・・・」<LINE 00>
 “Oh...”<LINE 00>
 //「来た・・・!」<LINE 00>
-“They came...!”<LINE 00>
+“They came here...!”<LINE 00>
 //ぼくらは同時に叫んだ。<LINE 00>
 We shouted at the same time.<LINE 00>
 //それまでなりをひそめていた光体が、ぼくらを囲むようにまた壁の中で光った。<LINE 00>
@@ -59416,7 +59433,7 @@ Calling from the heart, I said, “Nami, even stronger!”<LINE 00>
 //やっぱりそうだ。<LINE 00>
 Just as I thought.<LINE 00>
 //ぼくらが密着力を強めると、彼らはパワーを失うことを発見した。<LINE 00>
-We discovered they lost their power when we strengthened our relationship.<LINE 00>
+We discovered they lost their power when we stuck closer together.<LINE 00>
 //ぼくらはさらに強く抱擁しあい、激しくキスをかわした。<CLEAR 25>
 We embraced each other stronger\ and stronger, and exchanged a passionate kiss.<CLEAR 25>
 
@@ -59591,7 +59608,8 @@ I wrestled with the armor.<END CHOICE 1C>
 <SFX FADE OUT 3C><$00><$32><$00><$03><SFX 39><$00><$14><SFX 39><$00><$13><IMAGE FADE OUT 35><$00><$04>
 // fade out "to mansion covered in darkness"; creepy tones; fade image to black
 //あたりの光景がゆがんで消えた。<LINE 00>
-The scene in the area contorted and disappeared.<LINE 00>
+// view of the area around me
+What I saw around me contorted and disappeared.<LINE 00>
 <SFX FADE IN 3A><$00><$32><$00><$44>
 // loud armor steps
 //耳嗚りと頭痛が同時におそった。<LINE 00>
@@ -59613,7 +59631,7 @@ I was clinging onto it.<LINE 00>
 //ここで振り落とされたら、ぼくは壁の中から二度と出られないだろう。<LINE 00>
 If I got shaken off here, I may never come out of the wall again.<LINE 00>
 //いったい、どういうことだ!？<LINE 00>
-What the heck, what's going on?!<LINE 00>
+What the heck's going on?!<LINE 00>
 //「ねえ!　これでもデタラメ?」<LINE 00>
 //こんなさなかに、奈美が聞く。<LINE 00>
 In the middle of all this, Nami asked, “Hey, none of this makes sense!”<LINE 00>
@@ -59726,7 +59744,7 @@ As strange as it sounds, it felt<LINE 00>unbelievably good.<CLEAR 25>
 
 //[$1EFF71-1] -> [89 FB F7]
 //「ううッ・・・!」<LINE 00>
-“Oooh...!”<LINE 00>
+“Oo-...!”<LINE 00>
 //「ダメよ<KOUHEI-SAN 20>!<DELAY 17><$00><$03>・・・心をとられないで!」<LINE 00>
 // "don't let them capture your heart/mind"
 “No, <KOUHEI-SAN 20><AUTO ADV 13>!<DELAY 17><$00><$03> ...Don't let them take over your mind!”<LINE 00>
@@ -59825,7 +59843,7 @@ The wind sent me flying, and when I came to, Nami and I were on the floor.<END C
 // TL note: text from all 5 entry points allow replacing "Nami" with "her"
 I held her tight.<LINE 00>
 //そっとあたりをうかがってみる。<LINE 00>
-I quietly examined the area.<LINE 00>
+I quietly checked around me.<LINE 00>
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$0B>
 // fade in dining table
 //ここは食堂だ。<LINE 00>
@@ -59833,7 +59851,9 @@ This was the dining room.<LINE 00>
 //いくつもの目が見ていた。<LINE 00>
 Many eyes were looking at us.<LINE 00>
 //鎧と、怪魚と、ミイラとが、互いにけんせいしあっているように見える。<CLEAR 25>
-// けんせい possibly is 牽制? "(keeping in) check"
+// けんせい possibly is 牽制? Jisho definition was "(keeping in) check"; native
+// definition: 相手の注意を自分の方に引きつけて自由に行動できないようにすること。
+// trying to draw your opponent's attention and keep them from moving freely
 It looked like the armor, the monstrous fish, and the mummy were all keeping the two of us in check.<CLEAR 25>
 
 //[$1F8168-4] -> [44 0B FC]
@@ -59843,7 +59863,7 @@ It looked like the armor, the monstrous fish, and the mummy were all keeping the
 // cut out hum, tones, voice; a thud; "to the mansion covered in darkness"
 //ぼくはテーブルを倒すと、
 //そこにあったコショウとサンショウを振りまいて逃げた。<LINE 00>
-// 胡椒= black pepper, and 山椒= Japanese pepper
+// 胡椒 is black pepper, and 山椒 is Japanese pepper
 I knocked the table over, scattering the pepper on it, and ran away.<LINE 00>
 //「ハクション!」<LINE 00>
 “Achoo!”<LINE 00>
@@ -59879,7 +59899,7 @@ It definitely felt like it was.<LINE 00>
 Nami said, “But, what if the hallway is really getting longer!
 <FULL MUTE 43>
 //「私たちここで足踏みしてる間につかまってしまうわ!」<LINE 00>
- They'll catch us when we're just running in place!”<LINE 00>
+ They'll catch us when we're just running in place here!”<LINE 00>
 //「よし」<LINE 00>
 “Okay.”<LINE 00>
 //ぼくは決断した。<CLEAR 25>
@@ -59920,7 +59940,7 @@ It breathed heavily and smelled of a man's body odor.<LINE 00>
 //「ああ・・・」<LINE 00>
 “Ohh...”<LINE 00>
 //奈美の様子がおかしくなる。<LINE 00>
-Nami looked strange.<LINE 00>
+Something was wrong with Nami.<LINE 00>
 //「よせ、奈美!」<LINE 00>
 “Stop, Nami!”<LINE 00>
 //光体は、ゆらゆらと近づいてひろがり、奈美の体を包みこむようにする。<LINE 00>
@@ -59968,7 +59988,7 @@ I jumped at it again.<LINE 00>
 //「やめてエッ!」<LINE 00>
 “Stooop!”<LINE 00>
 //ぼくはダイビングのように飛び込んで奈美の両手をつかんだ。<CLEAR 25>
-I dived at Nami and grabbed both her hands.<CLEAR 25>
+I dived at Nami and grabbed her hands.<CLEAR 25>
 
 //[$1F844F-1] -> [79 22 FC]
 <SFX 39><$00><$41>
@@ -60065,7 +60085,8 @@ Nami jumped at me again.<LINE 00>
 //「ダメだ、二人とも殺される!」<LINE 00>
 “I won't, it'll kill both of us!”<LINE 00>
 //「殺されてもいい！　二人で勝つ!」<LINE 00>
-“It's fine if it kills us! We'll win together!”<LINE 00>
+// "even if we're killed, it's okay"
+“I don't care! We'll win together!”<LINE 00>
 //奈美は飛び込んできた。<LINE 00>
 Nami jumped at me.<LINE 00>
 //ぼくはその手をしっかりとつかんだ。<LINE 00>
@@ -60145,7 +60166,7 @@ Suddenly, flames broke out all around us.
 //「ええ!」<LINE 00>
 “Huh?!”<LINE 00>
 //ぼくらの周囲へ、鎧とミイラと怪魚が、にじみ出るように現れた。<CLEAR 25>
-The armor, mummy, and monstrous fish appeared around us, like they were revealing themselves.<CLEAR 25>
+The armor, mummy, and monstrous fish appeared around us, like they were seeping out of the flames.<CLEAR 25>
 
 //[$1F87A7-6] -> [3E 3D FC]
 <SFX 39><$00><$56>
@@ -60156,7 +60177,7 @@ The wind blew.<LINE 00>
 In it, we heard Naomi's voice.<LINE 00>
 //「もう逃げられないわよ<DELAY 17><$00><$05>・・・二人とも、心を決めなさい。
 //このままそこでそうしているか、それとも今すぐその抱擁をといて二人は別れるか?」<LINE 00>
-“You can't run away anymore...<DELAY 17><$00><$05> Both of you, make up your minds. Will you stay there, or will you stop hugging right now and break up?”<LINE 00>
+“You can't run away anymore...<DELAY 17><$00><$05> Both of you, make up your minds. Will you try to stay there, or will you stop hugging right now and break up?”<LINE 00>
 //ナオミはぼくらにシットしているのだ。<LINE 00>
 Naomi was jealous of us.<LINE 00>
 //ぼくは叫んだ。<LINE 00>
@@ -60300,7 +60321,7 @@ We looked back, and the blazing mansion was like a curtain of fire.<CLEAR 25>
 //奈美が叫んだ。<LINE 00>
 Nami screamed, “Aahh<AUTO ADV 13>!<DELAY 17><$00><$03> ...Mother!”<LINE 00>
 //見送るように窓辺まで来た車椅子は、一瞬のうちに炎に包まれて燃え上がった。<LINE 00>
-The wheelchair had come up to the window as if seeing us off. Flames engulfed it in an instant.<LINE 00>
+The wheelchair had come up to the window to see us off. Flames engulfed it in an instant.<LINE 00>
 //ぼくらを助けて、奈美の母は<DELAY 17><$00><$05>死んだ・・・。<LINE 00>
 Nami's mother saved us,<DELAY 17><$00><$05> and died...<WAIT 16><LINE 00>
 <CLEAR 25>
@@ -60405,7 +60426,7 @@ I kissed her.<LINE 00>
 “I'm so happy...”<LINE 00>
 //ぼくは奈美を引きよせ、ぼくらの体は、
 //ゆっくりと弟切草の草むらの中へ倒れて行く・・・。<CLEAR 25>
-I pulled Nami close to me, and slowly fell into a bed of otogirisou...<WAIT 16><CLEAR 25>
+I pulled Nami close to me, and we slowly fell into a bed of otogirisou...<WAIT 16><CLEAR 25>
 
 //[$1F8CCD-1] -> [69 66 FC]
 //甘い香りが匂った。<LINE 00>
@@ -60531,7 +60552,7 @@ Her grandfather stood up straight.<LINE 00>
 // fade out the music
 //ハナシのわかるお爺ちゃんのお言葉に甘えて、
 //ぼくらはシアワセ時間を再開した<AUTO ADV 13>。<LINE 00><DELAY 17><$00><$0F>
-Following her wise grandfather's advice, we resumed our times of happiness<AUTO ADV 13>.<LINE 00><DELAY 17><$00><$0F>
+Following her down-to-earth grandfather's advice, we resumed our times of happiness<AUTO ADV 13>.<LINE 00><DELAY 17><$00><$0F>
 //「奈美<DELAY 17><$00><$02>
 //・<DELAY 17><$00><$02>
 //・<DELAY 17><$00><$02>
@@ -60661,7 +60682,7 @@ Nami quietly whispered, “The invisible people are my family's managers.”<LIN
 //これは新しい人事移動だ。<LINE 00>
 This was a new transfer of personnel.<LINE 00>
 //事務長の透明人間は、手にした書類を老博士に見せた。<LINE 00>
-The invisible managers showed the documents to the elderly professor.<LINE 00>
+The invisible managers showed their documents to Dr<AUTO ADV 13>. Einstein.<LINE 00>
 //奈美の家族たちも集まってきて、全員でボソボソやっている。<LINE 00>
 //みんなの目がときどきぼくを見る。<CLEAR 25>
 Nami's family all gathered together, whispering and occasionally looking at me.<CLEAR 25>
@@ -60724,19 +60745,17 @@ I didn't want them to excuse<DELAY 17><$00><$01> bad results on my behalf.<CLEAR
 //奈美の美しい姉ナオミが笑った。<LINE 00>
 Nami's beautiful sister Naomi smiled.<LINE 00>
 //「今からメゲてて、どうするの?」<LINE 00>
-// rewrite
-“What would you do if you get<LINE 00>discouraged after this?”<LINE 00>
+“What will we do if this gets you all discouraged now?”<LINE 00>
 //「さあシャンとして。正しい結果を聞きましょ」<LINE 00>
-// しゃんと = "being in shape; holding a dignified appearance"
-“Well, stay dignified. Let's hear the correct results.”<LINE 00>
+// しゃんと -> "being in shape; holding a dignified appearance"
 //奈美もこういってはげましてくれる。<LINE 00>
-Nami encouraged me, too.<CLEAR 25>
+Nami also encouraged me, “So stay dignified. Let's hear the correct results.”<CLEAR 25>
 
 // clear code to prevent screen overflow
 //「うん、わかった」<LINE 00>
 “Okay, got it.”<LINE 00>
 //ぼくは背筋を伸ばして、胸を張った。<LINE 00>
-I stood up straight and stuck out my chest.<LINE 00>
+I stood up straight and proudly stuck out my chest.<LINE 00>
 //「・・・うかがいましょう。どうぞ」<CLEAR 25>
 “...Let's listen. Please, go ahead.”<CLEAR 25>
 
@@ -60817,17 +60836,18 @@ The stars twinkling in the night sky were beautiful<AUTO ADV 13>.<LINE 00>
 The next morning, on the way back home...<LINE 00>
 <DELAY 17><$00><$0F>
 //ぼくと奈美は、小さな丘の上に、<LINE 00>
-Nami and I found a small hill<AUTO ADV 13>.<LINE 00>
+Nami and I came upon a small hill<AUTO ADV 13>.<LINE 00>
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$27><DELAY 17><$00><$05>
 // fade in field of otogirisou
-// TL note: rearranging content of next few sentences for better dramatic
-// effect when reading in English
 //奈美の父と、母と、姉のナオミと、弟の直樹と、そして、祖父老博士の、<LINE 00>
-There were small, inconspicuous graves for some people who had <DELAY 17><$00><$01>passed away in a landslide three years ago<AUTO ADV 13>.<LINE 00>
-<DELAY 17><$00><$05>
-//三年前の山崩れで<DELAY 17><$00><$01>亡くなったという、
+//<DELAY 17><$00><$05>三年前の山崩れで
+//<DELAY 17><$00><$01>亡くなったという、
 //ひっそりとした小さな墓を見つけた・・・<AUTO ADV 13>。<LINE 00>
-They were her father, her mother, Naomi, Naoki, and her grandfather...<LINE 00>
+We found her father, her mother, Naomi, Naoki, and her grandfather's<DELAY 17><$00><$05> small, inconspicuous graves, which said they had passed away<DELAY 17><$00><$01> in a landslide three years ago...
+// old translation that tried rearranging the sentence:
+//There were small, inconspicuous graves for some people who had <DELAY 17><$00><$01>passed away in a landslide three years ago<AUTO ADV 13>.<LINE 00>
+//<DELAY 17><$00><$05>
+//They were her father, her mother, Naomi, Naoki, and her grandfather...<LINE 00>
 <SFX 39><$00><$02><DELAY 17><$00><$14><VFX 2C><$00><$9C><VFX 2C><$00><$9B><VFX 2C><$00><$9B><DELAY 17><$00><$1E><SET FLAG 22><$00><$00><$00><$01><VFX 2C><$00><$5D><NOP 1D>
 // flower legend song; five lights start flying on the screen as credits roll
 // interestingly, this ending has a different "The End" graphic after it shows
