@@ -38,10 +38,10 @@ public class HelperMethods {
     public static final int LEFT_BIT_INT = 0;
     public static final int RIGHT_BIT_INT = 1;
     public static final int NO_HEX_VAL = -1;
-    public static final int NUM_HUFFMAN_ENTRIES = 0x5B7;
-    public static final int ROOT_ENTRY_POS = NUM_HUFFMAN_ENTRIES - 1;
-    public static final int HUFF_LEFT_OFFSET = 0x14D4F;
-    public static final int HUFF_RIGHT_OFFSET = 0x141E1;
+    public static final int PTR_TO_NUM_HUFFMAN_ENTRIES = 0x14150;
+    // public static final int ROOT_ENTRY_POS = NUM_HUFFMAN_ENTRIES - 1;
+    public static final int PTR_TO_HUFF_LEFT_OFFSET = 0x14165;
+    public static final int PTR_TO_HUFF_RIGHT_OFFSET = 0x14160;
     public static final int HUFF_TABLE_ENTRIES = 0x5B7;
 
     // constants related to script start points and script pointers

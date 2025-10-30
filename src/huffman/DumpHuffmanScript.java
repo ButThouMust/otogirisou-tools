@@ -105,20 +105,20 @@ public class DumpHuffmanScript {
 
     private static void readHuffmanTreeData() throws IOException {
         // get number of entries in the Huffman tree
-        romFile.seek(0x14150); // $02C150
+        romFile.seek(PTR_TO_NUM_HUFFMAN_ENTRIES);
         int sizeOfHuffmanTree = romFile.readUnsignedByte();
         sizeOfHuffmanTree |= romFile.readUnsignedByte() << 8;
         int numHuffEntries = (sizeOfHuffmanTree >> 1) + 1;
 
         // get bank offset of ptr to left Huffman trees; convert to ROM offset
-        romFile.seek(0x14165); // $02C165
+        romFile.seek(PTR_TO_HUFF_LEFT_OFFSET);
         int leftTreeOffset = romFile.readUnsignedByte();
         leftTreeOffset |= romFile.readUnsignedByte() << 8;
         leftTreeOffset |= 0x2 << 16; // assume in bank 02
         leftTreeOffset = getFileOffset(leftTreeOffset);
 
         // same for the right Huffman trees
-        romFile.seek(0x14160); // $02C160
+        romFile.seek(PTR_TO_HUFF_RIGHT_OFFSET);
         int rightTreeOffset = romFile.readUnsignedByte();
         rightTreeOffset |= romFile.readUnsignedByte() << 8;
         rightTreeOffset |= 0x2 << 16;
@@ -166,7 +166,7 @@ public class DumpHuffmanScript {
 
     private static int readCharacter() throws IOException {
         // start going left/right from the root of the Huffman tree
-        int huffTreeValue = HUFF_TABLE_ENTRIES - 1;
+        int huffTreeValue = huffLeftTrees.length - 1;
 
         // Huffman leaf node (character) indicated by a SET MSB in tree value
         while ((huffTreeValue & 0x8000) == 0) {

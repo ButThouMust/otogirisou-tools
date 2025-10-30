@@ -417,6 +417,35 @@ public class GenerateHuffmanScript {
         return q.poll();
     }
 
+    private static int getNumEntriesInHuffmanTree(HuffmanNode root) {
+        int numEntries = 0;
+        Queue<HuffmanNode> traversal = new LinkedList<>();
+        traversal.add(root);
+        while (!traversal.isEmpty()) {
+            HuffmanNode node = traversal.poll();
+            if (!node.isLeaf()) {
+                numEntries++;
+                if (node.left != null) {
+                    traversal.add(node.left);
+                }
+                if (node.right != null) {
+                    traversal.add(node.right);
+                }
+            }
+        }
+
+        // print a warning if too many non-leaves in the tree; hopefully not an
+        // issue since 0x5B7 = 1463 and English uses a smaller "alphabet",
+        // but this may still happen
+        if (numEntries >= 0x5B7) {
+            System.out.println("WARNING: Huffman tree will not fit in original space");
+            String format = "Used 0x%X non-leaf nodes of 0x%X";
+            System.out.println(String.format(format, numEntries, 0x5B7));
+        }
+
+        return numEntries;
+    }
+
     /**
      * "Flatten out" the Huffman tree into a linear data block in the format
      * that the game expects, and output the data block to a binary file.
@@ -424,10 +453,11 @@ public class GenerateHuffmanScript {
      * @throws IOException
      */
     private static void convertTreeToGameFormat(HuffmanNode root) throws IOException {
-        // target data format: two linear data blocks each with 0x5B7 entries for
-        // how to navigate the Huffman tree; take all of the non-leaf nodes
-        int leftSubtreeData[] = new int[NUM_HUFFMAN_ENTRIES];
-        int rightSubtreeData[] = new int[NUM_HUFFMAN_ENTRIES];
+        // target data format: two linear data blocks each with <= 0x5B7 entries
+        // for how to navigate the Huffman tree; take all of the non-leaf nodes
+        int numEntries = getNumEntriesInHuffmanTree(root);
+        int leftSubtreeData[] = new int[numEntries];
+        int rightSubtreeData[] = new int[numEntries];
 
         // An array index corresponds to a particular non-leaf node in the tree.
         //     -0-      Left: An example indexing for a perfect 3 level tree.
@@ -439,7 +469,7 @@ public class GenerateHuffmanScript {
 
         // assign a unique number to all the non-leaves as above; note that the
         // game expects root to be at the end, so go in decreasing order to match
-        int dataIndex = ROOT_ENTRY_POS;
+        int dataIndex = numEntries - 1;
         HashMap<HuffmanNode, Integer> dataIndexForNode = new HashMap<>();
         traversal.add(root);
         while (!traversal.isEmpty()) {
@@ -461,16 +491,6 @@ public class GenerateHuffmanScript {
                     traversal.add(right);
                 }
             }
-        }
-
-        // print a warning if too many non-leaves in the tree; hopefully not an
-        // issue since 0x5B7 = 1463 and English uses a smaller "alphabet",
-        // but this may still happen
-        if (dataIndex < 0) {
-            System.out.println("WARNING: Huffman tree will not fit in original space");
-            String format = "Used 0x%X non-leaf nodes of 0x%X";
-            int numEntriesUsed = NUM_HUFFMAN_ENTRIES - dataIndex;
-            System.out.println(String.format(format, numEntriesUsed, NUM_HUFFMAN_ENTRIES));
         }
 
         // with all the values collected, fill in the data arrays

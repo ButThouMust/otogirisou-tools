@@ -126,12 +126,36 @@ public class DumpHuffmanCodesFromROM {
     // Code for reading in the raw Huffman tree data, and outputting it to text
     // *************************************************************************
 
-    private static void getTreeData(String romFilename) throws IOException {
-        RandomAccessFile romStream = new RandomAccessFile(romFilename, "r");
+    private static RandomAccessFile romStream;
+
+    private static int getNumHuffmanEntries() throws IOException {
+        // get number of entries in the Huffman tree
+        romStream.seek(PTR_TO_NUM_HUFFMAN_ENTRIES);
+        int sizeOfHuffmanTree = romStream.readUnsignedByte();
+        sizeOfHuffmanTree |= romStream.readUnsignedByte() << 8;
+
+        int numHuffEntries = (sizeOfHuffmanTree >> 1) + 1;
+        return numHuffEntries;
+    }
+
+    private static void getTreeData(String romFilename, int numHuffEntries) throws IOException {
+        // get bank offset of ptr to left Huffman trees; convert to ROM offset
+        romStream.seek(PTR_TO_HUFF_LEFT_OFFSET);
+        int leftTreeOffset = romStream.readUnsignedByte();
+        leftTreeOffset |= romStream.readUnsignedByte() << 8;
+        leftTreeOffset |= 0x2 << 16; // assume in bank 02
+        leftTreeOffset = getFileOffset(leftTreeOffset);
+
+        // same for the right Huffman trees
+        romStream.seek(PTR_TO_HUFF_RIGHT_OFFSET);
+        int rightTreeOffset = romStream.readUnsignedByte();
+        rightTreeOffset |= romStream.readUnsignedByte() << 8;
+        rightTreeOffset |= 0x2 << 16;
+        rightTreeOffset = getFileOffset(rightTreeOffset);
 
         // start reading data for the left subtrees for the Huffman tree
-        romStream.seek(HUFF_LEFT_OFFSET);
-        for (int i = 0; i < HUFF_TABLE_ENTRIES; i++) {
+        romStream.seek(leftTreeOffset);
+        for (int i = 0; i < numHuffEntries; i++) {
             treeData.add(new HuffmanNode());
             HuffmanNode node = treeData.get(i);
 
@@ -143,8 +167,8 @@ public class DumpHuffmanCodesFromROM {
             node.leftHuffCode = "";
         }
 
-        romStream.seek(HUFF_RIGHT_OFFSET);
-        for (int i = 0; i < HUFF_TABLE_ENTRIES; i++) {
+        romStream.seek(rightTreeOffset);
+        for (int i = 0; i < numHuffEntries; i++) {
             HuffmanNode node = treeData.get(i);
 
             node.rightHuffOffset = romStream.getFilePointer();
@@ -153,8 +177,6 @@ public class DumpHuffmanCodesFromROM {
 
             node.rightHuffCode = "";
         }
-
-        romStream.close();
     }
 
     // describes the raw Huffman tree data with a standard format on every line
@@ -184,7 +206,7 @@ public class DumpHuffmanCodesFromROM {
     private static void getHuffLeaves() {
         // get all the Huffman leaves by doing a depth-first traversal
         Stack<HuffmanNode> stack = new Stack<HuffmanNode>();
-        HuffmanNode huffmanRoot = treeData.get(ROOT_ENTRY_POS);
+        HuffmanNode huffmanRoot = treeData.get(treeData.size() - 1);
         stack.push(huffmanRoot);
 
         while (!stack.isEmpty()) {
@@ -250,12 +272,16 @@ public class DumpHuffmanCodesFromROM {
         String treeRawDataOutput = args[2];
         String huffCodesOutput = args[3];
 
-        treeData = new ArrayList<>(HUFF_TABLE_ENTRIES);
-        huffLeaves = new ArrayList<>(HUFF_TABLE_ENTRIES);
         tableFileMap = new HashMap<>();
-
         readTableFile(tableFilename);
-        getTreeData(romFilename);
+
+        romStream = new RandomAccessFile(romFilename, "r");
+        int numHuffEntries = getNumHuffmanEntries();
+        treeData = new ArrayList<>(numHuffEntries);
+        huffLeaves = new ArrayList<>(numHuffEntries);
+        getTreeData(romFilename, numHuffEntries);
+        romStream.close();
+
         getHuffLeaves();
 
         treeDataFileOutput(treeRawDataOutput);
