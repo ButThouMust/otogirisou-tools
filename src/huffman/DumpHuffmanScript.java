@@ -104,8 +104,28 @@ public class DumpHuffmanScript {
     private static int currByteOffset;
 
     private static void readHuffmanTreeData() throws IOException {
-        huffLeftTrees = new int[HUFF_TABLE_ENTRIES];
-        romFile.seek(HUFF_LEFT_OFFSET);
+        // get number of entries in the Huffman tree
+        romFile.seek(0x14150); // $02C150
+        int sizeOfHuffmanTree = romFile.readUnsignedByte();
+        sizeOfHuffmanTree |= romFile.readUnsignedByte() << 8;
+        int numHuffEntries = (sizeOfHuffmanTree >> 1) + 1;
+
+        // get bank offset of ptr to left Huffman trees; convert to ROM offset
+        romFile.seek(0x14165); // $02C165
+        int leftTreeOffset = romFile.readUnsignedByte();
+        leftTreeOffset |= romFile.readUnsignedByte() << 8;
+        leftTreeOffset |= 0x2 << 16; // assume in bank 02
+        leftTreeOffset = getFileOffset(leftTreeOffset);
+
+        // same for the right Huffman trees
+        romFile.seek(0x14160); // $02C160
+        int rightTreeOffset = romFile.readUnsignedByte();
+        rightTreeOffset |= romFile.readUnsignedByte() << 8;
+        rightTreeOffset |= 0x2 << 16;
+        rightTreeOffset = getFileOffset(rightTreeOffset);
+
+        huffLeftTrees = new int[numHuffEntries];
+        romFile.seek(leftTreeOffset);
         int data = 0;
         for (int i = 0; i < huffLeftTrees.length; i++) {
             data = romFile.readUnsignedByte();
@@ -113,8 +133,8 @@ public class DumpHuffmanScript {
             huffLeftTrees[i] = data;
         }
 
-        huffRightTrees = new int[HUFF_TABLE_ENTRIES];
-        romFile.seek(HUFF_RIGHT_OFFSET);
+        huffRightTrees = new int[numHuffEntries];
+        romFile.seek(rightTreeOffset);
         for (int i = 0; i < huffRightTrees.length; i++) {
             data = romFile.readUnsignedByte();
             data |= (romFile.readUnsignedByte() << 8);
@@ -124,7 +144,7 @@ public class DumpHuffmanScript {
     }
 
     // -------------------------------------------------------------------------
-    // "API" for reading raw binary data from the script
+    // Mnemonics for reading raw binary data from the script
     // -------------------------------------------------------------------------
 
     // uses the independent "current byte offset"; used for navigating the script
@@ -658,9 +678,7 @@ public class DumpHuffmanScript {
                         switch (argType & 0x1) {
                             case CHAR_ARG:
                                 int arg = readCharacter();
-                                if (!isKernLeft) {
-                                    printArg(arg);
-                                }
+                                printArg(arg);
                                 // if SET FLAG 22 or JMP.cc 04, note which flag
                                 // is being changed or being checked
                                 if ((charEncoding == SET_FLAG_22 ||
@@ -843,6 +861,7 @@ public class DumpHuffmanScript {
         Collections.sort(scriptPointers);
         outputScriptPointers();
 
+        System.out.println("Dumping script...");
         addAtlasHeader(tableFilename);
         dumpScript(scriptStart, scriptEnd);
 
