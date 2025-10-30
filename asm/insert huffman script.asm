@@ -21,9 +21,17 @@ org !OldMusicBlockStart
     incbin "script/huffman script.bin"
     check bankcross full
 
-; insert the new Huffman tree data
+; insert the new Huffman tree data, and update its size and pointers
+!HuffmanTreeDataFile = "script/huffman tree - game data format.bin"
 org $02C1E1
-    incbin "script/huffman tree - game data format.bin"
+HuffRightTrees:
+    incbin "!HuffmanTreeDataFile"
+org $02C150
+    dw (filesize("!HuffmanTreeDataFile")>>1)-2
+org $02C160
+    dw HuffRightTrees
+org $02C165
+    dw HuffRightTrees+(filesize("!HuffmanTreeDataFile")>>1)
 
 ; insert the new script start points
 !StartPointScriptOffsetsFile = "script/start points' script offsets.bin"
