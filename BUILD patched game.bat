@@ -132,7 +132,7 @@ java -classpath %srcPath% huffman/DumpHuffmanScript %huffScriptROM% %translation
 :: An IPS patch would encode the entire (copyrighted) block within the patch.
 
 tools\superfamicheck.exe %huffScriptROM% --fix --silent
-tools\flips.exe --create --bps-delta %jpROM% %huffScriptROM% "patches\otogirisou_en_beta_latest.bps"
+tools\flips.exe --create --bps-delta %jpROM% %huffScriptROM% "patches\otogirisou_english_latest.bps"
 
 :: Do a dead simple assembly hack, at least with the way I set things up, to
 :: create a patch to disable the honorifics.
@@ -140,6 +140,6 @@ tools\flips.exe --create --bps-delta %jpROM% %huffScriptROM% "patches\otogirisou
 copy /y %huffScriptROM% %honorificsOffROM%
 tools\asar.exe "asm\disable honorifics.asm" %honorificsOffROM%
 tools\superfamicheck.exe %honorificsOffROM% --fix --silent
-tools\flips.exe --create --bps-delta %jpROM% %honorificsOffROM% "patches\otogirisou_en_beta_latest_honorifics_off.bps"
+tools\flips.exe --create --bps-delta %jpROM% %honorificsOffROM% "patches\otogirisou_english_latest_honorifics_off.bps"
 
 pause

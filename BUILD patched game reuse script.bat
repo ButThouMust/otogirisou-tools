@@ -52,6 +52,6 @@ tools\flips.exe --create --bps-delta %jpROM% %huffScriptROM% "patches\otogirisou
 copy /y %huffScriptROM% %honorificsOffROM%
 tools\asar.exe "asm\disable honorifics.asm" %honorificsOffROM%
 tools\superfamicheck.exe %honorificsOffROM% --fix --silent
-tools\flips.exe --create --bps-delta %jpROM% %honorificsOffROM% "patches\otogirisou_en_beta_latest_honorifics_off.bps"
+tools\flips.exe --create --bps-delta %jpROM% %honorificsOffROM% "patches\otogirisou_english_latest_honorifics_off.bps"
 
 pause
