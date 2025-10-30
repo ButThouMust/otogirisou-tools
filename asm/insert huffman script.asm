@@ -15,23 +15,36 @@ OldScriptStart:
     fill $!OldFontEndROM-$!OldScriptStartROM+1
     check bankcross full
 
+; --------------------
+
 ; insert the new script
 org !OldMusicBlockStart
     check bankcross off
     incbin "script/huffman script.bin"
     check bankcross full
 
-; insert the new Huffman tree data, and update its size and pointers
+; --------------------
+
+; insert the new Huffman tree data
 !HuffmanTreeDataFile = "script/huffman tree - game data format.bin"
 org $02C1E1
 HuffRightTrees:
     incbin "!HuffmanTreeDataFile"
+; if you ever want to try fitting the translated game into 1 MB, you can start
+; the game's GFX data here in the ROM; for now, just fill in with FF bytes
+; NewStartOfGfxData:
+    fillbyte $ff
+    fill $02da00-pc()
+
+; update size of and pointers for the Huffman tree blocks
 org $02C150
     dw (filesize("!HuffmanTreeDataFile")>>1)-2
 org $02C160
     dw HuffRightTrees
 org $02C165
     dw HuffRightTrees+(filesize("!HuffmanTreeDataFile")>>1)
+
+; --------------------
 
 ; insert the new script start points
 !StartPointScriptOffsetsFile = "script/start points' script offsets.bin"
@@ -50,6 +63,8 @@ org $02A627
         dl numBits(!start)|(pctosnes(!OldMusicBlockStartROM+numBytes(!start))<<3)
     endfor
     ; print ""
+
+; --------------------
 
 ; also need to update values used for the script start in other places
 org $009EAA
