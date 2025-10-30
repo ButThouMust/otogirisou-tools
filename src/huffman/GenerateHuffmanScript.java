@@ -754,7 +754,7 @@ public class GenerateHuffmanScript {
         int numStartPointsFound = 0;
         int startPointToLookFor = 0;
 
-        System.out.println("Now collecting Huffman pointer locations and values...");
+        System.out.println("\nNow collecting Huffman pointer locations and values...");
         while (romFile.getFilePointer() < scriptEnd) {
             // as we walk the uncompressed script, get a list of locations for
             // all the equivalent Huffman pointers
@@ -768,8 +768,8 @@ public class GenerateHuffmanScript {
                 if (startLocationValue == getCPUOffset()) {
                     huffPtrLocations.put(startLoc, compressedSize);
 
-                    String format = "Start point #%d is at offset 0x%05X-%d from start of Huffman script";
-                    System.out.println(String.format(format, startPointToLookFor, compressedSize >> 3, compressedSize & 0x7));
+                    String format = "0x%05X-%d: Huffman script start point #%d";
+                    System.out.println(String.format(format, compressedSize >> 3, compressedSize & 0x7, startPointToLookFor));
 
                     // quirk about start points: sorted by offset, S0 < S2 < S1
                     // so after finding S0, next find S2, then S1, and done
@@ -863,7 +863,7 @@ public class GenerateHuffmanScript {
 
                 // for debugging purposes only, indicate progress
                 if (charEncoding == NOP_1D) {
-                    String format = "Ending @ offset 0x%05X-%d from script start";
+                    String format = "0x%05X-%d: got to an ending";
                     System.out.println(String.format(format, compressedSize >> 3, compressedSize & 0x7));
                 }
             }
