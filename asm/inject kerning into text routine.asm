@@ -121,6 +121,14 @@ DisableKerning:
     plp
     rts
 
+JslHereToAutoKernLeft:
+    jsr DoAutoKernLeft
+    rtl
+
+JslHereToDisableKerning:
+    jsr DisableKerning
+    rtl
+
 ; ------------------
 
 ; insert kerning distance tables into start of extra 0.5 MB
@@ -131,3 +139,91 @@ KerningPtrTable:
     incbin "font/kerning ptr table.bin"
     incbin "font/kerning tables.bin"
   ; db $00,$00
+
+; --------------------
+
+; You can also add kerning for the names on the file select screen. The idea
+; behind this hack is similar to what is in "improve linebreaking.asm", but
+; putting here to keep it with the theme of adding kerning to the text routines.
+
+; You must make a new version of the code at $02b685 (read chars from name ptr)
+; and $02b6af (print char encoding in A), and change the [jsl $02b685 ; rts] at
+; $02b984 to go to this new code instead. Both the file select and name entry
+; screens use the existing code for printing characters without kerning: page
+; and playthrough counters, # choices picked, and text on the name entry screen
+; (grid of characters, page #, page descriptions).
+
+org $02b685
+; this "JSL here" setup turns out to be unneeded; only used once, and in bank 02
+;     jsr.w $02b689 
+;     rtl
+; org $02b689
+;     php
+;     rep #$30
+;     sep #$10
+;     ldx #$70      ; set up to read from bank $70 = SRAM for the name
+;     bra +
+    fillbyte $ff
+    fill $02b692-pc()
+
+; org $02b692
+;     php
+;     rep #$30
+;     sep #$10
+;     ldx #$02      ; set up to read from bank $02
+
+; +   stx $54       ; construct pointer from bank number and bank offset in A
+;     sta $52
+
+; -   lda [$52]     ; read characters and print them; string is FFFF terminated
+;     inc $52
+;     inc $52
+;     cmp #$ffff
+;     beq +
+;     jsr.w $02b6af
+;     bra -
+
+; +   plp
+;     rts
+
+; the space where the honorifics used to be happens to fit this new code
+org $02aff8
+PrintBookmarkNameWithKerning:
+    php
+    rep #$30
+    sep #$10
+    ldx #$70      ; set up to read from bank $70 = SRAM for the name
+    stx $54       ; construct pointer from bank number and bank offset in A
+    sta $52
+
+    jsl JslHereToDisableKerning
+-   lda [$52]     ; read characters and print them; string is FFFF terminated
+    inc $52
+    inc $52
+    cmp #$ffff
+    beq +
+
+    ; assume that specifically for the name, do not need to check linebreaking
+    sta.w MostRecentChar
+    jsl $009595     ; JSL to load font data
+    jsl JslHereToAutoKernLeft
+    jsl $00959d     ; JSL to write font data to bank 7F
+    jsl $00957d     ; JSL to calculate text X position
+    bra -
+
++   plp
+    rts
+
+; taken care of in "honorifics asm hack.asm", but putting here for clarity
+; assert pc() <= $02b03e
+    ; fillbyte $ff
+    ; fill $02b03e-pc()
+
+; inject new code into game logic
+org $02b984
+  ; jsl $02b685
+  ; rts
+    jmp PrintBookmarkNameWithKerning
+assert pc() <= $02b989
+    fillbyte $ea
+    fill $02b989-pc()

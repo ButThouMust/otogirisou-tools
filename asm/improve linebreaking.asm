@@ -80,9 +80,11 @@ pushpc
 ;;;;;;;;;;;;;;;;;;;;
 
 ; Aside: the file select and name entry screens work fine with the stock logic,
-; so their control flow is unmodified. However, documenting location and logic:
+; so their control flow is unmodified. However, you can do kerning for the names
+; on the bookmarks, which you can see in "inject kerning into text routine.asm".
+; Anyway, documenting stock logic here:
 ; org $02b6af
-;     sta $1a7d       ; set most recent character
+;     sta MostRecentChar
 ;     jsl $009595     ; JSL to load font data
 ;     jsl $00958d     ; JSL to check horizontal overflow
 ;     jsl $00959d     ; JSL to write font data to bank 7F
@@ -124,12 +126,13 @@ assert pc() <= $00ac01
 org $00e080
   ; jsr.w $ac8f     ; again, get rid of this useless control flow here
   ; bne ToTheRtsBelow
+
 ; important: there is no check for auto waits/delays here
     jsr.w $ac79     ; write Y pos. for choice arrows to table if needed
     jsr.w $a4db     ; read font data
-    ; jsr.w $a777   ; original Japanese-style linebreaking routine
-    ; jsr.w $a611   ; write font data to buffer in bank 7F, to be DMA'd to VRAM
-    ; jsr.w $ac96   ; calculate X coordinate for next character; only 8-bit A!
+  ; jsr.w $a777     ; original Japanese-style linebreaking routine
+  ; jsr.w $a611     ; write font data to buffer in bank 7F, to be DMA'd to VRAM
+  ; jsr.w $ac96     ; calculate X coordinate for next character; only 8-bit A!
 
 ; important that this location uses $00A61C, not $00A611
     jsr.w DoAutoKernLeft
