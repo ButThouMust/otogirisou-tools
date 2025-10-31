@@ -315,11 +315,11 @@ TILEMAP header data:
    Tilemap | Data  | ID(s)
   ---------+-------+----------  I happened to notice that all these values are
    $07C477 | 06 01 | 7A         equal to (W*H + 2), where W and H are the width
-   $07AA2E | DE 00 | 7B,7C      and height of the tilemap. What are the other
-   $07AB50 | C2 03 | 7D,7E,7F   two bytes? The purpose is an educated guess, but
-   $07AE19 | E2 01 | 7D,7E,7F   I think the corresponding ASM would be at around
-   $079C7F | 62 00 | 80         $00B0B2 ($00B0D1-$00B0D7) and $00B131.
-   $079CE5 | 5D 00 | 80
+   $07AA2E | DE 00 | 7B,7C      and height of the tilemap. The other two bytes
+   $07AB50 | C2 03 | 7D,7E,7F   for Mode 7 tilemaps are the width and height.
+   $07AE19 | E2 01 | 7D,7E,7F   The purpose is an educated guess, but I think
+   $079C7F | 62 00 | 80         the corresponding ASM would be around $00B0B2
+   $079CE5 | 5D 00 | 80         ($00B0D1-$00B0D7) and $00B131.
 
 - Byte 2: Type indicator byte for normal or Mode 7 tilemap.
 
@@ -339,6 +339,23 @@ uncomp_tilemap_size = [(byte3 & 0x1) + 1] * byte4 * byte5
 It is also worth mentioning that $00E00C contains a special tilemap block. Its
 sole purpose is to initialize blocks of 0x800 bytes (0x400 words) in VRAM with
 all 00 bytes, not counting the base tilemap value to add to.
+
+---
+
+Basic list of steps for Mode 7 tilemaps:
+- Write the map's width and height to space at $7E4000.
+- RLE decompress the tilemap to $7F8810.
+- Copy the tilemap from $7F8810 to after the width and height bytes.
+
+List of steps for non-Mode 7 tilemaps:
+- Pre-fill the tilemap with the default tile ID number.
+- RLE decompress the tilemap to $7F8810.
+- If high bytes were included, interleave them with the low bytes. If this
+  occurs, the interleaved data will be at $7EC000.
+- Copy the tilemap data to $7E4000 row-by-row to the right position on screen. 
+  If high bytes were not included, substitute in 00 bytes. Add the "base entry
+  value" to each entry.
+- Horizontally flip the tilemap, if the control code requires it.
 
 ------------------------------
 
