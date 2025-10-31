@@ -38,35 +38,37 @@ Some notes:
     Even so, I still wanted to figure out how to compress stuff as much as
     possible given the format.
 
-3.  The max length of a run is 0x80 bytes, but the max length of a literal
-    sequence is 0x7F bytes.
+3.  A run decompresses 2 bytes into anywhere from 0x1-0x80 bytes.
+    A literal sequence can group up anywhere from 0x1-0x7F bytes.
 
 --------------------------------------------------------------------------------
 
 In most cases, yes, using the compression case will save space over encoding the
 repeated value byte by byte. However, there is one specific case where a run of
-length 2 is better encoded byte by byte, if it is surrounded by two sequences:
+length 2 is better encoded byte by byte, if it is surrounded by two sequences.
+(Semicolons indicate separation between groups)
 
 - Encoding as run is one byte worse if surrounded by two sequences of literals.
-There is an extra byte due to the second "sequence length" byte, [82] below.
-  [82 03 04 01 05 82 06 07] -> [03 04 05 05 06 07]
+  There is an extra byte due to the second "sequence length" byte, [82] below.
+  [82 03 04;01 05;82 06 07] -> [03 04 05 05 06 07]
   [86 03 04 05 05    06 07] -> [03 04 05 05 06 07]
 
 To know when we should use this optimization when compressing a run of length 2,
 let's examine the other three cases for what surrounds a run of length 2:
 
 - Better to encode as a run [01 xx] when surrounded by two other runs.
-  [02 00    01 FF 02 02] -> [00 00 00 FF FF 02 02 02]
-  [02 00 82 FF FF 02 02] -> [00 00 00 FF FF 02 02 02]
+  Encoding as a sequence duplicates the data value.
+  [02 00;   01 FF;02 02] -> [00 00 00 FF FF 02 02 02]
+  [02 00;82 FF FF;02 02] -> [00 00 00 FF FF 02 02 02]
 
 - Take your pick if surrounded by a run and a sequence of literals.
   * run, run2, sequence
-  [02 08 01 09 83 0A 0B 0C] -> [08 08 08 09 09 0A 0B 0C]
-  [02 08 85 09 09 0A 0B 0C] -> [08 08 08 09 09 0A 0B 0C]
+  [02 08;01 09;83 0A 0B 0C] -> [08 08 08 09 09 0A 0B 0C]
+  [02 08;85 09 09 0A 0B 0C] -> [08 08 08 09 09 0A 0B 0C]
 
   * sequence, run2, run
-  [85 0D 0E 0F 10 10 02 11] -> [0D 0E 0F 10 10 11 11 11]
-  [83 0D 0E 0F 01 10 02 11] -> [0D 0E 0F 10 10 11 11 11]
+  [85 0D 0E 0F 10 10;02 11] -> [0D 0E 0F 10 10 11 11 11]
+  [83 0D 0E 0F;01 10;02 11] -> [0D 0E 0F 10 10 11 11 11]
 
 Summarize in a "truth table" below:
      type     | encode as     So we have an easy decision to make:
@@ -78,7 +80,7 @@ Summarize in a "truth table" below:
 
 To be thorough, this is the case for a run of 2 and a sequence at the beginning
 of the file. It doesn't matter either way.
-  [01 12 83 13 14 15] <- [12 12 13 14 15]
+  [01 12;83 13 14 15] <- [12 12 13 14 15]
   [85 12 12 13 14 15] <- [12 12 13 14 15]
 
 --------------------------------------------------------------------------------
@@ -155,3 +157,136 @@ For each combined data group {
     Write the data byte for the run: get from original data at (run start index)
 }
 Write the "end of data" 0x80 terminator byte.
+
+--------------------------------------------------------------------------------
+
+If you do want to try improving the compression, here are some ideas:
+
+------------------------------
+
+In the original compression format, you can "equivalently" encode a single byte
+either as a sequence or as a run, in that both require the same amount of space. 
+Looking back at example cases: run [00 B1] -> [B1], sequence [81 B1] -> [B1]
+
+One simple change is to make the run case encode at least two bytes at once, so
+like having [00 B1] decompress to [B1 B1] instead. If you rearrange the format,
+you can keep the sequence size limit of 0x80 and bump up the run size limit to
+0x80 from 0x7F:
+
+  N   |   meaning   | size  | formula
+00-7F |   sequence  | 01-80 | N+1
+80    | end of data |  N/A  | --
+81-FF |     run     | 02-80 | (N & 0x7F) + 1
+
+However, I don't know if this would be enough of a change to warrant having to
+recompress and repoint all the data.
+
+------------------------------
+
+Program your own better compression format for the tilesets and tilemaps, or
+even multiple formats each tailored to a certain type of data.
+
+Including the headers' data, all the tilesets and tilemaps in the Japanese game
+take up 0x1ECAD bytes and 0xFD92 bytes, respectively. I think that this area has
+the most potential for trimming down on data sizes to get the translation patch
+to fit within 1 MB like the original Japanese game.
+
+Assuming you simply change the JSR target from $00B295 (decompression algorithm)
+to wherever your new algorithm(s) is/are, here is the metadata available to you
+upon starting decompression:
+
+----------
+
+Tilesets general case:
+A reg:   Metadata byte 3 = encodes bit depth of raw decompression in bits 4-6
+$10-$11: Total decompressed size, but after being uninterleaved and padded
+$13:     Packs TARGET bit depth, empty tile flag, Mode 7 flag.
+$1C:     "This structure is a tileset" 00 byte
+$24-$25: # tiles
+
+Tileset special case ("advance text" and "next page" icons' gfx; see $00B1FE):
+A reg:   Metadata byte 3 = encodes bit depth of raw decompression in bits 4-6
+$24-$25: # tiles
+And that's all you seem to get.
+
+Specifically, both cases encode raw decompression bit depth in the three bits as
+(bit_depth - 1). So 8bpp would be encoded as 7, 1bpp would be encoded as 0, etc.
+
+So in both cases, you are able to easily calculate the expected size of the data
+once it is decompressed. This is useful because we no longer have to dedicate a
+value in the compression format for "end of data."
+
+Rearrange a formula from my decompression notes about the tile header:
+bit_depth = decomp_size_bytes / num_tiles / 8
+decomp_size_bytes = bit_depth * num_tiles * 8
+
+We know: (A & 0x70) = ((bit_depth - 1) << 4)
+size = num_tiles * (bit_depth << 3) = $24 * ((A & 0x70) + 0x10) >> 1
+
+Chunsoft has already programmed 3 multiplication subroutines at $00863B (2 byte
+product), $008653 (3 byte product), and $00866C (4 byte product). Put one of the
+multiplicands into A, the other into a direct page address, and the direct page
+address itself into (16-bit) X, then call the subroutine. The product will be in
+the direct page address.
+
+The largest possible size any one tileset block can decompress to is for 0x400
+8bpp tiles: 8 * 0x400 * 8 = 0x10000 bytes, which requires 3 bytes to encode.
+However, I found that the largest tileset present in the game decompresses to
+0x3000 bytes, so we can just use the 2 byte product subroutine.
+
+- Push value in $24-$25 (# tiles) to the stack for later (pull before exiting).
+- Put the value ((A & 0x70) + 0x10) >> 1 into the A register
+- Put #$0024 into the X register.
+- JSR to $00863B.
+
+Or as ASM code:
+rep #$30
+ldx $24
+phx
+and #$0070
+clc : adc #$0010
+lsr
+ldx #$0024
+jsr $863b
+
+[etc.]
+rep #$30
+plx
+stx $24
+
+An ASM optimization: the LSR after the AND #$0070 would clear the carry flag, so
+you can replace the [CLC ; ADC #$0010 ; LSR] with [LSR ; ADC #$0008].
+
+Now you can do your "end of data" check by doing, say, CPX $24 or CPY $24.
+
+As for what compression format to use, I'll leave that for another day for now.
+
+----------
+
+Tilemaps general case:
+A reg:   Tilemap height
+$1A:     Flag for "high bits included" or not. (header byte 03)
+$1B:     Tilemap width
+$1C:     "This structure is a tilemap" 02 byte
+$1D:     Tilemap height
+$24-$25: Value to pre-fill empty spaces in tilemap. (from struct bytes 07-08)
+$26-$27: Value to pre-fill empty spaces in tilemap. (from struct bytes 07-08)
+$28:     Tile X position for top left tile in tilemap
+$29:     Tile Y position for top left tile in tilemap
+$2A-$2B: Base value to add decompressed tilemap data to (e.g. set palette index,
+         set priority, set starting tile). (from struct bytes 05-06)
+
+Mode 7 tilemaps:
+A reg:   Tilemap height
+$1A:     Flag for "high bits included" or not. (header byte 03)
+$1B:     Tilemap width
+$1C:     "This structure is a Mode 7 tilemap" 03 byte
+$1D:     Tilemap height
+
+Again, you can easily calculate the expected size of the decompressed tilemap.
+It is $1B*$1D if no high bytes included, or $1B*$1D << 1 if they are included.
+
+The question is where to put the tilemap size in memory. It may be useful to
+know the tilemap's width at $1B for decompression, for a "look 1 row up" check.
+$1C gets overwritten after the original decompression finishes, so perhaps you
+could put the product at $1C-$1D.
