@@ -1593,7 +1593,10 @@ Suddenly, our field of view opened\ up\ to show a huge mansion.<LINE 00>
 //しばらく呆然としてその光景をながめた。<LINE 00>
 Forgetting our fear from the thunder strike and the heavy rain for a moment, we stared at the spectacle in awe.<LINE 00>
 //雨に濡れ、黒々と光る巨大な鉄の門。<LINE 00>
-Wet from the rain, a giant iron gate\ shined jet black.<LINE 00>
+// want to put this note here: the user Guadozoku had pointed out that I had
+// written "shined" here but should write "shone" instead because shined/shone
+// is the difference between transitive/intransitive; this use is intransitive
+Wet from the rain, a giant iron gate\ shone jet black.<LINE 00>
 //その鉄格子のすきまからは広大な庭が見わたせる。<CLEAR 25>
 We looked out over the huge garden through the gaps in the iron bars.<CLEAR 25>
 
@@ -5945,7 +5948,7 @@ There were two horizontal lines each about as thick as a finger, with a little s
 //「でも、なんでこんな所に・・・」<LINE 00>
 “But, why in a place like this...”<LINE 00>
 //ぼくは腰を折り曲げ、下の横線に光を向けた。<LINE 00>
-I bent down and pointed light at the bottom line.<LINE 00>
+I bent down and shined light at the bottom line.<LINE 00>
 //木の柱に元から塗られていたペンキは、乾ききって浮き上がり、
 //かさぶたのようになっていた。<LINE 00>
 The original paint on the base of the wood pillar had dried like a scab.<LINE 00>
@@ -5966,7 +5969,7 @@ I concentrated on it.<CLEAR 25>
 
 //[$16ED1E-7] -> [F7 68 B7]
 //が、古い方の塗料がでこぼこになっていて判別しにくい。<LINE 00>
-But the old paint was uneven and\ hard to make out.<LINE 00>
+But it was hard to make out with the old, uneven paint.<LINE 00>
 //「めくれば分かるわよ」<LINE 00>
 Nami said, “I can read it if I peel off\ the paint.”<LINE 00>
 //奈美はそう言うと、指の爪で浮き上がった塗料をはがし始めた。<LINE 00>
@@ -6199,7 +6202,7 @@ She finally smiled a little.<LINE 00>
 I took Nami's hand, and started walking to the slatted door.<LINE 00>
 //扉をくぐる前に振り返ると、暗いバルコニーの片隅で、
 //残った蛍光塗料がまだらに光っていた。
-I looked back before passing through\ it. Spots of the remaining fluorescent\ paint shined in the corner of the dark balcony.
+I looked back before passing through\ it. Spots of the remaining fluorescent\ paint shone in the corner of the dark balcony.
 <CLEAR FADE OUT 27><$00><$03>
 
 //[$16F2B1-2] -> [8A 95 B7]
@@ -9159,7 +9162,7 @@ The door was unlocked, and I slowly pushed it open.<CLEAR 25>
 <SFX 39><$00><$64><IMAGE FADE IN BLOCK H-MIRROR 37><$00><$01><$00><$22>
 // open door; fade in bottom of open door
 //廊下の光が中にさしこむ。<LINE 00>
-Light from the hallway shined inside.<LINE 00>
+Light from the hallway shone inside.<LINE 00>
 //「ねえ、何かへんなにおいしない?」<LINE 00>
 “Hey, do you smell something funny?”<LINE 00>
 //奈美が鼻をつまんだ。<LINE 00>
@@ -9591,7 +9594,7 @@ I stealthily climbed the stairs.<CLEAR 25>
 // fade in the hallway; stairs stop creaking
 //上がりきった所から右の廊下を見ると、一つだけ、
 //隙間から明かりのもれる扉があった。<LINE 00>
-When I looked into the right hallway upstairs, light shined through the gap\ of just one door.<LINE 00>
+When I looked into the right upstairs hallway, light was shining through the gap of just one door.<LINE 00>
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$1D>
 // go to a door knob
 //ぼくはカギ穴から中をのぞいた。<LINE 00>
@@ -18151,7 +18154,7 @@ I tried to calm her down.<LINE 00>
 //「奈美、あぶないッ!」<LINE 00>
 “Nami, look out!”<LINE 00>
 //ガレージの中から強い光が射した。<LINE 00>
-An intense light shined from inside the garage.
+An intense light shone from inside the garage.
 //クラシックカーがガレージのシャッターを破って突進してくる！<CLEAR 25>
  The classic car tore through the garage door and charged at us!<CLEAR 25>
 
@@ -18736,7 +18739,7 @@ I was no longer afraid of it.<LINE 00>
 //ぼくは手近にあった椅子を振り上げ突進した。<LINE 00>
 I picked up a nearby chair and charged at it.<LINE 00>
 //こちらを向いた怪魚の目が、ギラリと赤い光を放った。<LINE 00>
-The fish's eyes faced me and shined\ red.<LINE 00>
+The fish's eyes faced me and shone\ red.<LINE 00>
 //ぼくの体は宙に浮いて、叩きつけられた<AUTO ADV 13>。<LINE 00><SFX 39><$00><$55><WAIT 16>
 My body flew through the air and got slammed against the floor<AUTO ADV 13>.<SFX 39><$00><$55><WAIT 16>
 // glass shatters
@@ -20515,7 +20518,7 @@ We got to the site of the lightning strike, where we abandoned our car.<LINE 00>
 //ぼくらは何と長い時を過ごしたのだろう。<LINE 00>
 Even though it was only a few hours since it happened, it still felt like so\ much time had passed.<LINE 00>
 //屋敷の地下が、赤く光った。<CLEAR 25>
-A red light shined from under the<LINE 00>mansion.<CLEAR 25>
+A red light shone from under the<LINE 00>mansion.<CLEAR 25>
 // last input before the credits eventually roll
 
 //[$19ACE3-5] -> [1D 67 CD]
@@ -28342,7 +28345,7 @@ At a glance, I knew it was that room.<LINE 00>
 <IMAGE FADE IN BLOCK H-MIRROR 37><$00><$01><$00><$22>
 // fade in bottom of open door
 //開いたドアから雷光が廊下までもれている<AUTO ADV 13>。<LINE 00><SFX 39><$00><$93><WAIT 16>
-A flash of lightning shined into the hallway through an open door<SFX 39><$00><$93>.<LINE 00>
+A flash of lightning shone into the hallway through an open door<SFX 39><$00><$93>.<LINE 00>
 // distant thunder
 //入ってみると、室内はぶきみな花でおおわれていた。<LINE 00>
 We went in and saw the inside of the room, covered in creepy flowers.<LINE 00>
@@ -31097,7 +31100,7 @@ I panicked and tried to run away.<CLEAR 25>
 “Wha-...?!”<LINE 00>
 //雷光が照らした廊下の奥を、
 //白い薄ものをまとったナオミと怪魚が行くのが見えた。<LINE 00>
-Lightning shined into the hallway, and I saw Naomi, clad in thin white clothes, with the monstrous fish.<LINE 00>
+Lightning shone into the hallway, and I saw Naomi, clad in thin white clothes, with the monstrous fish.<LINE 00>
 <SFX 39><$00><$10>
 // mysterious discovery
 //「あっちがナオミだ!?」<LINE 00>
@@ -31788,7 +31791,7 @@ I heard the monstrous fish's footsteps...?<LINE 00>
 //いや。別の誰かが、壁の中を歩いている!？<LINE 00>
 No. Someone else was, walking inside the walls?!<LINE 00>
 //その壁がぼんやりと光った。<CLEAR 25>
-A wall shined faintly.<CLEAR 25>
+A wall faintly shone.<CLEAR 25>
 
 //[$1AFA4C-7] -> [67 D2 D7]
 <STOP SFX 3B><$00><$49><VFX 2C><$00><$99>
@@ -32644,7 +32647,7 @@ The monstrous fish became a body\ of light.
 <VFX 2C><$00><$85><SFX VOLUME 3F><$00><$01><$00><$39>
 // momentary flash of white
 //光体はふるえ、四つの命が一つに溶けて輝き、四散した・・・。<LINE 00>
- The light of four lives merged\ into one shook, shined, and scattered...<WAIT 16><LINE 00>
+ The light of four lives merged\ into one shook, shone, and scattered...<WAIT 16><LINE 00>
 <SFX FADE OUT 40><$00><$02><$00><$39>
 // more shaking sound effects? hard to tell
 //「奈美、あぶないッ!」<CLEAR 25>
@@ -33372,7 +33375,10 @@ I thought Nami, walking in the rain, looked like a dark red jelly bean.<END CHOI
 //雨に打たれて修業するつもりだった。<END CHOICE 1C>
 // while Jisho lists "training" as a translation for 修業, it means more like
 // learning knowledge or skills, or finishing a required course for a certain
-// field, not like physical training
+// field, not like physical training; note, 修行 is pronounced very similarly
+// (しゅぎょう vs しゅうぎょう) and does mean training/practice/discipline
+// this option seems to not be in the PS1 version, so can't check against it
+// to see if 修業 was possibly a typo for 修行
 I planned to study in the the rain.<END CHOICE 1C>
 //<JMP 03>
 //#EMBSET(1377)
@@ -33617,7 +33623,7 @@ Something was in the otogirisou.<LINE 00>
 //「魚!」<LINE 00>
 “A fish!”<LINE 00>
 //キラリと一匹、銀色のウロコがハネた。<LINE 00>
-A silver-colored fish scale shined\ with a flash of light.
+A silver-colored fish scale shone\ with a flash of light.
 <CLEAR 25>
 
 //[$1B9EE3-0] -> [18 F7 DC]
@@ -37716,7 +37722,7 @@ Something<DELAY 17><$00><$03> was next to her<SFX FADE OUT 3C><$00><$6E><$00><$2
 
 //[$1BE614-1] -> [A1 30 DF]
 //巨大なウロコが光った。<LINE 00>
-A giant fish scale shined.<LINE 00>
+A giant fish scale shone.<LINE 00>
 //2メートルもある大きな魚・・・<DELAY 17><$00><$05>ベタベタと歩く怪魚だった。<LINE 00>
 A huge fish two meters long...<DELAY 17><$00><$05> It was a sticky, monstrous, walking fish.<LINE 00>
 //奈美と怪魚は、泳ぎ、たわむれあっては<DELAY 17><$00><$05>浮き沈みしている。<LINE 00>
@@ -39313,7 +39319,7 @@ I knew Nami was following me.<LINE 00>
 //窓が割れた。<LINE 00>
 A window shattered.<LINE 00>
 //いつの間に出ていたのか、満月の光が、音をたてるように射しこんできた。<LINE 00>
-When did the full moon come out? Its light shined in to make a sound.<LINE 00>
+When did the full moon come out? Its light shone in to make a sound.<LINE 00>
 <SFX 39><$00><$14>
 // creepy tones
 //「うわア!!」<LINE 00>
@@ -40262,7 +40268,7 @@ Nami shouted<AUTO ADV 13>.<LINE 00>
 //夜空へ散らばり、暗黒の空へ<DELAY 17><$00><$02>
 //無数の星となって輝いた<AUTO ADV 13>。<LINE 00>
 Bodies of light scattered from the flames into hundreds or thousands of dots\ in the night sky<AUTO ADV 13>.
- They shined as countless stars in the darkness<AUTO ADV 13>.<LINE 00>
+ They shone as countless stars in the darkness<AUTO ADV 13>.<LINE 00>
 //<DELAY 17><$00><$0F>
 <DELAY 17><$00><$08>
 //「星に<DELAY 17><$00><$03>
@@ -41483,7 +41489,7 @@ I was scared but decisively said, “We came this far, so let's go in.”<END CH
 #EMBWRITE(0894)
 //#EMBWRITE(1800)
 //雨にぬれて黒光りする門扉だ。<LINE 00>
-The doors of the gate, wet from the\ rain, shined with a black luster.<LINE 00>
+The doors of the gate, wet from the\ rain, shone with a black luster.<LINE 00>
 //「鍵、かかってるかな?」<LINE 00>
 “Is it, locked?”<LINE 00>
 //「こうすればわかるわ」<LINE 00>
@@ -41833,7 +41839,7 @@ Curious, I approached the\ glass.<END CHOICE 1C>
 As the muddy water swelled, something white slowly passed by the glass<AUTO ADV 13>.<LINE 00>
 <SFX 39><$00><$7B><WAIT 16>
 //「あッ、何か光ったわ・・・!」<LINE 00>
-Nami shouted, “Oh, something shined...!”<LINE 00>
+Nami shouted, “Oh, something shone...!”<LINE 00>
 //「ウロコだ・・・!?」<LINE 00>
 “A fish scale...?!”<LINE 00>
 //「じゃ・・・<DELAY 17><$00><$03>サカナ?　まさか、あんなに大きな・・・!?」<CLEAR 25>
@@ -42286,7 +42292,7 @@ Who the heck was this...<WAIT 16><CLEAR 25>
 <STOP SFX 3B><$00><$13><STOP SFX 3B><$00><$17><VFX 2C><$00><$83>
 // sound cuts out, a strong white light fades in
 //強い光がぼくを射た。<LINE 00>
-A strong light shined onto me.<LINE 00>
+A strong light shone onto me.<LINE 00>
 //懐中電灯だ。<LINE 00>
 It was a flashlight.<LINE 00>
 //「なんだ・・・そこにいたのか奈美」<LINE 00>
@@ -44496,7 +44502,7 @@ Or, was that a ghost who looked just like Nami...?<LINE 00>
 // whole screen cuts to black; a woman's eyes open in the darkness; you hear her
 // laugh; then it fades back to the hallway and the text
 //闇に目玉が光って、笑い声がひびいた。<LINE 00>
-Eyeballs shined in the darkness, and I heard a laughing voice from far away.<LINE 00>
+Eyeballs shone in the darkness, and I heard a laughing voice from far away.<LINE 00>
 <SFX FADE OUT 40><$00><$08><$00><$56>
 // the wind blows
 //あとに、風だけが吹き荒れた。<LINE 00>
@@ -45966,7 +45972,7 @@ We screamed at the same time.<LINE 00>
 <VFX 2C><$00><$83>
 // the background "fades" to white
 //剣が光った。<LINE 00>
-The sword shined.<LINE 00>
+The sword shone.<LINE 00>
 //その光の中で、ぼくらは七才の双子姉妹が母親を剣で刺す光景を見た。<CLEAR 25>
 In that light, we saw seven year old twin sisters stabbing their mother with the sword.<CLEAR 25>
 
@@ -47221,7 +47227,7 @@ Still holding the sword up, the mummy's hands were shaking.<CLEAR 25>
 //奈美が全身で叫んだ。<LINE 00>
 Nami shouted with everything she\ had.<LINE 00>
 //その瞬間ミイラは輝き、爆発した。<LINE 00>
-That moment, the mummy shined, and exploded.
+That moment, the mummy shone, and exploded.
 <CLEAR 25>
 
 //[$1D9870-5] -> [85 C3 EC]
@@ -47961,7 +47967,7 @@ It looked back at us.<LINE 00>
 <SFX 39><$00><$52>
 // meow sound effect
 //全身がうねるように光って、緑色になった。<LINE 00>
-Its whole body twisted, and shined\ in a green light.<LINE 00>
+Its whole body twisted, and shone\ in a green light.<LINE 00>
 //「ちがった。緑ネコ・・・!?」<LINE 00>
 “That was strange. A green cat...?!”<LINE 00>
 //緑色の猫は、咲き乱れる弟切草の向こうへすばやく去った。<LINE 00>
@@ -55218,7 +55224,7 @@ We approached a dark corner.<CLEAR 25>
 We instinctively embraced each other.<LINE 00>
 //いきなり暗ヤミにストロボが光って、インスタントカメラの音がした。
 //ぼくらは写真をとられたのだ。<CLEAR 25>
-A sudden strobe light shined in the darkness, and there was the sound\ of an instant camera. We had our picture taken.<CLEAR 25>
+A sudden strobe light shone in the darkness, and there was the sound\ of an instant camera. We had our picture taken.<CLEAR 25>
 
 //[$1EA8E4-3] -> [23 47 F5]
 //「誰だ!」<LINE 00>
@@ -59385,7 +59391,7 @@ Either they turned into the armor and monstrous fish,<DELAY 17><$00><$03> became
 //ぼくらは同時に叫んだ。<LINE 00>
 We shouted at the same time.<LINE 00>
 //それまでなりをひそめていた光体が、ぼくらを囲むようにまた壁の中で光った。<LINE 00>
-They'd been hiding until now, but shined again in the walls, as if surrounding\ us.<LINE 00>
+They'd been hiding until now, but shone again in the walls, as if surrounding\ us.<LINE 00>
 //一面、二面、三面の壁から・・・三つの光体が、<WAIT 16>
 //ヒトダマとなって壁からぬけ出した。<CLEAR 25>
 From one, two, three of the walls...<WAIT 16> Three bodies of light became hitodamas and slipped out.<CLEAR 25>
@@ -60362,7 +60368,7 @@ The fireflies danced towards the heavens all at once.<CLEAR 25>
 We<DELAY 17><$00><$02> looked up to the starry sky at\ the same time<AUTO ADV 13>.<LINE 00>
 <DELAY 17><$00><$0F>
 //ホタルは、ぼくらの頭上で、光りかがやく星となった<AUTO ADV 13>。<LINE 00>
-The fireflies above our heads, shined and turned into stars<AUTO ADV 13>.<LINE 00>
+The fireflies above our heads, shone and turned into stars<AUTO ADV 13>.<LINE 00>
 <DELAY 17><$00><$19>
 <JMP.cc 04><$01><$8D><$00><$01>
 #EMBSET(2402)
