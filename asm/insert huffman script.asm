@@ -23,6 +23,8 @@ org !OldMusicBlockStart
     incbin "script/huffman script.bin"
     check bankcross full
 
+print "End of Huffman script @ 0x",hex(snestopc(pc())-1)
+
 ; --------------------
 
 ; insert the new Huffman tree data
