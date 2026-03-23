@@ -27,7 +27,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
     private int[] gfxDataHeader;
 
     private String filenameFormat;
-    private String dataOutputFile;
+    private String dataOutputFileName;
     private String logFilename;
 
     private BufferedWriter logFile;
@@ -205,7 +205,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         int dataStart = (int) romStream.getFilePointer();
         int dataStartRAM = getRAMOffset(dataStart);
 
-        dataOutputFile = String.format(filenameFormat, dataStartRAM, type.toString(), ".bin");
+        dataOutputFileName = String.format(filenameFormat, dataStartRAM, type.toString(), ".bin");
         logFilename = String.format(filenameFormat, dataStartRAM, type.toString(), " log.txt");
 
         switch (type) {
@@ -252,7 +252,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         // keep track of size of decompressed data
         int decompressedSize = 0;
 
-        FileOutputStream outputFile = new FileOutputStream(dataOutputFile);
+        FileOutputStream outputFile = new FileOutputStream(dataOutputFileName);
 
         while (ctrlByte != 0x80) {
             // "run length encoding" case: 0x00 <= ctrlByte <= 0x7F
@@ -315,7 +315,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         // (depending on the raw decompressed data) pad it to a certain
         // graphics bit depth that is pre-defined in the structure data
 
-        FileInputStream decompFile = new FileInputStream(dataOutputFile);
+        FileInputStream decompFile = new FileInputStream(dataOutputFileName);
 
         final int GROUP_SIZE = 8;
         final int BUFFER_SIZE = GROUP_SIZE * 2;
@@ -376,7 +376,7 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         // GOAL: convert raw decompressed tilemap to standard SNES format
 
         // get an array of all the bytes from the raw decompressed tilemap
-        FileInputStream decompFile = new FileInputStream(dataOutputFile);
+        FileInputStream decompFile = new FileInputStream(dataOutputFileName);
         byte rawDecompTilemap[] = new byte[uncompDataSize];
         decompFile.read(rawDecompTilemap);
         decompFile.close();
@@ -410,8 +410,31 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
     // -------------------------------------------------------------------------
     // -------------------------------------------------------------------------
 
+    private static final int MAX_COLORS = 0x100;
+    private static final int NUM_BYTES_PER_RGB24_COLOR = 3;
+
+    private RandomAccessFile initializeRGB24PaletteFile() throws IOException {
+        int dataStart = (int) romStream.getFilePointer();
+        int dataStartRAM = getRAMOffset(dataStart);
+        dataOutputFileName = String.format(filenameFormat, dataStartRAM, type.toString(), " RGB24.pal");
+
+        RandomAccessFile outputFile24 = new RandomAccessFile(dataOutputFileName, "rw");
+        // it's unnecessary to fill with data for 0x100 RGB24 copies of black,
+        // but you can do this if you want consistent sizes for the .pal files
+        /*
+        for (int i = 0; i < MAX_COLORS; i++) {
+            outputFile24.write(0x00);
+            outputFile24.write(0x00);
+            outputFile24.write(0x00);
+        }
+        */
+        return outputFile24;
+    }
+
     private void dumpPaletteData() throws IOException {
-        FileOutputStream outputFile = new FileOutputStream(dataOutputFile);
+        // output the raw BGR15 color data and the converted RGB24 color data
+        FileOutputStream outputFile15 = new FileOutputStream(dataOutputFileName);
+        RandomAccessFile outputFile24 = initializeRGB24PaletteFile();
 
         // int size = gfxDataHeader[0] - 3;
         int position = getRAMOffset((int) romStream.getFilePointer());
@@ -422,11 +445,6 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
         if (!isIndepDataBlock()) {
             startIndex = structureMetadata[0];
         }
-
-        // Note: You should determine color depth from the tile data instead.
-        // int colorDepth = (int) (Math.log(totalColors) / Math.log(2));
-        // String firstLineFormat = "$%06X has data for %d colors of a possible %d (%d bpp)";
-        // String firstLine = String.format(firstLineFormat, position, colorsUsed, totalColors, colorDepth);
 
         String firstLineFormat = "$%06X has data for %d colors\n\n";
         String firstLine = String.format(firstLineFormat, position, totalColors);
@@ -440,6 +458,10 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
 
         int totalColorGroups = 0;
         int currentCgramIndex = startIndex;
+        // to accurately simulate writing colors to CGRAM, seek to the correct
+        // location for first set of 24-bit colors
+        outputFile24.seek(currentCgramIndex * NUM_BYTES_PER_RGB24_COLOR);
+
         for (int i = 0; i < totalColors; i++) {
             int byte0 = romStream.readUnsignedByte();
             int byte1 = romStream.readUnsignedByte();
@@ -447,8 +469,12 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
             int colorValue15 = (byte1 << 8) | byte0;
             int colorValue24 = convertBGR15ToRGB24(colorValue15 & 0x7FFF);
 
-            outputFile.write(byte0);
-            outputFile.write(byte1);
+            outputFile15.write(byte0);
+            outputFile15.write(byte1);
+
+            outputFile24.write((colorValue24 >> 16) & 0xFF);
+            outputFile24.write((colorValue24 >> 8) & 0xFF);
+            outputFile24.write(colorValue24 & 0xFF);
 
             logFile.write(String.format(loopLineFormat, currentCgramIndex, colorValue15 & 0x7FFF, colorValue24));
 
@@ -457,13 +483,17 @@ public class GraphicsStructure implements Comparable<GraphicsStructure> {
                 totalColorGroups++;
                 currentCgramIndex = startIndex + totalColorGroups * colorIndexSkipSize;
 
+                // similar, seek to correct position for 24-bit colors
+                outputFile24.seek(currentCgramIndex * NUM_BYTES_PER_RGB24_COLOR);
+
                 transparencyLine = String.format(loopLineFormat, currentCgramIndex - 1, 0, 0) + " (implied)";
                 logFile.write("\n");
                 logFile.write(transparencyLine);
             }
         }
         endOfData = getRAMOffset((int) (romStream.getFilePointer() - 1));
-        outputFile.close();
+        outputFile15.close();
+        outputFile24.close();
 
         // note: need to also output metadata if independent structure, so do
         // not close log file here
