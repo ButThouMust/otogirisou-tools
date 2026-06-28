@@ -1892,7 +1892,7 @@ It faintly smelled of roses.<LINE 00>
 //「あ、ありがと」<LINE 00>
 “Th-, thanks.”<LINE 00>
 //なんだか照れ臭い。<LINE 00>
-Oh, this is embarassing.<LINE 00>
+Oh, this is embarrassing.<LINE 00>
 //「それより・・・、壊しちゃったね」<LINE 00>
 // note: can't use a specific direct object because it can be either the door
 // or the window depending on player's choice, so have to be vague and use "it"
@@ -3830,7 +3830,7 @@ I glanced at Nami's face. Her mouth\ still half open, she was looking at me out 
 //・<DELAY 17><$00><$02>・<DELAY 17><$00><$02>・<DELAY 17><$00><$02>
 //気まずい。<CLEAR 25>
 .<DELAY 17><$00><$02>.<DELAY 17><$00><$02>.<DELAY 17><$00><$02>
-This is embarassing.<CLEAR 25>
+This is embarrassing.<CLEAR 25>
 
 //[$16B5F9-7] -> [CF AF B5]
 //「よし<AUTO ADV 13>！　あのドアまで競走だ!」<LINE 00>
@@ -20833,7 +20833,7 @@ Then:<LINE 00>
 //[$19B20C-5] -> [65 90 CD]
 #EMBWRITE(0657)
 //テレ隠しに頭をかきながら門内に入った。<END CHOICE 1C>
-Scratching my head to hide my<LINE 00>embarassment, I entered the gate.<END CHOICE 1C>
+Scratching my head to hide my<LINE 00>embarrassment, I entered the gate.<END CHOICE 1C>
 // putting clear code to avoid screen overflow on "next page" icon
 <CLEAR 25>
 <JMP 03>
@@ -25107,7 +25107,7 @@ The flames and laughs disappeared into the mansion, as if being sucked\ in.
 #EMBWRITE(0810)
 //「わかった<AUTO ADV 13>。そうする<AUTO ADV 13>」<LINE 00>
 //ぼくは奈美を安心させるためにいった。<END CHOICE 1C>
-For her own safety, I said, “Okay<AUTO ADV 13>. I'll run away.”<END CHOICE 1C>
+To put her at ease, I said, “Okay<AUTO ADV 13>. I'll run away.”<END CHOICE 1C>
 //<JMP 03>
 //#EMBSET(0813)
 
@@ -25133,9 +25133,9 @@ I heard a woman's crazed laughter\ as Nami's flames swelled up tenfold, shot acr
 <SFX FADE OUT 3C><$00><$46><$00><$1C><CLEAR FADE OUT 27><$00><$03>
 // fade out crackling of fire
 
-// in the PS1 version, choosing to leave Nami behind would roll the credits here
-// but more importantly, it does not mark this ending route as viewed for pink
-// bookmark progress; take a guess as to how I found this out :P
+// in the PS1 version, abandoning Nami quickly leads to a bad ending here, and
+// importantly doesn't mark this route as viewed for pink bookmark progress;
+// take a guess as to how I found this out :P
 
 //[$1A88E5-1] -> [29 47 D4]
 <VFX 2C><$00><$95>
@@ -26290,7 +26290,7 @@ The phoenix lit me on fire and went\ away.<LINE 00>
 //「脱いで！　<KOUHEI-SAN 20>、ズボン、脱いでッ!」<LINE 00>
 “Take them off! Take your pants off, <KOUHEI-SAN 20>!”<LINE 00>
 //うれしいが、恥ずかしい。<CLEAR 25>
-I was glad, but embarassed.<CLEAR 25>
+I was glad, but embarrassed.<CLEAR 25>
 
 //[$1A9CF4-2] -> [A2 E7 D4]
 //「アチチチチ・・・!」<LINE 00>
@@ -33376,10 +33376,10 @@ I thought Nami, walking in the rain, looked like a dark red jelly bean.<END CHOI
 // while Jisho lists "training" as a translation for 修業, it means more like
 // learning knowledge or skills, or finishing a required course for a certain
 // field, not like physical training; note, 修行 is pronounced very similarly
-// (しゅぎょう vs しゅうぎょう) and does mean training/practice/discipline
-// this option seems to not be in the PS1 version, so can't check against it
-// to see if 修業 was possibly a typo for 修行
-I planned to study in the the rain.<END CHOICE 1C>
+// (しゅぎょう vs しゅうぎょう) and does mean training/practice/discipline; typo?
+// PS1 version doesn't have this option, so can't use it to see if 修業 was
+// definitely a typo for 修行
+I planned to train in the the rain.<END CHOICE 1C>
 //<JMP 03>
 //#EMBSET(1377)
 
@@ -36464,7 +36464,7 @@ To calm her down, I brought her to\ the kitchen and had her drink some cold wate
 //[$1BCF63-7] -> [1F 7B DE]
 <SFX FADE OUT 3C><$00><$0F><$00><$15><CODE 45><$00><$59><CODE 46><$00><$59>
 //そしてぼくは、<LINE 00>
- Then:<LINE 00>
+Then:<LINE 00>
 <CHOICE 1A><$03><$45><$00><$04><$00><$E1>
 #EMBSET(1540)
 #EMBSET(1541)
@@ -38545,9 +38545,9 @@ Somehow, her family seemed strangely large.<CLEAR 25>
 //奈美はその隠し棚を閉じた。<LINE 00>
 Nami closed the hidden shelf.<LINE 00>
 //「これは、私の分。・・・少なくって、恥かしいんだけれど」<LINE 00>
-“These are, mine. It's embarassing\ there are so few, but...”<LINE 00>
+“These are, mine. It's embarrassing\ there are so few, but...”<LINE 00>
 //「少なくて恥かしい・・・?」<CLEAR 25>
-“Embarassingly few...?”<CLEAR 25>
+“embarrassingly few...?”<CLEAR 25>
 
 //[$1BF78C-3] -> [63 BC DF]
 //「みんなでコレクションしてるの。お父さんなんか、九十九個も集めたわ」<LINE 00>
@@ -39103,7 +39103,7 @@ Slender, miniature severed heads were arranged inside like ping pong balls.<CLEA
 //「三十八個」<LINE 00>
 “I have 38.”<LINE 00>
 //恥かしそうに奈美がいった。<LINE 00>
-Nami sounded embarassed.<LINE 00>
+Nami sounded embarrassed.<LINE 00>
 //怪魚がウエヘヘと笑った。<LINE 00>
 The monstrous fish laughed, “Ehehe.”<LINE 00>
 <IMAGE FADE IN BLOCK 36><$00><$01><$00><$36>
@@ -40787,12 +40787,13 @@ I tried to change the subject and asked, “Nami, are you hungry?”<END CHOICE 
 //感傷的になっている奈美を観ショウした。<END CHOICE 1C>
 // - Japanese pun: 感傷 "sentimentality" and 観賞 "looking at something and
 //   enjoying its appearance/beauty/meaning" (if you want a one-word translation
-//   with that context in mind, admiration or appreciation) are both かんしょう
+//   with that context in mind, "admiration" or "appreciation," e.g. "I admired
+//   the scenic view" or "I appreciated the flowers") are both かんしょう
 // - more direct translation: "I admired the sight of Nami being sentimental"
 // - I think "the sight of" is important, since if you translate as "I admired
-//   Nami being sentimental", it can be misinterpreted as admiring NAMI for her
-//   sentimentality instead of enjoying just seeing her like that
-I admired the sight of Nami, mired\ in her sentimentality.<END CHOICE 1C>
+//   Nami being sentimental", "admired" can be misinterpreted as respecting Nami
+//   as a person or for her character, versus enjoying just seeing her like that
+I admired the sight of Nami mired\ in sentimentality.<END CHOICE 1C>
 <JMP 03>
 #EMBSET(0833)
 
@@ -41004,7 +41005,7 @@ I opened my eyes, and the car had stopped.<LINE 00>
 //奈美はうつむいて少し顔を赤らめている。<LINE 00>
 Nami was hanging her head and blushing a little.<LINE 00>
 //ギリギリのところで、ぼくは何かはずかしいことでも叫んでしまったのだろうか。<LINE 00>
-Did I shout something embarassing\ at the last moment?<LINE 00>
+Did I shout something embarrassing\ at the last moment?<LINE 00>
 //マサカ、愛しているとでも・・・？<CLEAR 25>
 No way, did I say I love her...?<CLEAR 25>
 
@@ -43129,7 +43130,7 @@ Nami said, “Maybe it was supposed\ to be protection against theft?”<LINE 00>
 //「何ダ!」<LINE 00>
 “What?!”<LINE 00>
 //神経カビンになっている。<LINE 00>
-// 神経 -> nerves, sensitivity; カビン -> 神経 -> nervousness
+// 神経 -> nerves, sensitivity; カビン -> 過敏 -> nervousness
 We became a bundle of nerves.<LINE 00>
 //「二階からよ」<CLEAR 25>
 “It's from upstairs.”<CLEAR 25>
